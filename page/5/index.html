@@ -1,23 +1,1453 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#3eaf7c">
+<meta name="generator" content="Hexo 5.2.0">
 
-{% block title %}{{ title }}{% if theme.index_with_subtitle and subtitle %} – {{ subtitle }}{% endif %}{% endblock %}
 
-{% block page_class %}
-  {% if is_home() %}page-home{% endif -%}
-{% endblock %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon.png" color="#3eaf7c">
 
-{% block content %}
-  <section id="posts" class="posts-expand">
-    {% for post in page.posts %}
-      {{ post_template.render(post, true) }}
-    {% endfor %}
-  </section>
+<link rel="stylesheet" href="/css/main.css">
 
-  {% include '_partials/pagination.swig' %}
-{% endblock %}
 
-{% block sidebar %}
-  {{ sidebar_template.render(false) }}
-{% endblock %}
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="热衷于记录、分享前端开发技术">
+<meta property="og:type" content="website">
+<meta property="og:title" content="前端轻语">
+<meta property="og:url" content="https://blog.flqin.com/page/5/index.html">
+<meta property="og:site_name" content="前端轻语">
+<meta property="og:description" content="热衷于记录、分享前端开发技术">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Korey">
+<meta property="article:tag" content="前端,前端开发,css,html,js,css3,前端开发博客,fe,技术文档">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.flqin.com/page/5/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>前端轻语 - korey的前端笔记</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c8dec20f0d0449c8ece3c0dbab4e8f31";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">前端轻语</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">korey的前端笔记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+
+  </li>
+        <li class="menu-item menu-item-map">
+
+    <a href="/map/" rel="section"><i class="fa fa-sitemap fa-fw"></i>map</a>
+
+  </li>
+        <li class="menu-item menu-item-link">
+
+    <a href="/link/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>link</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Korey" src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Korey</p>
+  <div class="site-description" itemprop="description">热衷于记录、分享前端开发技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="GitHub → https://github.com/zhaoky"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtleXUuemhhb0Bmb3htYWlsLmNvbQ==" title="E-Mail → mailto:keyu.zhao@foxmail.com"><i class="far fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci81N2M5MWIzYjE2NWFiZDAwNjhkYjg5YzI=" title="掘金 → https://juejin.im/user/57c91b3b165abd0068db89c2"><i class="fas fa-link fa-fw"></i>掘金</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cDovL3d3dy56aGlodS5jb20vcGVvcGxlL2ZlX2tvcmV5" title="知乎 → http://www.zhihu.com/people/fe_korey"><i class="fas fa-link fa-fw"></i>知乎</span>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner index posts-expand">
+      
+
+      
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/370.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/370.html" class="post-title-link" itemprop="url">（转载）了解 HTML5 中的 MutationObserver</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-09-18 18:10:35" itemprop="dateCreated datePublished" datetime="2019-09-18T18:10:35+00:00">2019-09-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Basics/" itemprop="url" rel="index"><span itemprop="name">FE Basics</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><code>MutationObserver</code> 翻译过来就是变动观察器，字面上就可以理解这是用来观察 <code>Node</code>（节点）变化的。<code>MutationObserver</code> 是在 <code>DOM4</code> 规范中定义的，它的前身是 <code>MutationEvent</code> 事件，该事件最初在 <code>DOM2</code> 事件规范中介绍，到来了 <code>DOM3</code> 事件规范中正式定义，但是由于该事件存在兼容性以及性能上的问题被弃用。<span class="exturl" data-url="aHR0cHM6Ly9jYW5pdXNlLmNvbS8jc2VhcmNoPU11dGF0aW9uT2JzZXJ2ZXI=">兼容性查阅<i class="fa fa-external-link-alt"></i></span></p>
+<p><code>MutationObserver</code> 是一个构造器，接受一个 <code>callback</code> 参数，用来处理节点变化的回调函数。返回两个参数:</p>
+<ul>
+<li><code>mutations</code>：节点变化记录列表（<code>sequence&lt;MutationRecord&gt;</code>）</li>
+<li><code>observer</code>：构造 <code>MutationObserver 对象</code>。</li>
+</ul>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> observe = <span class="keyword">new</span> MutationObserver(<span class="function"><span class="keyword">function</span> (<span class="params">mutations, observer</span>) </span>{});</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>MutationObserver</code> 对象有三个方法，分别如下：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/370.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/369.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/369.html" class="post-title-link" itemprop="url">Unable to preventDefault inside passive event listener due to target being treated as passive</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-09-18 17:17:18" itemprop="dateCreated datePublished" datetime="2019-09-18T17:17:18+00:00">2019-09-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Basics/" itemprop="url" rel="index"><span itemprop="name">FE Basics</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>956</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="事件现象"><a href="#事件现象" class="headerlink" title="事件现象"></a>事件现象</h2><figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.addEventListener(<span class="string">'touchstart'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>{</span><br><span class="line">  e.preventDefault();</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>chrome</code> 控制台报错：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[Intervention] Unable to preventDefault inside passive event listener due to target being treated as passive. See https://www.chromestatus.com/features/5093566007214080</span><br></pre></td></tr></tbody></table></figure>
+
+<p>在 <code>document</code> 上监听 <code>touch</code> 类事件时，如果在 <code>handler</code> 里调用了 <code>e.preventDefault()</code>，则会报错：<code>不能给passive(被动的)事件监听器 preventDefault，因为它被认为是 passive</code></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/369.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/368.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/368.html" class="post-title-link" itemprop="url">（转载）javascript中的装箱和拆箱</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-09-16 11:15:50" itemprop="dateCreated datePublished" datetime="2019-09-16T11:15:50+00:00">2019-09-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Basics/" itemprop="url" rel="index"><span itemprop="name">FE Basics</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>869</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="装箱"><a href="#装箱" class="headerlink" title="装箱"></a>装箱</h2><p>把 <code>基本数据类型</code> 转换为对应的 <code>引用类型</code> 的操作称为 <code>装箱</code>，把 <code>引用类型</code> 转换为 <code>基本数据类型</code> 称为 <code>拆箱</code>。</p>
+<blockquote>
+<p>每当读取一个基本类型的时候，后台就会创建一个对应的基本包装类型对象，从而让我们能够调用一些方法来操作这些数据。 –《javascript 高级程序设计》</p>
+</blockquote>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> s1 = <span class="string">'some text'</span>;</span><br><span class="line"><span class="keyword">var</span> s2 = s1.substring(<span class="number">2</span>);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>如上所视，变量 <code>s1</code> 是一个基本类型值，它不是对象，所以它不应该有方法。但是 <code>js</code> 内部为我们完成了一系列处理（即我们称之为<code>装箱</code>），使得它能够调用方法,实现的机制如下：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/368.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/367.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/367.html" class="post-title-link" itemprop="url">ast简介</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-09-12 16:30:31" itemprop="dateCreated datePublished" datetime="2019-09-12T16:30:31+00:00">2019-09-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/Computer-Basics/" itemprop="url" rel="index"><span itemprop="name">Computer Basics</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p><code>抽象语法树（Abstract Syntax Tree，AST）</code>是源代码语法结构的一种抽象表示。它以<strong>树状的形式表现编程语言的语法结构</strong>，树上的每个节点都表示源代码中的一种结构。之所以说语法是“抽象”的，是因为这里的语法并不会表示出真实语法中出现的每个细节。</p>
+<h2 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h2><p>优化变更代码，改变代码结构达到想要的结构（<code>webpack</code> 等），代码语法、风格的检查（<code>eslint</code>），代码的格式化，代码的高亮，代码错误提示，代码自动补全（<code>IDE</code>）等等。</p>
+<h2 id="如何转换"><a href="#如何转换" class="headerlink" title="如何转换"></a>如何转换</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/367.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/366.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/366.html" class="post-title-link" itemprop="url">使用proxy实现一个简单完整的MVVM库</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-09-06 09:49:29" itemprop="dateCreated datePublished" datetime="2019-09-06T09:49:29+00:00">2019-09-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Build/" itemprop="url" rel="index"><span itemprop="name">FE Build</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>MVVM</code> 是当前时代前端日常业务开发中的必备模式（相关框架如<code>react</code>，<code>vue</code>，<code>angular</code> 等）， 使用 <code>MVVM</code> 可以将开发者的精力更专注于业务上的逻辑，而不需要关心如何操作 <code>dom</code>。虽然现在都 9012 年了，<code>mvvm</code> 相关原理的介绍已经烂大街了，但出于学习基础知识的目的（使用 <code>proxy</code> 实现的 <code>vue</code>3.0 还在开发中）， 在参考了之前 <code>vue.js</code> 的整体思路之后，自己动手实现了一个简易的通过 <code>proxy</code> 实现的 <code>mvvm</code>。</p>
+<blockquote>
+<p>本项目代码已经开源在<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reS9tdnZt">github<i class="fa fa-external-link-alt"></i></span>，项目正在持续完善中，欢迎交流学习，喜欢请点个 star 吧！</p>
+</blockquote>
+<h2 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h2><figure class="highlight html"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"app"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span>&gt;</span>{{title}}<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/366.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/365.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/365.html" class="post-title-link" itemprop="url">正则表达式的先行断言(lookahead)和后行断言(lookbehind)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-09-04 22:56:45" itemprop="dateCreated datePublished" datetime="2019-09-04T22:56:45+00:00">2019-09-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/Computer-Basics/" itemprop="url" rel="index"><span itemprop="name">Computer Basics</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>904</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>均是<strong>匹配位置</strong>，在匹配过程中，不占用字符，所以被称为<strong>零宽</strong>。</p>
+<ul>
+<li><p><code>(?=pattern)</code> 零宽<code>正向先行</code>断言(zero-width positive lookahead assertion)</p>
+<ul>
+<li><p>紧接该位置<strong>之后</strong>的字符序列<strong>能够</strong>匹配 <code>pattern</code></p>
+</li>
+<li><p>如替换后面紧跟<code>c</code>的<code>ab</code>为<code>xx</code>：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'abcabdabe'</span>.replace(<span class="regexp">/ab(?=c)/g</span>, <span class="string">'xx'</span>); <span class="comment">// xxcabdabe</span></span><br></pre></td></tr></tbody></table></figure>
+</li>
+</ul>
+</li>
+<li><p><code>(?!pattern)</code> 零宽<code>负向先行</code>断言(zero-width negative lookahead assertion)</p>
+<ul>
+<li><p>紧接该位置<strong>之后</strong>的字符序列<strong>不能</strong>匹配 <code>pattern</code></p>
+</li>
+<li><p>如替换后面不为<code>c</code>的<code>ab</code>为<code>xx</code>：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'abcabdabe'</span>.replace(<span class="regexp">/ab(?!c)/g</span>, <span class="string">'xx'</span>); <span class="comment">// abcxxdxxe</span></span><br></pre></td></tr></tbody></table></figure>
+</li>
+</ul>
+</li>
+<li><p><code>(?&lt;=pattern)</code> 零宽<code>正向后行</code>断言(zero-width positive lookbehind assertion)</p>
+<ul>
+<li><p>紧接该位置<strong>之前</strong>的字符序列<strong>能够</strong>匹配 <code>pattern</code></p>
+</li>
+<li><p>如替换前面为<code>a</code>的<code>bc</code>为<code>xx</code>：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'abcdbcebc'</span>.replace(<span class="regexp">/(?&lt;=a)bc/g</span>, <span class="string">'xx'</span>); <span class="comment">// axxdbcebc</span></span><br></pre></td></tr></tbody></table></figure>
+</li>
+</ul>
+</li>
+<li><p><code>(?&lt;!pattern)</code> 零宽<code>负向后行</code>断言(zero-width negative lookbehind assertion)</p>
+<ul>
+<li><p>紧接该位置<strong>之前</strong>的字符序列<strong>不能</strong>匹配 <code>pattern</code></p>
+</li>
+<li><p>如替换后面不为<code>a</code>的<code>bc</code>为<code>xx</code>：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'abcdbcebc'</span>.replace(<span class="regexp">/(?&lt;!a)bc/g</span>, <span class="string">'xx'</span>); <span class="comment">// abcdxxexx</span></span><br></pre></td></tr></tbody></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<p>另：非捕获分组<code>(?:p)</code></p>
+<p><code>括号</code>是提供分组功能，如果只想要<code>括号</code>最原始的功能，但不会引用它，即既不在 API 里引用，也不在正则里反向引用。此时可以使用<code>非捕获分组(?:p)</code></p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'abcde'</span>.replace(<span class="regexp">/(ab)c(de)/g</span>, <span class="string">'$1'</span>); <span class="comment">// ab</span></span><br><span class="line"><span class="string">'abcde'</span>.replace(<span class="regexp">/(?:ab)c(de)/g</span>, <span class="string">'$1'</span>); <span class="comment">// de</span></span><br></pre></td></tr></tbody></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/365.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/364.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/364.html" class="post-title-link" itemprop="url">（转载）为什么JavaScript里面typeof(null)的值是"object"</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-09-04 22:32:28" itemprop="dateCreated datePublished" datetime="2019-09-04T22:32:28+00:00">2019-09-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Basics/" itemprop="url" rel="index"><span itemprop="name">FE Basics</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>243</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <ol>
+<li>null 不是一个空引用, 而是一个原始值, 参考 <span class="exturl" data-url="aHR0cDovL2x6dy5tZS9wYWdlcy9lY21hc2NyaXB0LyMyMA==">ECMAScript5.1 中文版<i class="fa fa-external-link-alt"></i></span> 4.3.11 节; 它只是期望此处将引用一个对象, 注意是”期望”, 参考 <span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXIubW96aWxsYS5vcmcvemgtQ04vZG9jcy9XZWIvSmF2YVNjcmlwdC9SZWZlcmVuY2UvR2xvYmFsX09iamVjdHMvbnVsbA==">null - JavaScript<i class="fa fa-external-link-alt"></i></span>.</li>
+<li>typeof null 结果是 object, 这是个历史遗留 bug, 参考 <span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXIubW96aWxsYS5vcmcvemgtQ04vZG9jcy9XZWIvSmF2YVNjcmlwdC9SZWZlcmVuY2UvT3BlcmF0b3JzL3R5cGVvZg==">typeof - JavaScript<i class="fa fa-external-link-alt"></i></span></li>
+<li>在 ECMA6 中, 曾经有提案为历史平反, 将 type null 的值纠正为 null, 但最后提案被拒了. 理由是历史遗留代码太多, 不想得罪人, 不如继续将错就错当和事老, 参考 <span class="exturl" data-url="aHR0cDovL3dpa2kuZWNtYXNjcmlwdC5vcmcvZG9rdS5waHA/aWQ9aGFybW9ueTp0eXBlb2ZfbnVsbA==">harmony:typeof_null -ES Wiki<i class="fa fa-external-link-alt"></i></span></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/363.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/363.html" class="post-title-link" itemprop="url">NFE（具名函数表达式）的问题</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-09-04 20:32:38" itemprop="dateCreated datePublished" datetime="2019-09-04T20:32:38+00:00">2019-09-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Basics/" itemprop="url" rel="index"><span itemprop="name">FE Basics</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>280</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>群里小伙伴讨论了这么一个问题：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> a = <span class="function"><span class="keyword">function</span> <span class="title">b</span>(<span class="params"></span>) </span>{</span><br><span class="line">  b = <span class="number">1</span>;</span><br><span class="line">  <span class="built_in">console</span>.log(b);</span><br><span class="line">};</span><br><span class="line">a(); <span class="comment">//打印b为function(){b=1;console.log(b);}</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>为什么这里打印的 <code>b</code> 为 <code>b</code> 函数，而不是 <code>1</code>？</p>
+<p>声明提前：一个声明在函数体内都是可见的，函数声明优先于变量声明；<code>函数表达式</code> 如果有 <code>name</code> 的话，这个 <code>name</code> 是 <code>不可删除且为只读</code>。</p>
+<p>资料查阅：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/363.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/362.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/362.html" class="post-title-link" itemprop="url">自定义事件</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-09-04 11:28:37" itemprop="dateCreated datePublished" datetime="2019-09-04T11:28:37+00:00">2019-09-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Basics/" itemprop="url" rel="index"><span itemprop="name">FE Basics</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>764</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="创建，触发，删除自定义事件"><a href="#创建，触发，删除自定义事件" class="headerlink" title="创建，触发，删除自定义事件"></a>创建，触发，删除自定义事件</h2><ul>
+<li>创建自定义事件 文档<span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXIubW96aWxsYS5vcmcvemgtQ04vZG9jcy9XZWIvR3VpZGUvRXZlbnRzL0NyZWF0aW5nX2FuZF90cmlnZ2VyaW5nX2V2ZW50cw==">查阅<i class="fa fa-external-link-alt"></i></span></li>
+<li>Event() 文档<span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXIubW96aWxsYS5vcmcvZW4tVVMvZG9jcy9XZWIvQVBJL0V2ZW50L0V2ZW50">查阅<i class="fa fa-external-link-alt"></i></span></li>
+<li>Event 属性 文档<span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXIubW96aWxsYS5vcmcvZW4tVVMvZG9jcy9XZWIvQVBJL0V2ZW50">查阅<i class="fa fa-external-link-alt"></i></span></li>
+</ul>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> event = <span class="keyword">new</span> Event(<span class="string">'build'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Listen for the event.</span></span><br><span class="line">elem.addEventListener(<span class="string">'build'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>{ ... }, <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Dispatch the event.</span></span><br><span class="line">elem.dispatchEvent(event);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Delete the event.</span></span><br><span class="line">elem.removeEventListener(<span class="string">'build'</span>);</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="添加自定义数据"><a href="#添加自定义数据" class="headerlink" title="添加自定义数据"></a>添加自定义数据</h2><p>要向事件对象添加更多数据，可以使用 <code>CustomEvent</code></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/362.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/361.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/361.html" class="post-title-link" itemprop="url">使用typescript下的项目架构最佳实践</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-24 17:55:32" itemprop="dateCreated datePublished" datetime="2019-07-24T17:55:32+00:00">2019-07-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Build/" itemprop="url" rel="index"><span itemprop="name">FE Build</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>6.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>6 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>此贴记录下在 <code>typescript</code> 项目里的一些相关配置和包的选用，其中各种依赖包和最佳实践都在不断发展演变中，最新的配置以该仓库 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reS9tdnZt">MVVM<i class="fa fa-external-link-alt"></i></span> 为准。</p>
+<h2 id="typescript-支持"><a href="#typescript-支持" class="headerlink" title="typescript 支持"></a>typescript 支持</h2><p>在<code>webpack</code>中使用 <code>babel 7.0 +</code>,摒弃了传统的 <code>ts-loader</code> 或 <code>awesome-typescript-loader</code> 方案。原因如下：</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Zyb250ZW5kOS9mZTktbGlicmFyeS9pc3N1ZXMvMjM=">参考 1<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vcG9zdC81YzgyMmU0MjZmYjlhMDRhMGE1ZmZiNDk=">参考 2<i class="fa fa-external-link-alt"></i></span></li>
+</ul>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yarn add @babel/core babel-loader @babel/preset-env @babel/preset-typescript -D</span><br><span class="line">yarn add @babel/plugin-proposal-class-propertie -D //根据项目需求添加其他env未包含的转义插件</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/361.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">…</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">…</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  © 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Korey zhao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">507k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:41</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+
+
+  
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script>
+
+<script src="/bundle.js"></script><script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  ;
+L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":125,"height":150,"position":"left","hOffset":30,"vOffset":-5},"mobile":{"show":false,"scale":0.05},"react":{"opacityDefault":1,"opacityOnHover":0.2},"log":false});</script></body></html>

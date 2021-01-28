@@ -1,23 +1,560 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#3eaf7c">
+<meta name="generator" content="Hexo 5.2.0">
 
-{% block title %}{{ page.title }} | {{ title }}{% endblock %}
 
-{% block page_class %}page-post-detail{% endblock %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon.png" color="#3eaf7c">
 
-{% block content %}
+<link rel="stylesheet" href="/css/main.css">
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="我们在使用 CSS 对网页元素定义样式时经常会遇到这种情况：要对一般元素应用一般样式，然后在更特殊的元素上覆盖它们。那么我们怎么样来保证我们所新定义的元素样式能覆盖目标元素上原有的样式呢？ 在 CSS 中，会根据选择器的特殊性来决定所定义的样式规则的次序，具有更特殊选择器的规则优先于具有一般选择器的规则，如果两个规则的特殊性相同，那么后定义的规则优先。 那么，又怎么来计算选择器的特殊性呢？下面这张">
+<meta property="og:type" content="article">
+<meta property="og:title" content="（转载）CSS选择器的权重与优先规则">
+<meta property="og:url" content="https://blog.flqin.com/189.html">
+<meta property="og:site_name" content="前端轻语">
+<meta property="og:description" content="我们在使用 CSS 对网页元素定义样式时经常会遇到这种情况：要对一般元素应用一般样式，然后在更特殊的元素上覆盖它们。那么我们怎么样来保证我们所新定义的元素样式能覆盖目标元素上原有的样式呢？ 在 CSS 中，会根据选择器的特殊性来决定所定义的样式规则的次序，具有更特殊选择器的规则优先于具有一般选择器的规则，如果两个规则的特殊性相同，那么后定义的规则优先。 那么，又怎么来计算选择器的特殊性呢？下面这张">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.flqin.com/p189-1.jpg">
+<meta property="og:image" content="http://cdn.flqin.com/p189-2.jpg">
+<meta property="article:published_time" content="2016-03-06T16:24:36.000Z">
+<meta property="article:modified_time" content="2016-03-06T16:24:36.000Z">
+<meta property="article:author" content="Korey">
+<meta property="article:tag" content="前端,前端开发,css,html,js,css3,前端开发博客,fe,技术文档">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.flqin.com/p189-1.jpg">
+
+
+<link rel="canonical" href="https://blog.flqin.com/189.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>（转载）CSS选择器的权重与优先规则 | 前端轻语</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c8dec20f0d0449c8ece3c0dbab4e8f31";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
   </div>
 
-{% endblock %}
+  <div class="site-meta">
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">前端轻语</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">korey的前端笔记</p>
+  </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+
+  </li>
+        <li class="menu-item menu-item-map">
+
+    <a href="/map/" rel="section"><i class="fa fa-sitemap fa-fw"></i>map</a>
+
+  </li>
+        <li class="menu-item menu-item-link">
+
+    <a href="/link/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>link</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Korey" src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Korey</p>
+  <div class="site-description" itemprop="description">热衷于记录、分享前端开发技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="GitHub → https://github.com/zhaoky"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtleXUuemhhb0Bmb3htYWlsLmNvbQ==" title="E-Mail → mailto:keyu.zhao@foxmail.com"><i class="far fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci81N2M5MWIzYjE2NWFiZDAwNjhkYjg5YzI=" title="掘金 → https://juejin.im/user/57c91b3b165abd0068db89c2"><i class="fas fa-link fa-fw"></i>掘金</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cDovL3d3dy56aGlodS5jb20vcGVvcGxlL2ZlX2tvcmV5" title="知乎 → http://www.zhihu.com/people/fe_korey"><i class="fas fa-link fa-fw"></i>知乎</span>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/189.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          （转载）CSS选择器的权重与优先规则
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-03-06 16:24:36" itemprop="dateCreated datePublished" datetime="2016-03-06T16:24:36+00:00">2016-03-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Basics/" itemprop="url" rel="index"><span itemprop="name">FE Basics</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>我们在使用 <code>CSS</code> 对网页元素定义样式时经常会遇到这种情况：要对一般元素应用一般样式，然后在更特殊的元素上覆盖它们。那么我们怎么样来保证我们所新定义的元素样式能覆盖目标元素上原有的样式呢？</p>
+<p>在 <code>CSS</code> 中，会根据选择器的特殊性来决定所定义的样式规则的次序，具有更特殊选择器的规则优先于具有一般选择器的规则，如果两个规则的特殊性相同，那么后定义的规则优先。</p>
+<p>那么，又怎么来计算选择器的特殊性呢？下面这张图介绍了特殊性的计算方法：</p>
+<p><img data-src="http://cdn.flqin.com/p189-1.jpg" alt="选择器权值"></p>
+<p>我们把特殊性分为 4 个等级，每个等级代表一类选择器，每个等级的值为其所代表的选择器的个数乘以这一等级的权值，最后把所有等级的值相加得出选择器的特殊值。</p>
+<p>4 个等级的定义如下：</p>
+<ul>
+<li>第一等：代表内联样式，如：<code>style=””</code>，权值为 1000。</li>
+<li>第二等：代表 <code>ID</code> 选择器，如：<code>#content</code>，权值为 100。</li>
+<li>第三等：代表类，伪类和属性选择器，如： <code>.content</code>，权值为 10。</li>
+<li>第四等：代表类型选择器和伪元素选择器，如： <code>div p</code>，权值为 1。</li>
+</ul>
+<p>例如上图为例，其中 <code>#NAV</code> 为二等选择器，<code>.ACTIVE</code> 为三等选择器，<code>UL</code>、<code>LI</code> 和 <code>A</code> 为四等选择器。则整个选择器表达式的特殊性的值为 <code>1_100+1_10+3\*1=113</code></p>
+<p>下面是一些计算示例：</p>
+<p><img data-src="http://cdn.flqin.com/p189-2.jpg" alt="计算示例"></p>
+<p>注意：通用选择器（<code>*</code>），子选择器（<code>&gt;</code>）和相邻同胞选择器（<code>+</code>）并不在这四个等级中，所以他们的权值都为 <code>0</code>。</p>
+<p>我们再来看一个具体的例子：假如有以下组样式规则，你能判断出 <code>HTML</code> 代码中的两个标题是什么颜色吗？</p>
+<figure class="highlight css"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#content</span> <span class="selector-tag">div</span><span class="selector-id">#main-content</span> <span class="selector-tag">h2</span> {</span><br><span class="line">  <span class="attribute">color</span>: red;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="selector-id">#content</span> <span class="selector-id">#main-content</span> &gt; <span class="selector-tag">h2</span> {</span><br><span class="line">  <span class="attribute">color</span>: blue;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">body</span> <span class="selector-id">#content</span> <span class="selector-tag">div</span><span class="selector-attr">[id=<span class="string">'main-content'</span>]</span> <span class="selector-tag">h2</span> {</span><br><span class="line">  <span class="attribute">color</span>: green;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="selector-id">#main-content</span> <span class="selector-tag">div</span><span class="selector-class">.paragraph</span> <span class="selector-tag">h2</span> {</span><br><span class="line">  <span class="attribute">color</span>: orange;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="selector-id">#main-content</span> <span class="selector-attr">[class=<span class="string">'paragraph'</span>]</span> <span class="selector-tag">h2</span> {</span><br><span class="line">  <span class="attribute">color</span>: yellow;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">div</span><span class="selector-id">#main-content</span> <span class="selector-tag">div</span><span class="selector-class">.paragraph</span> <span class="selector-tag">h2</span><span class="selector-class">.first</span> {</span><br><span class="line">  <span class="attribute">color</span>: pink;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>以下是 HTML 代码：</p>
+<figure class="highlight html"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"content"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"main-content"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h2</span>&gt;</span>CSS简介<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>CSS（Cascading Style Sheet，可译为“层叠样式表”或“级联样式表”）是一组格式设置规则，用于控制Web页面的外观。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"paragraph"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">h2</span> <span class="attr">class</span>=<span class="string">"first"</span>&gt;</span>使用CSS布局的优点<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">p</span>&gt;</span>1、表现和内容相分离 2、提高页面浏览速度 3、易于维护和改版 4、使用CSS布局更符合现在的W3C标准.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>判断出来了么？答案是：两个标题都是红色的！</p>
+<p>让我们来一起算算六个样式规则各自的特殊性的值：</p>
+<ul>
+<li>第一个特殊性的值=<code>2_100+2_1=202</code></li>
+<li>第二个特殊性的值=<code>2\*100+1=201</code></li>
+<li>第三个特殊性的值=<code>1_100+1_10+3\*1=113</code></li>
+<li>第四个特殊性的值=<code>1_100+1_10+2\*1=112</code></li>
+<li>第五个特殊性的值=<code>1_100+1_10+1\*1=111</code></li>
+<li>第六个特殊性的值=<code>1_100+2_10+3\*1=123</code></li>
+</ul>
+<p>清楚了吧，第一个样式规则以其 <code>202</code> 的高分一举夺得了本次样式选择器特殊性大赛的冠军，后面一些规则虽然看起来好像更复杂，但特殊性并不是拼谁的选择器表达式写得更长，<code>ID</code> 选择器才是王道！</p>
+<p>理解选择器的特殊性很重要，特别是在修复 <code>bug</code> 的时候，因为你需要了解哪些规则优先及其原因。</p>
+<p>如果你遇到了似乎没有起作用的 <code>CSS</code> 规则，很可能是出现了特殊性冲突。请在你的选择器中添加他的一个父元素的 <code>ID</code>，从而提高它的特殊性。如果这能解决问题，就说明样式表中其他地方很可能有更特殊的规则，它覆盖了你的规则。如果是这种情况，你可能需要检查代码，解决特殊性冲突，让代码尽可能简洁。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Korey 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/184.html" rel="prev" title="（转载）CSS3中:nth-child和:nth-of-type的区别深入理解">
+                  <i class="fa fa-chevron-left"></i> （转载）CSS3中:nth-child和:nth-of-type的区别深入理解
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/192.html" rel="next" title="（转载）CSS实现单行、多行文本溢出显示省略号">
+                  （转载）CSS实现单行、多行文本溢出显示省略号 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  © 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Korey zhao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">507k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:41</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+
+
+  
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script>
+
+<script src="/bundle.js"></script><script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  ;
+L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":125,"height":150,"position":"left","hOffset":30,"vOffset":-5},"mobile":{"show":false,"scale":0.05},"react":{"opacityDefault":1,"opacityOnHover":0.2},"log":false});</script></body></html>

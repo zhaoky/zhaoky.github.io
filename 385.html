@@ -1,23 +1,669 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#3eaf7c">
+<meta name="generator" content="Hexo 5.2.0">
 
-{% block title %}{{ page.title }} | {{ title }}{% endblock %}
 
-{% block page_class %}page-post-detail{% endblock %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon.png" color="#3eaf7c">
 
-{% block content %}
+<link rel="stylesheet" href="/css/main.css">
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="前面一至十一章，介绍了在 development 的模式下，整个完整了构建主流程。在了解构建流程的基础上，本章整理一些与 webpack 优化相关的知识点。 production 模式我们参考 production 模式里，里面已经做了大部分的优化，如压缩，Scope Hoisting， tree-shaking 等都给予了我们启发，接下来具体分析各个点。 production 模式启用的插件 F">
+<meta property="og:type" content="article">
+<meta property="og:title" content="webpack 4 源码主流程分析（十四）：webpack 优化">
+<meta property="og:url" content="https://blog.flqin.com/385.html">
+<meta property="og:site_name" content="前端轻语">
+<meta property="og:description" content="前面一至十一章，介绍了在 development 的模式下，整个完整了构建主流程。在了解构建流程的基础上，本章整理一些与 webpack 优化相关的知识点。 production 模式我们参考 production 模式里，里面已经做了大部分的优化，如压缩，Scope Hoisting， tree-shaking 等都给予了我们启发，接下来具体分析各个点。 production 模式启用的插件 F">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-01-05T11:39:30.000Z">
+<meta property="article:modified_time" content="2020-01-05T11:39:30.000Z">
+<meta property="article:author" content="Korey">
+<meta property="article:tag" content="前端,前端开发,css,html,js,css3,前端开发博客,fe,技术文档">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.flqin.com/385.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>webpack 4 源码主流程分析（十四）：webpack 优化 | 前端轻语</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c8dec20f0d0449c8ece3c0dbab4e8f31";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
   </div>
 
-{% endblock %}
+  <div class="site-meta">
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">前端轻语</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">korey的前端笔记</p>
+  </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+
+  </li>
+        <li class="menu-item menu-item-map">
+
+    <a href="/map/" rel="section"><i class="fa fa-sitemap fa-fw"></i>map</a>
+
+  </li>
+        <li class="menu-item menu-item-link">
+
+    <a href="/link/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>link</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#production-%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">production 模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#production-%E6%A8%A1%E5%BC%8F%E5%90%AF%E7%94%A8%E7%9A%84%E6%8F%92%E4%BB%B6"><span class="nav-number">1.1.</span> <span class="nav-text">production 模式启用的插件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96%E7%BC%93%E5%AD%98"><span class="nav-number">2.</span> <span class="nav-text">持久化缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#webpack-%E4%B8%AD%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E7%BC%93%E5%AD%98"><span class="nav-number">2.1.</span> <span class="nav-text">webpack 中的持久化缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tree-Sharing"><span class="nav-number">3.</span> <span class="nav-text">Tree Sharing</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#tree-sharing-%E5%8E%9F%E7%90%86"><span class="nav-number">3.1.</span> <span class="nav-text">tree-sharing 原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AF%E7%94%A8-tree-shaking-%E9%9C%80%E8%A6%81%E6%BB%A1%E8%B6%B3"><span class="nav-number">3.2.</span> <span class="nav-text">启用 tree shaking 需要满足</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Scope-Hoisting"><span class="nav-number">4.</span> <span class="nav-text">Scope Hoisting</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Scope-Hoisting-%E4%BC%98%E7%82%B9"><span class="nav-number">4.1.</span> <span class="nav-text">Scope Hoisting 优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Scope-Hoisting-%E5%8E%9F%E7%90%86"><span class="nav-number">4.2.</span> <span class="nav-text">Scope Hoisting 原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AF%E7%94%A8-Scope-Hoisting-%E9%9C%80%E8%A6%81%E6%BB%A1%E8%B6%B3"><span class="nav-number">4.3.</span> <span class="nav-text">启用 Scope Hoisting 需要满足</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E6%8F%92%E4%BB%B6"><span class="nav-number">5.</span> <span class="nav-text">一些插件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E5%85%B6%E4%BB%96%E4%BC%98%E5%8C%96%E7%82%B9"><span class="nav-number">6.</span> <span class="nav-text">一些其他优化点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8E%E8%AE%B0"><span class="nav-number">7.</span> <span class="nav-text">后记</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Korey" src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Korey</p>
+  <div class="site-description" itemprop="description">热衷于记录、分享前端开发技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="GitHub → https://github.com/zhaoky"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtleXUuemhhb0Bmb3htYWlsLmNvbQ==" title="E-Mail → mailto:keyu.zhao@foxmail.com"><i class="far fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci81N2M5MWIzYjE2NWFiZDAwNjhkYjg5YzI=" title="掘金 → https://juejin.im/user/57c91b3b165abd0068db89c2"><i class="fas fa-link fa-fw"></i>掘金</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cDovL3d3dy56aGlodS5jb20vcGVvcGxlL2ZlX2tvcmV5" title="知乎 → http://www.zhihu.com/people/fe_korey"><i class="fas fa-link fa-fw"></i>知乎</span>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/385.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          webpack 4 源码主流程分析（十四）：webpack 优化
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-01-05 11:39:30" itemprop="dateCreated datePublished" datetime="2020-01-05T11:39:30+00:00">2020-01-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Build/" itemprop="url" rel="index"><span itemprop="name">FE Build</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>前面一至十一章，介绍了在 <code>development</code> 的模式下，整个完整了构建主流程。在了解构建流程的基础上，本章整理一些与 <code>webpack</code> 优化相关的知识点。</p>
+<h2 id="production-模式"><a href="#production-模式" class="headerlink" title="production 模式"></a>production 模式</h2><p>我们参考 <code>production</code> 模式里，里面已经做了大部分的优化，如压缩，<code>Scope Hoisting</code>， <code>tree-shaking</code> 等都给予了我们启发，接下来具体分析各个点。</p>
+<h3 id="production-模式启用的插件"><a href="#production-模式启用的插件" class="headerlink" title="production 模式启用的插件"></a>production 模式启用的插件</h3><ul>
+<li><code>FlagDependencyUsagePlugin</code><ul>
+<li>触发时机：<code>compilation.hooks.optimizeDependencies</code></li>
+<li>功能：标记模块导出中被使用的导出，存在 <code>module.usedExports</code> 里。用于 <code>Tree shaking</code>。</li>
+<li>对应配置项：<code>optimization.usedExports:true</code></li>
+</ul>
+</li>
+<li><code>FlagIncludedChunksPlugin</code><ul>
+<li>触发时机：<code>compilation.hooks.optimizeChunkId</code></li>
+<li>功能：给每个 <code>chunk</code> 添加了 <code>ids</code>，用于判断避免加载不必要的 <code>chunk</code></li>
+</ul>
+</li>
+<li><code>ModuleConcatenationPlugin</code><ul>
+<li>触发时机：<code>compilation.hooks.optimizeChunkModules</code></li>
+<li>功能：使用 <code>esm</code> 语法可以作用域提升(<code>Scope Hoisting</code>)或预编译所有模块到一个闭包中，提升代码在浏览器中的执行速度</li>
+<li>对应配置项：<code>optimization.concatenateModules:true</code></li>
+</ul>
+</li>
+<li><code>NoEmitOnErrorsPlugin</code><ul>
+<li>触发时机：<code>compiler.hooks.shouldEmit</code>，<code>compilation.hooks.shouldRecord</code></li>
+<li>功能：如果在 <code>compilation</code> 编译时有 <code>error</code>，则不执行 <code>Record</code> 相关的钩子，并且抛错和不编译资源</li>
+</ul>
+</li>
+<li><code>OccurrenceOrderModuleIdsPlugin</code>，<code>OccurrenceOrderChunkIdsPlugin</code><ul>
+<li>注意不是<span class="exturl" data-url="aHR0cHM6Ly93ZWJwYWNrLmpzLm9yZy9jb25maWd1cmF0aW9uL21vZGUvI3Jvb3Q=">文档<i class="fa fa-external-link-alt"></i></span>写的 <code>OccurrenceOrderPlugin</code>，这个没用</li>
+<li>触发时机：<code>compilation.hooks.optimizeModuleOrder</code>，<code>compilation.hooks.optimizeChunkOrder</code></li>
+<li>功能：根据模块初始调用次数或者总调用次数排序（<span class="exturl" data-url="aHR0cHM6Ly93ZWJwYWNrLmRvY3NjaGluYS5vcmcvY29uZmlndXJhdGlvbi9vcHRpbWl6YXRpb24vI29wdGltaXphdGlvbi1tb2R1bGVpZHM=">配置<i class="fa fa-external-link-alt"></i></span>），这样在后面分配 <code>ID</code> 的时候常被调用 <code>ID</code> 就靠前，除此之外，还可以让 <code>id</code> 为路径，<code>hash</code> 等。</li>
+<li>对应配置项：<code>optimization.occurrenceOrder</code>，<code>optimization.chunkIds</code>，<code>optimization.moduleIds</code></li>
+</ul>
+</li>
+<li><code>SideEffectsFlagPlugin</code><ul>
+<li>触发时机：<code>normalModuleFactory.hooks.module</code>，<code>compilation.hooks.optimizeDependencies</code></li>
+<li>功能：<ul>
+<li><code>normalModuleFactory.hooks.module</code> 钩子里读取 <code>package.json</code> 里的 <code>sideEffects</code> 字段和读取 <code>module.rule</code> 里的 <code>sideEffects</code> 赋给 <code>module.factoryMeta</code>（纯的 <code>ES2015</code> 模块)；</li>
+<li><code>compilation.hooks.optimizeDependencies</code> 钩子里根据 <code>sideEffects</code> 配置，删除未用到的 <code>export</code> 导出</li>
+</ul>
+</li>
+<li>对应配置项：<code>optimization.sideEffects:true</code>（默认）</li>
+</ul>
+</li>
+<li><code>TerserPlugin</code><ul>
+<li>触发时机：<code>template.hooks.hashForChunk</code>，<code>compilation.hooks.optimizeChunkAssets</code></li>
+<li>功能：<ul>
+<li>在 <code>template.hooks.hashForChunk</code> 钩子即在 <code>chunks</code> 生成 <code>hash</code> 阶段会把压缩相关的信息也打入到里面</li>
+<li>在 <code>compilation.hooks.optimizeChunkAssets</code> 钩子触发资源压缩事件</li>
+</ul>
+</li>
+<li>对应配置项：<ul>
+<li><code>optimization.minimize</code> 是否开启压缩</li>
+<li><code>optimization.minimizer</code> 定制 <code>Terser</code>，默认开启多进程压缩和缓存</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>另：<code>development</code> 模式单独启用的插件：</p>
+<ul>
+<li><code>NamedChunksPlugin</code><ul>
+<li>触发时机：<code>compilation.hooks.beforeChunkIds</code></li>
+<li>功能：以名称固化 <code>chunk id</code></li>
+<li>对应配置项：<code>optimization.chunkIds</code></li>
+</ul>
+</li>
+<li><code>NamedModulesPlugin</code><ul>
+<li>触发时机：<code>compilation.hooks.beforeModuleIds</code></li>
+<li>功能：以名称固化 <code>module id</code></li>
+<li>对应配置项：<code>optimization.moduleIds</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="持久化缓存"><a href="#持久化缓存" class="headerlink" title="持久化缓存"></a>持久化缓存</h2><blockquote>
+<p>在更新部署页面资源时，无论是先部署页面，还是先部署其他静态资源，都会因为新老资源替换后的缓存原因，或者部署间隔原因，都会导致资源不对应而引起页面错误。</p>
+</blockquote>
+<p>持久化缓存方案就是在各静态资源的名字后面加唯一的 <code>hash</code> 值，这样在每次修改文件后生成的不同的 <code>hash</code> 值，然后在增量式发布文件时，就可以避免覆盖掉之前旧的文件。获取到新文件的用户就可以访问新的资源，而浏览器有缓存等情况的用户则继续访问老资源，保证新老资源同时存在且互不影响不出错。</p>
+<ul>
+<li>对于 <code>html</code>：不开启缓存，把 <code>html</code> 放到单独的服务器上并关闭服务器的缓存，需要保证每次的 <code>html</code> 都为最新</li>
+<li>对于 <code>js</code>，<code>css</code>，<code>img</code> 等其他静态资源：开启缓存，将静态资源上传到 <code>cdn</code>，对资源开启长期缓存，因为有唯一 <code>hash</code> 的缘故所以不会导致资源被覆盖，用户在初次访问可以将这些长效缓存下载到本地，然后在后续的访问可以直接从缓存里读，节约网络资源。</li>
+</ul>
+<h3 id="webpack-中的持久化缓存"><a href="#webpack-中的持久化缓存" class="headerlink" title="webpack 中的持久化缓存"></a>webpack 中的持久化缓存</h3><ul>
+<li>对 <code>js</code> 使用 <code>chunkhash</code> ，对 <code>css</code> 应用 <code>mini-css-extract-plugin</code> 插件并使用 <code>contenthash</code></li>
+<li>通过 <code>optimization.moduleIds</code> 属性设置 <code>module id</code><ul>
+<li>开发环境 <code>moduleIds</code> 设为 <code>named</code> 即使用 <code>NamedModulesPlugin</code> （相对路径为 <code>key</code>）来固化 <code>module id</code>，</li>
+<li>生产环境 <code>moduleIds</code> 设为 <code>hashed</code> 即使用 <code>HashedModuleIdsPlugin</code> （将路径转换为 <code>hash</code> 为 <code>key</code>）来固化 <code>module id</code>，保证在某一模块增删后，不会影响其他模块的 <code>module id</code></li>
+</ul>
+</li>
+<li>通过 <code>optimization.chunkIds</code> 属性设置为 <code>named</code> 或 <code>optimization.namedChunks</code> 属性设置为 <code>true</code> （通过将 <code>chunk name</code> 复制到 <code>chunk id</code>）固化 <code>chunk id</code>，该属性会启用 <code>NamedChunksPlugin</code><ul>
+<li><code>NamedChunksPlugin</code> 插件里可以自定义 <code>nameResolver</code> 设置 <code>name</code></li>
+<li><code>splitChunks.cacheGroups[].name</code> 也可以设置 <code>chunk name</code></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93ZWJwYWNrLmpzLm9yZy9hcGkvbW9kdWxlLW1ldGhvZHMvI21hZ2ljLWNvbW1lbnRz">魔法注释<i class="fa fa-external-link-alt"></i></span>也可以设置：<code>import(/* webpackChunkName: "my-chunk-name" */ 'module')</code></li>
+</ul>
+</li>
+<li>通过 <code>optimization.splitChunks</code> 属性抽离库 <code>vendor</code>，业务公共代码 <code>common</code></li>
+<li>通过 <code>optimization.runtimeChunk</code> 属性抽离运行时 <code>runtime</code>，其中 <code>runtime</code> 也可以通过 <code>script-ext-html-webpack-plugin</code> 插件嵌入到 <code>html</code></li>
+</ul>
+<h2 id="Tree-Sharing"><a href="#Tree-Sharing" class="headerlink" title="Tree Sharing"></a>Tree Sharing</h2><p><code>Tree Sharing</code> 是一个术语，通常用于描述移除 <code>JavaScript</code> 上下文中的未引用代码(<code>dead-code</code>)。由 <span class="exturl" data-url="aHR0cHM6Ly9yb2xsdXBqcy5vcmcvZ3VpZGUvZW4v">rollup<i class="fa fa-external-link-alt"></i></span> 普及，在 <code>webpack</code> 里由 <code>TerserPlugin</code> 实现。</p>
+<h3 id="tree-sharing-原理"><a href="#tree-sharing-原理" class="headerlink" title="tree-sharing 原理"></a>tree-sharing 原理</h3><ul>
+<li><code>ES6</code> 的模块引入是静态分析的，故而可以在编译时正确判断到底加载了什么代码</li>
+<li>分析程序流，判断哪些变量未被使用、引用，进而删除此代码</li>
+</ul>
+<p>如果我们引入的模块被标记为 <code>sideEffects: false</code>，只要它任意一个导出都没有被其他模块引用到，那么不管它是否真的有副作用，整个模块都会被完整的移除。</p>
+<blockquote>
+<p>“<code>side effect</code>(副作用)” 的定义是，在导入时会执行特殊行为的代码，而不是仅仅暴露一个 <code>export</code> 或多个 <code>export</code>。举例说明，例如 <code>polyfill</code>，它影响全局作用域，并且通常不提供 <code>export</code>。</p>
+</blockquote>
+<h3 id="启用-tree-shaking-需要满足"><a href="#启用-tree-shaking-需要满足" class="headerlink" title="启用 tree shaking 需要满足"></a>启用 <code>tree shaking</code> 需要满足</h3><ul>
+<li>使用 <code>ES2015</code> 模块语法（即 <code>import</code> 和 <code>export</code>），目的是为了供程序静态分析</li>
+<li>确保没有 <code>compiler</code> 将 <code>ES2015</code> 模块语法转换为 <code>CommonJS</code> 模块（设置 <code>babel.config.js</code> <code>presets: [['@babel/env', { modules: false }]]</code>）</li>
+<li>在 <code>package.json</code> 或者 <code>module.rule</code> 设置 <code>sideEffects : false</code>，告诉 <code>webpack</code> 该项目或者该文件没有副作用</li>
+<li>mode 选项设置为 <code>production</code>，其中会启用 <code>FlagDependencyUsagePlugin</code>，<code>TerserPlugin</code> 完成 <code>tree shaking</code></li>
+</ul>
+<h2 id="Scope-Hoisting"><a href="#Scope-Hoisting" class="headerlink" title="Scope Hoisting"></a>Scope Hoisting</h2><p><code>Scope Hoisting</code> 即 作用域提升，可以让 <code>webpack</code> 打包出来的代码文件更小，运行更快。</p>
+<h3 id="Scope-Hoisting-优点"><a href="#Scope-Hoisting-优点" class="headerlink" title="Scope Hoisting 优点"></a>Scope Hoisting 优点</h3><ul>
+<li>代码体积会变小，因为函数声明语句会产生大量代码</li>
+<li>代码在运行时因为创建的函数作用域减少了，内存开销也随之变小</li>
+</ul>
+<h3 id="Scope-Hoisting-原理"><a href="#Scope-Hoisting-原理" class="headerlink" title="Scope Hoisting 原理"></a>Scope Hoisting 原理</h3><p><code>ES6</code> 的静态模块分析，分析出模块之间的依赖关系，按照引用顺序尽可能地把模块放到同一个函数作用域中，然后适当的重命名一些变量以防止变量名冲突。</p>
+<blockquote>
+<p>异步 <code>import()</code> 不会启用 <code>Scope Hoisting</code></p>
+</blockquote>
+<h3 id="启用-Scope-Hoisting-需要满足"><a href="#启用-Scope-Hoisting-需要满足" class="headerlink" title="启用 Scope Hoisting 需要满足"></a>启用 Scope Hoisting 需要满足</h3><ul>
+<li>使用 <code>ES2015</code> 模块语法（即 <code>import</code> 和 <code>export</code>）</li>
+<li><code>mode</code> 选项设置为 <code>production</code>，其中会启用 <code>ModuleConcatenationPlugin</code> 插件完成 <code>Scope Hoisting</code></li>
+</ul>
+<h2 id="一些插件"><a href="#一些插件" class="headerlink" title="一些插件"></a>一些插件</h2><p>以下列举部分我用过优化相关的插件及 <code>loader</code>：</p>
+<ol>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2FtaXJlaC9oYXBweXBhY2s=">happypack<i class="fa fa-external-link-alt"></i></span> 多线程编译，加快编译速度 注：已被废弃，使用 <span class="exturl" data-url="aHR0cHM6Ly93d3cud2VicGFja2pzLmNvbS9sb2FkZXJzL3RocmVhZC1sb2FkZXIv">thread-loader<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL251eHQvd2VicGFja2Jhcg==">webpackbar<i class="fa fa-external-link-alt"></i></span> 编译进度条</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3dlYnBhY2stY29udHJpYi9taW5pLWNzcy1leHRyYWN0LXBsdWdpbg==">mini-css-extract-plugin<i class="fa fa-external-link-alt"></i></span> 提取 <code>css</code> 样式到单独文件</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL251bWljYWwvc3R5bGUtZXh0LWh0bWwtd2VicGFjay1wbHVnaW4=">style-ext-html-webpack-plugin<i class="fa fa-external-link-alt"></i></span> 增强 <code>HtmlWebpackPlugin</code>，将 <code>css</code> 内联到 <code>html</code> 里</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL251bWljYWwvc2NyaXB0LWV4dC1odG1sLXdlYnBhY2stcGx1Z2lu">script-ext-html-webpack-plugin<i class="fa fa-external-link-alt"></i></span> 增强 <code>HtmlWebpackPlugin</code>，将 <code>js</code> 内联到 <code>html</code> 里</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL05NRlIvb3B0aW1pemUtY3NzLWFzc2V0cy13ZWJwYWNrLXBsdWdpbg==">optimize-css-assets-webpack-plugin<i class="fa fa-external-link-alt"></i></span> 使用<span class="exturl" data-url="aHR0cDovL2dpdGh1Yi5jb20vYmVuLWViL2Nzc25hbm8=">cssnano<i class="fa fa-external-link-alt"></i></span>压缩优化 <code>css</code></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3dlYnBhY2stY29udHJpYi93ZWJwYWNrLWJ1bmRsZS1hbmFseXplcg==">webpack-bundle-analyzer<i class="fa fa-external-link-alt"></i></span> 模块分析</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3dlYnBhY2stY29udHJpYi91cmwtbG9hZGVy">url-loader<i class="fa fa-external-link-alt"></i></span> 将文件转换为 <code>DataURL</code>，减少请求数</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3N0ZXBoZW5jb29rZGV2L3NwZWVkLW1lYXN1cmUtd2VicGFjay1wbHVnaW4=">speed-measure-webpack-plugin<i class="fa fa-external-link-alt"></i></span> 构建耗时分析</li>
+</ol>
+<p>各插件随着时间推移，有的可能废弃，有的可能被更好的所替代，已社区流行为准。</p>
+<h2 id="一些其他优化点"><a href="#一些其他优化点" class="headerlink" title="一些其他优化点"></a>一些其他优化点</h2><ol>
+<li>缓存二次构建，如 <code>babel-loader</code>，<code>terser-webpack-plugin</code> 开启缓存，使用 <code>cache-loader</code>，使用 <code>hard-source-webpack-plugin</code>(已被 <code>webpack5</code> 内置) 等</li>
+<li>分包构建，如 <code>DLLPlugin+DllRefrencePlugin</code> 等</li>
+<li>缩小构建范围，如 <code>module.rules</code> 里 <code>include/exclude</code>，配置 <code>resolve.modules/resolve.mainFields/resolve.extensions</code> ,配置 <code>noParse</code>，配置 <code>externals</code>， 配置 <code>IgnorePlugin</code> 等</li>
+</ol>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>从 <code>webpack</code> 源码开始，到后面打包结果分析、<code>watch</code>、<code>webpack</code> 优化总结等，前前后后花了一个月的时间，但收获也颇多。由于对 webpack 主流程的执行有了大概的认知，在遇到一些配置需要深入了解专研的时候，能快速定位在流程的哪个环节；在开发一个 loader 或者 plugin 也能有很清晰的思路；最重要的是通过对源码分析，大型工程的组织架构，扩展性，健壮性等给人带来一些新的思路和启发。</p>
+<p>本系列到此结束，后续会不断的更新优化。对 <code>webpack</code> 的主流程分析解除了我心中很多的构建相关的疑惑，解开了心中的结。人生短短数十载，精力、时间都很有限，选择做让自己开发的事情，方为上策。</p>
+<p><code>webpack5.0</code> 已到，后续有时间会分析与 <code>webpack 4.x</code> 不同的源码差异。</p>
+<p>如有错误，请联系笔者。分析码字不易，转载请表明出处，谢谢！</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Korey 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/384.html" rel="prev" title="webpack 4 源码主流程分析（十三）：watch">
+                  <i class="fa fa-chevron-left"></i> webpack 4 源码主流程分析（十三）：watch
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/386.html" rel="next" title="数组方法 forEach、filter、every、some、map、reduce 实现等相关记录">
+                  数组方法 forEach、filter、every、some、map、reduce 实现等相关记录 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  © 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Korey zhao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">507k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:41</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+
+
+  
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script>
+
+<script src="/bundle.js"></script><script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  ;
+L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":125,"height":150,"position":"left","hOffset":30,"vOffset":-5},"mobile":{"show":false,"scale":0.05},"react":{"opacityDefault":1,"opacityOnHover":0.2},"log":false});</script></body></html>

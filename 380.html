@@ -1,23 +1,623 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#3eaf7c">
+<meta name="generator" content="Hexo 5.2.0">
 
-{% block title %}{{ page.title }} | {{ title }}{% endblock %}
 
-{% block page_class %}page-post-detail{% endblock %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon.png" color="#3eaf7c">
 
-{% block content %}
+<link rel="stylesheet" href="/css/main.css">
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="chunk 的一些优化在 chunk 生成后，开始进行 chunk 优化之类的处理。 在触发钩子 optimize，optimizeModules（module 相关的优化）等之后，忽略掉本次打包未触发插件的钩子，执行： 1this.hooks.optimizeChunksBasic.call(this.chunks, this.chunkGroups);  触发插件：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="webpack 4 源码主流程分析（九）：优化 chunk">
+<meta property="og:url" content="https://blog.flqin.com/380.html">
+<meta property="og:site_name" content="前端轻语">
+<meta property="og:description" content="chunk 的一些优化在 chunk 生成后，开始进行 chunk 优化之类的处理。 在触发钩子 optimize，optimizeModules（module 相关的优化）等之后，忽略掉本次打包未触发插件的钩子，执行： 1this.hooks.optimizeChunksBasic.call(this.chunks, this.chunkGroups);  触发插件：">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-12-12T17:08:11.000Z">
+<meta property="article:modified_time" content="2019-12-12T17:08:11.000Z">
+<meta property="article:author" content="Korey">
+<meta property="article:tag" content="前端,前端开发,css,html,js,css3,前端开发博客,fe,技术文档">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.flqin.com/380.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>webpack 4 源码主流程分析（九）：优化 chunk | 前端轻语</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c8dec20f0d0449c8ece3c0dbab4e8f31";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
   </div>
 
-{% endblock %}
+  <div class="site-meta">
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">前端轻语</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">korey的前端笔记</p>
+  </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+
+  </li>
+        <li class="menu-item menu-item-map">
+
+    <a href="/map/" rel="section"><i class="fa fa-sitemap fa-fw"></i>map</a>
+
+  </li>
+        <li class="menu-item menu-item-link">
+
+    <a href="/link/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>link</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#chunk-%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BC%98%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">chunk 的一些优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE-module-id"><span class="nav-number">2.</span> <span class="nav-text">设置 module.id</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE-chunk-id"><span class="nav-number">3.</span> <span class="nav-text">设置 chunk.id</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA-hash"><span class="nav-number">4.</span> <span class="nav-text">创建 hash</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA-module-hash"><span class="nav-number">4.1.</span> <span class="nav-text">创建 module hash</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA-chunk-hash"><span class="nav-number">4.2.</span> <span class="nav-text">创建 chunk hash</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#chunkTemplate"><span class="nav-number">4.2.1.</span> <span class="nav-text">chunkTemplate</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mainTemplate"><span class="nav-number">4.2.2.</span> <span class="nav-text">mainTemplate</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA-content-hash-amp-fullhash-amp-hash"><span class="nav-number">4.3.</span> <span class="nav-text">创建 content hash &amp; fullhash &amp; hash</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">本章小结</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Korey" src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Korey</p>
+  <div class="site-description" itemprop="description">热衷于记录、分享前端开发技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="GitHub → https://github.com/zhaoky"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtleXUuemhhb0Bmb3htYWlsLmNvbQ==" title="E-Mail → mailto:keyu.zhao@foxmail.com"><i class="far fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci81N2M5MWIzYjE2NWFiZDAwNjhkYjg5YzI=" title="掘金 → https://juejin.im/user/57c91b3b165abd0068db89c2"><i class="fas fa-link fa-fw"></i>掘金</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cDovL3d3dy56aGlodS5jb20vcGVvcGxlL2ZlX2tvcmV5" title="知乎 → http://www.zhihu.com/people/fe_korey"><i class="fas fa-link fa-fw"></i>知乎</span>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/380.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          webpack 4 源码主流程分析（九）：优化 chunk
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-12-12 17:08:11" itemprop="dateCreated datePublished" datetime="2019-12-12T17:08:11+00:00">2019-12-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Build/" itemprop="url" rel="index"><span itemprop="name">FE Build</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>7.6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="chunk-的一些优化"><a href="#chunk-的一些优化" class="headerlink" title="chunk 的一些优化"></a>chunk 的一些优化</h2><p>在 <code>chunk</code> 生成后，开始进行 <code>chunk</code> 优化之类的处理。</p>
+<p>在触发钩子 <code>optimize，optimizeModules</code>（<code>module</code> 相关的优化）等之后，忽略掉本次打包未触发插件的钩子，执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.hooks.optimizeChunksBasic.call(<span class="built_in">this</span>.chunks, <span class="built_in">this</span>.chunkGroups);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>触发插件：</p>
+<ul>
+<li><code>EnsureChunkConditionsPlugin</code> 处理 <code>chunkCondition</code></li>
+<li><code>RemoveEmptyChunksPlugin</code> 移除空 <code>chunk</code></li>
+<li><code>MergeDuplicateChunksPlugin</code> 处理重复 <code>chunk</code></li>
+</ul>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.hooks.optimizeChunksAdvanced.call(<span class="built_in">this</span>.chunks, <span class="built_in">this</span>.chunkGroups);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>触发插件：</p>
+<ul>
+<li><code>SplitChunksPlugin</code> 优化切割 <code>chunk</code></li>
+<li><code>RemoveEmptyChunksPlugin</code> 再次移除空 <code>chunk</code></li>
+</ul>
+<h2 id="设置-module-id"><a href="#设置-module-id" class="headerlink" title="设置 module.id"></a>设置 module.id</h2><figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.hooks.reviveModules.call(<span class="built_in">this</span>.modules, <span class="built_in">this</span>.records);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>触发插件 <code>RecordIdsPlugin</code>：设置 <code>module.id</code></p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.hooks.beforeModuleIds.call(<span class="built_in">this</span>.modules);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>触发插件 <code>NamedModulesPlugin</code>： 设置 <code>module.id</code> 为 文件相对路径，然后执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.applyModuleIds();</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这一步主要用于设置 <code>module.id</code>（如果 <code>id</code> 在上一步没有设置的话），内部具体算法为：</p>
+<p>先遍历各 <code>module</code>，找出其中最大的 <code>id</code> 以他为最大值（<code>usedIdmax</code>），计算出比他小的所有未使用的正整数和（<code>usedIdmax+1</code>）作为 <code>unusedIds</code> 用于给没有设置 <code>id</code> 的 <code>module</code> 使用，<code>unusedIds</code> 用尽后，则设置 <code>id</code> 为 <code>（usedIdmax+1）++</code></p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.sortItemsWithModuleIds();</span><br></pre></td></tr></tbody></table></figure>
+
+<p>根据 <code>module.id</code> 给 <code>module，chunk，reasons</code> 等排序。</p>
+<h2 id="设置-chunk-id"><a href="#设置-chunk-id" class="headerlink" title="设置 chunk.id"></a>设置 chunk.id</h2><figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.hooks.reviveChunks.call(<span class="built_in">this</span>.chunks, <span class="built_in">this</span>.records);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>触发插件 <code>RecordIdsPlugin</code>：设置 <code>chunk.id</code></p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.hooks.optimizeChunkOrder.call(<span class="built_in">this</span>.chunks);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>触发插件 <code>OccurrenceOrderChunkIdsPlugin</code>：<code>chunks</code> 排序</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.hooks.beforeChunkIds.call(<span class="built_in">this</span>.chunks);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>触发插件 <code>NamedChunksPlugin</code>：设置 <code>chunk.id = chunk.name</code></p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.applyChunkIds();</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这一步主要用于设置 <code>chunk.id</code>，算法与 <code>this.applyModuleIds</code> 一致。</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.sortItemsWithChunkIds();</span><br></pre></td></tr></tbody></table></figure>
+
+<p>根据 <code>chunk.id</code> 给 <code>module，chunk，reasons，errors，warnings，children</code> 等排序。</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (shouldRecord) {</span><br><span class="line">  <span class="built_in">this</span>.hooks.recordModules.call(<span class="built_in">this</span>.modules, <span class="built_in">this</span>.records);</span><br><span class="line">  <span class="built_in">this</span>.hooks.recordChunks.call(<span class="built_in">this</span>.chunks, <span class="built_in">this</span>.records);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>依旧是对 <code>records</code> 的一些设置。</p>
+<h2 id="创建-hash"><a href="#创建-hash" class="headerlink" title="创建 hash"></a>创建 hash</h2><p>接下来执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.hooks.beforeHash.call();</span><br><span class="line"><span class="built_in">this</span>.createHash();</span><br><span class="line"><span class="built_in">this</span>.hooks.afterHash.call();</span><br><span class="line"><span class="keyword">if</span> (shouldRecord) {</span><br><span class="line">  <span class="built_in">this</span>.hooks.recordHash.call(<span class="built_in">this</span>.records);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>进入 <code>createHash</code>，前文已介绍生成 <code>hash</code> 的方法，此处先初始化一个 <code>hash</code>，然后执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.mainTemplate.updateHash(hash);</span><br><span class="line"><span class="built_in">this</span>.chunkTemplate.updateHash(hash);</span><br></pre></td></tr></tbody></table></figure>
+
+<ul>
+<li><code>mainTemplate</code>: 渲染生成包含 <code>webpack runtime bootstrap</code> 代码的 <code>chunk</code></li>
+<li><code>chunkTemplate</code>: 渲染生成普通 <code>chunk</code></li>
+</ul>
+<p><code>mainTemplate</code> 在 <code>update('maintemplate','3')</code> 后，触发 <code>MainTemplate.hooks</code>: <code>hash</code>，执行插件 <code>JsonpMainTemplatePlugin</code>，<code>WasmMainTemplatePlugin</code> 内的相关事件，<code>hash.buffer</code> 更新为 <code>maintemplate3jsonp6WasmMainTemplatePlugin2</code>。</p>
+<p><code>chunkTemplate</code> 在 <code>update('ChunkTemplate','2')</code> 后，触发<code>ChunkTemplate.hooks</code>: <code>hash</code>，执行插件 <code>JsonpChunkTemplatePlugin</code>内的相关事件，<code>hash.buffer</code> 更新为 <code>maintemplate3jsonp6WasmMainTemplatePlugin2ChunkTemplate2JsonpChunkTemplatePlugin4webpackJsonpwindow</code>。</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">of</span> <span class="built_in">Object</span>.keys(<span class="built_in">this</span>.moduleTemplates).sort()) {</span><br><span class="line">  <span class="built_in">this</span>.moduleTemplates[key].updateHash(hash);</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment">// 以下代码为 complation 实例化的时候所定义</span></span><br><span class="line"><span class="built_in">this</span>.moduleTemplates = {</span><br><span class="line">  javascript: <span class="keyword">new</span> ModuleTemplate(<span class="built_in">this</span>.runtimeTemplate, <span class="string">'javascript'</span>),</span><br><span class="line">  webassembly: <span class="keyword">new</span> ModuleTemplate(<span class="built_in">this</span>.runtimeTemplate, <span class="string">'webassembly'</span>),</span><br><span class="line">};</span><br></pre></td></tr></tbody></table></figure>
+
+<p>将 <code>this.moduleTemplates</code> 的 <code>key</code> 排序后执行各自的 <code>updateHash</code>，<code>hash.buffer</code> 更新为 <code>maintemplate3jsonp6WasmMainTemplatePlugin2ChunkTemplate2JsonpChunkTemplatePlugin4webpackJsonpwindow1FunctionModuleTemplatePlugin21</code></p>
+<p>然后如果有 <code>children,warnings,errors</code> 也把他们的 <code>hash</code> 或者 <code>message</code> <code>update</code> 进去。然后执行：</p>
+<h3 id="创建-module-hash"><a href="#创建-module-hash" class="headerlink" title="创建 module hash"></a>创建 module hash</h3><figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; modules.length; i++) {</span><br><span class="line">  <span class="keyword">const</span> <span class="built_in">module</span> = modules[i];</span><br><span class="line">  <span class="keyword">const</span> moduleHash = createHash(hashFunction);</span><br><span class="line">  <span class="built_in">module</span>.updateHash(moduleHash);</span><br><span class="line">  <span class="built_in">module</span>.hash = <span class="comment">/** <span class="doctag">@type <span class="type">{string}</span> </span>*/</span> (moduleHash.digest(hashDigest));</span><br><span class="line">  <span class="built_in">module</span>.renderedHash = <span class="built_in">module</span>.hash.substr(<span class="number">0</span>, hashDigestLength);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这里循环初始化了每个 <code>module</code> 的 <code>hash</code>，并调用了每个 <code>module</code> 的 <code>updateHash</code>：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.updateHash(moduleHash);</span><br><span class="line"></span><br><span class="line"><span class="comment">//上面 module.updateHash 调用</span></span><br><span class="line">hash.update(<span class="built_in">this</span>._buildHash); <span class="comment">//这里加入了 _buildHash</span></span><br><span class="line"><span class="built_in">super</span>.updateHash(hash);</span><br><span class="line"></span><br><span class="line"><span class="comment">//上面 super 调用</span></span><br><span class="line">hash.update(<span class="string">`<span class="subst">${<span class="built_in">this</span>.id}</span>`</span>);</span><br><span class="line">hash.update(<span class="built_in">JSON</span>.stringify(<span class="built_in">this</span>.usedExports));</span><br><span class="line"><span class="built_in">super</span>.updateHash(hash);</span><br><span class="line"></span><br><span class="line"><span class="comment">//上面 super 调用</span></span><br><span class="line"><span class="comment">//调用各自 dependencies，blocks，variables的 updateHash</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">const</span> dep <span class="keyword">of</span> <span class="built_in">this</span>.dependencies) dep.updateHash(hash);</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">const</span> block <span class="keyword">of</span> <span class="built_in">this</span>.blocks) block.updateHash(hash);</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">const</span> variable <span class="keyword">of</span> <span class="built_in">this</span>.variables) variable.updateHash(hash);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>最终得到 <code>moduleHash.buffer</code> 形如：<code>ac01f98d10f099796d2f3d600c2592d1./src/a.jsnull0,28./src/b.jsnamespace./src/b.js29,57./src/c.jsnamespace./src/c.js58,121../github/test-loader/loader.js?number=20000!./src/e.jsnamespace../github/test-loader/loader.js?number=20000!./src/e.js./src/b.jsnamespace./src/b.jsaddaddnamespacenullnull./src/c.jsnamespace./src/c.jssubsubnamespacenullnull../github/test-loader/loader.js?number=20000!./src/e.jsnamespace../github/test-loader/loader.js?number=20000!./src/e.jsdivdivnamespacenullnull</code></p>
+<p>然后最终生成出 <code>module</code> 各自的 <code>hash</code> 和 <code>renderedHash</code>。</p>
+<h3 id="创建-chunk-hash"><a href="#创建-chunk-hash" class="headerlink" title="创建 chunk hash"></a>创建 chunk hash</h3><p>继续执行，先对 <code>chunks</code> 进行排序，然后遍历 <code>chunks</code>：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; chunks.length; i++) {</span><br><span class="line">  <span class="keyword">const</span> chunk = chunks[i];</span><br><span class="line">  <span class="keyword">const</span> chunkHash = createHash(hashFunction);</span><br><span class="line">  <span class="keyword">try</span> {</span><br><span class="line">    <span class="keyword">if</span> (outputOptions.hashSalt) {</span><br><span class="line">      chunkHash.update(outputOptions.hashSalt);</span><br><span class="line">    }</span><br><span class="line">    chunk.updateHash(chunkHash);</span><br><span class="line">    <span class="keyword">const</span> template = chunk.hasRuntime() ? <span class="built_in">this</span>.mainTemplate : <span class="built_in">this</span>.chunkTemplate;</span><br><span class="line">    template.updateHashForChunk(chunkHash, chunk, <span class="built_in">this</span>.moduleTemplates.javascript, <span class="built_in">this</span>.dependencyTemplates);</span><br><span class="line">    <span class="built_in">this</span>.hooks.chunkHash.call(chunk, chunkHash);</span><br><span class="line">    chunk.hash = <span class="comment">/** <span class="doctag">@type <span class="type">{string}</span> </span>*/</span> (chunkHash.digest(hashDigest));</span><br><span class="line">    hash.update(chunk.hash);</span><br><span class="line">    chunk.renderedHash = chunk.hash.substr(<span class="number">0</span>, hashDigestLength);</span><br><span class="line">    <span class="built_in">this</span>.hooks.contentHash.call(chunk);</span><br><span class="line">  } <span class="keyword">catch</span> (err) {</span><br><span class="line">    <span class="built_in">this</span>.errors.push(<span class="keyword">new</span> ChunkRenderError(chunk, <span class="string">''</span>, err));</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这里循环初始化了每个 <code>chunk</code> 的 <code>hash</code>，并调用了每个 <code>chunk</code> 的 <code>updateHash</code>：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">chunk.updateHash(chunkHash);</span><br><span class="line"></span><br><span class="line"><span class="comment">//上面 chunk.updateHash 调用</span></span><br><span class="line">hash.update(<span class="string">`<span class="subst">${<span class="built_in">this</span>.id}</span> `</span>);</span><br><span class="line">hash.update(<span class="built_in">this</span>.ids ? <span class="built_in">this</span>.ids.join(<span class="string">','</span>) : <span class="string">''</span>);</span><br><span class="line">hash.update(<span class="string">`<span class="subst">${<span class="built_in">this</span>.name || <span class="string">''</span>}</span> `</span>);</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">const</span> m <span class="keyword">of</span> <span class="built_in">this</span>._modules) {</span><br><span class="line">  hash.update(m.hash); <span class="comment">//此处把每个 module 的 hash 一并加入</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>得到 <code>chunkHash.buffer</code> 形如 <code>bundle bundlebundle 99d78a1615d2e348fbf274adb4e0b67c4fa9f69c98e5b41607cb6354e95983c3824bbf3e0b5e82705f88a41a6741b08f2f18bdc137e8a1e8e6cc78ca7ce0caf64b500a96034ab069ecf31c34f944ede6</code>，然后判断 <code>chunk</code> 是否含有 <code>runtime</code> 代码（ <code>template</code> 判断入口 <code>chunk</code> 与运行时 <code>chunk</code> 一致则为 <code>this.mainTemplate</code>，不一致则为 <code>this.chunkTemplate</code> ）。</p>
+<h4 id="chunkTemplate"><a href="#chunkTemplate" class="headerlink" title="chunkTemplate"></a>chunkTemplate</h4><p>如果是 <code>chunkTemplate</code> 的 <code>updateHashForChunk</code>，则执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.updateHash(hash); <span class="comment">//与上文 this.chunkTemplate.updateHash(hash) 执行相同</span></span><br><span class="line"><span class="built_in">this</span>.hooks.hashForChunk.call(hash, chunk);</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>this.hooks.hashForChunk.call(hash, chunk)</code> 触发插件 <code>JsonpChunkTemplatePlugin</code> 相关事件， <code>update</code> <code>entryModule</code> 和 <code>group.childrenIterable</code>。</p>
+<h4 id="mainTemplate"><a href="#mainTemplate" class="headerlink" title="mainTemplate"></a>mainTemplate</h4><p>如果是 <code>mainTemplate</code> 的 <code>updateHashForChunk</code>，则执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.updateHash(hash); <span class="comment">//与上文 this.mainTemplate.updateHash(hash) 执行相同</span></span><br><span class="line"><span class="built_in">this</span>.hooks.hashForChunk.call(hash, chunk);</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">const</span> line <span class="keyword">of</span> <span class="built_in">this</span>.renderBootstrap(<span class="string">'0000'</span>, chunk, moduleTemplate, dependencyTemplates)) {</span><br><span class="line">  hash.update(line);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>this.hooks.hashForChunk.call(hash, chunk)</code> 触发插件 <code>TemplatedPathPlugin</code> 相关事件，根据 <code>chunkFilename</code> 的不同配置，<code>update chunk.getChunkMaps</code> 的不同导出，<code>chunk.getChunkMaps</code> 的实现为：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">getChunkMaps</span>(<span class="params">realHash</span>)</span> {</span><br><span class="line">  <span class="keyword">const</span> chunkHashMap = <span class="built_in">Object</span>.create(<span class="literal">null</span>);</span><br><span class="line">  <span class="keyword">const</span> chunkContentHashMap = <span class="built_in">Object</span>.create(<span class="literal">null</span>);</span><br><span class="line">  <span class="keyword">const</span> chunkNameMap = <span class="built_in">Object</span>.create(<span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> chunk <span class="keyword">of</span> <span class="built_in">this</span>.getAllAsyncChunks()) {</span><br><span class="line">    chunkHashMap[chunk.id] = realHash ? chunk.hash : chunk.renderedHash;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">of</span> <span class="built_in">Object</span>.keys(chunk.contentHash)) {</span><br><span class="line">      <span class="keyword">if</span> (!chunkContentHashMap[key]) {</span><br><span class="line">        chunkContentHashMap[key] = <span class="built_in">Object</span>.create(<span class="literal">null</span>);</span><br><span class="line">      }</span><br><span class="line">      chunkContentHashMap[key][chunk.id] = chunk.contentHash[key];</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">if</span> (chunk.name) {</span><br><span class="line">      chunkNameMap[chunk.id] = chunk.name;</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> {</span><br><span class="line">    hash: chunkHashMap, <span class="comment">// chunkFilename 配置为 chunkhash的导出</span></span><br><span class="line">    contentHash: chunkContentHashMap, <span class="comment">// chunkFilename 配置为 contenthash 的导出</span></span><br><span class="line">    name: chunkNameMap <span class="comment">// chunkFilename 配置为 name 的导出</span></span><br><span class="line">  };</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>可见各种类型的 <code>hash</code> 都与其他的 <code>不含runtime模块即异步模块</code> 的 <code>hash</code> 有强关联，所以前面的 <code>chunk</code> 排序也就很重要。</p>
+<p><code>this.renderBootstrap</code> 用于拼接 <code>webpack runtime bootstrap</code> 代码字符串。这里相当于把每一行 <code>runtime</code> 代码循环 <code>update</code> 进去，到此 <code>chunk hash</code> 生成结束。 将 <code>chunk.hash</code> <code>update</code> 到 <code>hash</code> 上。 最终得到 <code>chunk.hash</code> 和 <code>chunk.renderedHash</code>。</p>
+<h3 id="创建-content-hash-amp-fullhash-amp-hash"><a href="#创建-content-hash-amp-fullhash-amp-hash" class="headerlink" title="创建 content hash &amp; fullhash &amp; hash"></a>创建 content hash &amp; fullhash &amp; hash</h3><p>然后执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.hooks.contentHash.call(chunk);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这里触发 <code>JavascriptModulesPlugin</code> 相关事件，主要作用是创建生成 <code>chunk.contentHash.javascript</code>，也就是 <code>contentHash</code> 生成相关，大体跟生成 <code>chunk hash</code> 一致.</p>
+<p>最后在 <code>createHash</code> 里得到 <code>Compilation.hash</code> 和 <code>Compilation.fullhash</code>，<code>hash</code> 生成到此结束。<code>chunk</code> 相关优化到此结束。</p>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><ol>
+<li>本章主要是对 <code>chunk</code> 的一些优化工作，暴露了很多相关的优化钩子；</li>
+<li>设置了 <code>module.id</code> 及 <code>chunk.id</code> 并排序；</li>
+<li>创建了 <code>hash</code>，包括 <code>module hash，chunk hash，content hash，fullhash，hash</code></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Korey 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/379.html" rel="prev" title="webpack 4 源码主流程分析（八）：生成 chunk">
+                  <i class="fa fa-chevron-left"></i> webpack 4 源码主流程分析（八）：生成 chunk
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/381.html" rel="next" title="webpack 4 源码主流程分析（十）：资源的构建">
+                  webpack 4 源码主流程分析（十）：资源的构建 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  © 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Korey zhao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">507k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:41</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+
+
+  
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script>
+
+<script src="/bundle.js"></script><script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  ;
+L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":125,"height":150,"position":"left","hOffset":30,"vOffset":-5},"mobile":{"show":false,"scale":0.05},"react":{"opacityDefault":1,"opacityOnHover":0.2},"log":false});</script></body></html>

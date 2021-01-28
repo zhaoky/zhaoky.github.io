@@ -1,23 +1,625 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#3eaf7c">
+<meta name="generator" content="Hexo 5.2.0">
 
-{% block title %}{{ page.title }} | {{ title }}{% endblock %}
 
-{% block page_class %}page-post-detail{% endblock %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon.png" color="#3eaf7c">
 
-{% block content %}
+<link rel="stylesheet" href="/css/main.css">
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="vnode 渲染为真实 dom接上文，vm._render 通过 render 生成 vnode 后，然后执行 vm._update(vm._render(),hydrating) 来首次渲染成真实 dom，里面执行： 1234567if (!prevVnode) &amp;#123;  // initial render  vm.$el = vm.__patch__(vm.$el, vnode, hyd">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue2.x（含组件）主流程源码笔记（七）：mount 阶段之生成 dom">
+<meta property="og:url" content="https://blog.flqin.com/398.html">
+<meta property="og:site_name" content="前端轻语">
+<meta property="og:description" content="vnode 渲染为真实 dom接上文，vm._render 通过 render 生成 vnode 后，然后执行 vm._update(vm._render(),hydrating) 来首次渲染成真实 dom，里面执行： 1234567if (!prevVnode) &amp;#123;  // initial render  vm.$el = vm.__patch__(vm.$el, vnode, hyd">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-03-24T16:22:30.000Z">
+<meta property="article:modified_time" content="2020-03-24T16:22:30.000Z">
+<meta property="article:author" content="Korey">
+<meta property="article:tag" content="前端,前端开发,css,html,js,css3,前端开发博客,fe,技术文档">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.flqin.com/398.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Vue2.x（含组件）主流程源码笔记（七）：mount 阶段之生成 dom | 前端轻语</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c8dec20f0d0449c8ece3c0dbab4e8f31";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
   </div>
 
-{% endblock %}
+  <div class="site-meta">
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">前端轻语</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">korey的前端笔记</p>
+  </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+
+  </li>
+        <li class="menu-item menu-item-map">
+
+    <a href="/map/" rel="section"><i class="fa fa-sitemap fa-fw"></i>map</a>
+
+  </li>
+        <li class="menu-item menu-item-link">
+
+    <a href="/link/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>link</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#vnode-%E6%B8%B2%E6%9F%93%E4%B8%BA%E7%9C%9F%E5%AE%9E-dom"><span class="nav-number">1.</span> <span class="nav-text">vnode 渲染为真实 dom</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#createElm"><span class="nav-number">1.1.</span> <span class="nav-text">createElm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#createChildren"><span class="nav-number">1.2.</span> <span class="nav-text">createChildren</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invokeCreateHooks"><span class="nav-number">1.3.</span> <span class="nav-text">invokeCreateHooks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invokeInsertHook"><span class="nav-number">1.4.</span> <span class="nav-text">invokeInsertHook</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90-demo"><span class="nav-number">1.5.</span> <span class="nav-text">分析 demo</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E4%BB%B6-vnode-%E6%B8%B2%E6%9F%93%E4%B8%BA%E7%9C%9F%E5%AE%9E-dom"><span class="nav-number">2.</span> <span class="nav-text">组件 vnode 渲染为真实 dom</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%AD%90%E7%BB%84%E4%BB%B6"><span class="nav-number">2.1.</span> <span class="nav-text">实例化子组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E5%AD%90%E7%BB%84%E4%BB%B6"><span class="nav-number">2.2.</span> <span class="nav-text">构建子组件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%90%E7%BB%84%E4%BB%B6-render-%E5%87%BD%E6%95%B0"><span class="nav-number">2.2.1.</span> <span class="nav-text">子组件 render 函数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E5%AD%99%E7%BB%84%E4%BB%B6"><span class="nav-number">2.3.</span> <span class="nav-text">构建孙组件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9C%9F%E5%AE%9E-dom-%E6%8F%92%E5%85%A5%E5%88%B0%E6%96%87%E6%A1%A3"><span class="nav-number">3.</span> <span class="nav-text">真实 dom 插入到文档</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%99%E7%BB%84%E4%BB%B6-dom-%E6%8F%92%E5%85%A5%E5%88%B0%E5%AD%90%E7%BB%84%E4%BB%B6-dom"><span class="nav-number">3.1.</span> <span class="nav-text">孙组件 dom 插入到子组件 dom</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#initComponent"><span class="nav-number">3.1.1.</span> <span class="nav-text">initComponent</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90%E7%BB%84%E4%BB%B6-dom-%E6%8F%92%E5%85%A5%E5%88%B0%E6%A0%B9%E7%BB%84%E4%BB%B6-dom"><span class="nav-number">3.2.</span> <span class="nav-text">子组件 dom 插入到根组件 dom</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B4%E4%BD%93%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">4.</span> <span class="nav-text">整体生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">本章小结</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Korey" src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Korey</p>
+  <div class="site-description" itemprop="description">热衷于记录、分享前端开发技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="GitHub → https://github.com/zhaoky"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtleXUuemhhb0Bmb3htYWlsLmNvbQ==" title="E-Mail → mailto:keyu.zhao@foxmail.com"><i class="far fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci81N2M5MWIzYjE2NWFiZDAwNjhkYjg5YzI=" title="掘金 → https://juejin.im/user/57c91b3b165abd0068db89c2"><i class="fas fa-link fa-fw"></i>掘金</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cDovL3d3dy56aGlodS5jb20vcGVvcGxlL2ZlX2tvcmV5" title="知乎 → http://www.zhihu.com/people/fe_korey"><i class="fas fa-link fa-fw"></i>知乎</span>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/398.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Vue2.x（含组件）主流程源码笔记（七）：mount 阶段之生成 dom
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-24 16:22:30" itemprop="dateCreated datePublished" datetime="2020-03-24T16:22:30+00:00">2020-03-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Frame/" itemprop="url" rel="index"><span itemprop="name">FE Frame</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>8.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="vnode-渲染为真实-dom"><a href="#vnode-渲染为真实-dom" class="headerlink" title="vnode 渲染为真实 dom"></a>vnode 渲染为真实 dom</h2><p>接上文，<code>vm._render</code> 通过 <code>render</code> 生成 <code>vnode</code> 后，然后执行 <code>vm._update(vm._render(),hydrating)</code> 来首次渲染成真实 <code>dom</code>，里面执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!prevVnode) {</span><br><span class="line">  <span class="comment">// initial render</span></span><br><span class="line">  vm.$el = vm.__patch__(vm.$el, vnode, hydrating, <span class="literal">false</span> <span class="comment">/* removeOnly */</span>);</span><br><span class="line">} <span class="keyword">else</span> {</span><br><span class="line">  <span class="comment">// updates</span></span><br><span class="line">  vm.$el = vm.__patch__(prevVnode, vnode);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>此处为初始渲染，执行第一个分支 <code>vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */);</code> 即执行 <code>patch</code>。</p>
+<p><code>patch</code> 中因为 <code>oldVnode</code> 即 <code>vm.$el</code> 是真实节点，则 <code>oldVnode</code> 替换为空 <code>vnode</code>，然后执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">createElm(vnode, insertedVnodeQueue, oldElm._leaveCb ? <span class="literal">null</span> : parentElm, nodeOps.nextSibling(oldElm));</span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="createElm"><a href="#createElm" class="headerlink" title="createElm"></a>createElm</h3><p><code>createElm</code> 主要逻辑：</p>
+<ul>
+<li>是组件 <code>vnode</code>，则在 <code>createComponent</code> 处理</li>
+<li>不是组件 <code>vnode</code><ul>
+<li>是元素节点的 <code>vnode</code>，则创建该标签并设置 <code>css scope</code>，然后通过 <code>createChildren</code> 循环构建子 <code>vnode</code>，然后触发 <code>invokeCreateHooks</code> 处理标签的属性</li>
+<li>是注释节点的 <code>vnode</code>，则创建注释节点</li>
+<li>其他情况就创建文件节点</li>
+<li>最后将创建的真实节点插入到根节点里</li>
+</ul>
+</li>
+</ul>
+<h3 id="createChildren"><a href="#createChildren" class="headerlink" title="createChildren"></a>createChildren</h3><figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">createChildren(vnode, children, insertedVnodeQueue);</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>createChildren</code> 标志开始构建子 <code>vnode</code>。方法里先通过 <code>checkDuplicateKeys</code> 检查 <code>key</code> 是否重复，然后执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; children.length; ++i) {</span><br><span class="line">  createElm(children[i], insertedVnodeQueue, vnode.elm, <span class="literal">null</span>, <span class="literal">true</span>, children, i);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>即递归对每一个子 <code>vnode</code> 执行 <code>createElm</code>。</p>
+<h3 id="invokeCreateHooks"><a href="#invokeCreateHooks" class="headerlink" title="invokeCreateHooks"></a>invokeCreateHooks</h3><figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (isDef(data)) {</span><br><span class="line">  <span class="comment">// `data` 为：`{ref: "btn", staticClass: "side", on: {click: ƒ}}`。</span></span><br><span class="line">  invokeCreateHooks(vnode, insertedVnodeQueue);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>invokeCreateHooks</code> 处理该 <code>vnode</code> 上的 <code>data</code> 属性，里循环调用 <code>cbs.create</code> 数组里的 8 个方法如 <code>updateAttrs，updateClass，updateDOMListeners</code> 等，做一些 <code>style，class，event，$refs</code> 等相关的处理。如果是组件 <code>vnode</code> 且有 <code>insert</code> 方法则将该组件 <code>vnode</code> <code>push</code> 到 <code>insertedVnodeQueue</code>。</p>
+<p><code>insertedVnodeQueue</code> 记录子节点组件创建顺序的队列。每创建一个组件实例就会往这个队列中插入当前的组件节点 <code>VNode</code>, 当整个 <code>VNode</code> 对象全部转换成为真实的 <code>DOM</code> 树时，会依次调用这个队列中的 <code>VNode hook</code> 的 <code>insert</code> 方法。</p>
+<h3 id="invokeInsertHook"><a href="#invokeInsertHook" class="headerlink" title="invokeInsertHook"></a>invokeInsertHook</h3><figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">invokeInsertHook</span>(<span class="params">vnode, queue, initial</span>) </span>{</span><br><span class="line">  <span class="keyword">if</span> (isTrue(initial) &amp;&amp; isDef(vnode.parent)) {</span><br><span class="line">    vnode.parent.data.pendingInsert = queue;</span><br><span class="line">  } <span class="keyword">else</span> {</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; queue.length; ++i) {</span><br><span class="line">      queue[i].data.hook.insert(queue[i]);</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>暂时不考虑服务端渲染，<code>invokeInsertHook</code> 钩子在 <code>patch</code> 方法的最后执行。如果是新建的组件实例 <code>vnode</code>（如未挂载、组件实例）且有父 <code>vnode</code>，则将 <code>queue</code> 即之前的 <code>insertedVnodeQueue</code> 队列存到父 <code>vnode</code> 上的 <code>data.pendingInsert</code> 上，在 <code>initComponent</code> 时，会把其 <code>push</code> 到 <code>insertedVnodeQueue</code>。</p>
+<p>如果不是，则就依次调用每个组件 <code>vnode</code> 的 <code>insert</code> 方法，如果组件还未 <code>mounted</code>，则触发 <code>mounted</code> 钩子，如果是 <code>keepAlive</code> 包裹的组件，则执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (vnode.data.keepAlive) {</span><br><span class="line">  <span class="keyword">if</span> (context._isMounted) {</span><br><span class="line">    <span class="comment">//已装载好，说明在更新，将 componentInstance push 到 activatedChildren</span></span><br><span class="line">    <span class="comment">//后面组件更新结束后，在 flushSchedulerQueue 执行 callActivatedHooks，即遍历整个activatedChildren队列 执行 activateChildComponent</span></span><br><span class="line">    queueActivatedComponent(componentInstance);</span><br><span class="line">  } <span class="keyword">else</span> {</span><br><span class="line">    <span class="comment">//触发子元素的 activated 钩子和自己的 activated 钩子。同理，keep-alive 的 deactivated 钩子原理一致</span></span><br><span class="line">    activateChildComponent(componentInstance, <span class="literal">true</span>);</span><br><span class="line">  }</span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="分析-demo"><a href="#分析-demo" class="headerlink" title="分析 demo"></a>分析 demo</h3><p>对于本例：</p>
+<figure class="highlight html"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"main"</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 节点 1 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Bpp</span>&gt;</span><span class="tag">&lt;/<span class="name">Bpp</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 节点 2 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">v-on:click</span>=<span class="string">"plus"</span>&gt;</span>info.name:{{info.name}}，计算属性:{{compute}}<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 节点 3 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">App</span> <span class="attr">name</span>=<span class="string">"one"</span> <span class="attr">v-bind:num</span>=<span class="string">"info.age"</span>&gt;</span><span class="tag">&lt;/<span class="name">App</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 节点 4 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">v-on:click</span>=<span class="string">"hide"</span>&gt;</span>====点击让第二个App组件卸载====<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 节点 5 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">App</span> <span class="attr">name</span>=<span class="string">"two"</span> <span class="attr">v-if</span>=<span class="string">"isShow"</span>&gt;</span><span class="tag">&lt;/<span class="name">App</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>除开 4 个空节点和一个异步组件占位的空注释节点，还有 4 个子节点。</p>
+<p>接下来逐个分析创建流程：</p>
+<ol>
+<li>创建 4 个空节点，即在 <code>createElm</code> 里直接执行 <code>createTextNode</code> 生成空的文本节点后插入到对应的位置,下面的节点分析将略过空节点；</li>
+<li>创建第一个节点（称为节点 1，下一个就为节点 2，以此类推）异步占位节点，即在 <code>createElm</code> 里直接执行 <code>createComment</code> 生成空的注释节点后插入到对应的位置；</li>
+<li>创建节点 2，同前面逻辑一样走 <code>createElm -&gt; createChildren -&gt; createElm -&gt; createChildren ···</code>，递归执行 <code>createElm</code> 判断到 <code>tag</code> 为空，则执行 <code>createTextNode</code> 创建文本节点 <code>info.name:korey，计算属性:29</code> 并调 <code>insert</code> 插入到父节点。然后回到节点 2 的 <code>createElm</code> 继续执行 <code>invokeCreateHooks</code>，然后调 <code>insert</code> 插入到父节点即根组件的 <code>div</code>，此时生成的 <code>dom</code> 节点都赋值在各自 <code>vnode.elm</code> 下；</li>
+<li>创建节点 3，<code>vnode</code> 为 <code>App</code> 组件节点，在 <code>createElm</code> 里走 <code>createComponent</code> 方法。下面单独分析；</li>
+<li>创建节点 4，与节点 2 一致；</li>
+<li>创建节点 5，与节点 3 一致；</li>
+</ol>
+<h2 id="组件-vnode-渲染为真实-dom"><a href="#组件-vnode-渲染为真实-dom" class="headerlink" title="组件 vnode 渲染为真实 dom"></a>组件 vnode 渲染为真实 dom</h2><p>组件节点在 <code>createElm</code> 里走 <code>createComponent</code>。因为组件 <code>vnode.data</code> 有 <code>hook.init</code> 等渲染 <code>vnode</code> 时安装的钩子函数，故执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">i(vnode, <span class="literal">false</span> <span class="comment">/* hydrating */</span>); <span class="comment">//其中 i 为 componentVNodeHooks.init</span></span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="实例化子组件"><a href="#实例化子组件" class="headerlink" title="实例化子组件"></a>实例化子组件</h3><p>执行 <code>componentVNodeHooks.init</code>，方法里先判断如果存在已被 <code>keep-alive</code> 缓存的组件实例 <code>vnode.componentInstance</code>，则调用 <code>componentVNodeHooks.prepatch</code> 直接 <code>updateChildComponent</code> 更新子组件实例即可，就不用去初始化和装载子组件，即不会走一系列常规生命周期钩子。否则执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> child = (vnode.componentInstance = createComponentInstanceForVnode(vnode, activeInstance));</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>createComponentInstanceForVnode</code> 用于创建 <code>component</code> 实例。</p>
+<p>方法里执行：<code>new vnode.componentOptions.Ctor(options)</code>，即实例化 <code>VueComponent</code>，内部执行 <code>this._init(options)</code> 即原型链上的 <code>Vue</code> 的方法 <code>_init</code>，到此，<code>App</code> 子组件开始走 <code>vue</code> 的 <code>init</code> 流程（具体与 <code>Vue</code> 实例化差异可以参考第一章分析），触发 <code>App beforeCreate 钩子-&gt;App created 钩子</code>，然后执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (vm.$options.el) {</span><br><span class="line">  vm.$mount(vm.$options.el);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>因 <code>vm.$options.el</code> 不存在，所以子组件的 <code>_init</code> 的执行结束（即子组件实例化完成），将子组件实例赋给 <code>vnode.componentInstance</code> 即 <code>child</code>。</p>
+<h3 id="构建子组件"><a href="#构建子组件" class="headerlink" title="构建子组件"></a>构建子组件</h3><p>回到 <code>componentVNodeHooks.init</code> 继续执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">child.$mount(hydrating ? vnode.elm : <span class="literal">undefined</span>, hydrating);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>执行 <code>child.$mount</code> 即原型链上的 <code>Vue</code> 的方法 <code>$mount</code>。因为存在 <code>render</code>，故触发 <code>App beforeMount 钩子</code> 后，直接进入 <code>mount</code> 阶段。</p>
+<p>前面已分析，在实例化 <code>渲染 watcher</code> 里触发 <code>updateComponent</code> 先执行 <code>vm._render</code> 生成 <code>vnode</code>：</p>
+<h4 id="子组件-render-函数"><a href="#子组件-render-函数" class="headerlink" title="子组件 render 函数"></a>子组件 render 函数</h4><figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> render = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>{</span><br><span class="line">  <span class="keyword">var</span> _vm = <span class="built_in">this</span>;</span><br><span class="line">  <span class="keyword">var</span> _h = _vm.$createElement;</span><br><span class="line">  <span class="keyword">var</span> _c = _vm._self._c || _h;</span><br><span class="line">  <span class="keyword">return</span> _c(<span class="string">'div'</span>, { <span class="attr">attrs</span>: { <span class="attr">id</span>: <span class="string">'app'</span> } }, [_c(<span class="string">'div'</span>, [_vm._v(_vm._s(_vm.num ? <span class="string">'num:'</span> + _vm.num : <span class="string">''</span>))]), _vm._v(<span class="string">' '</span>), _c(<span class="string">'Child'</span>, { <span class="attr">staticClass</span>: <span class="string">'example'</span> })], <span class="number">1</span>);</span><br><span class="line">};</span><br></pre></td></tr></tbody></table></figure>
+
+<p>生成 <code>vnode</code> 后，执行 <code>vm._update</code> 渲染成真实 <code>dom</code>。在 <code>patch</code> 方法里，由于 <code>oldVnode</code> 即 <code>vm.$el</code> 不存在，执行 <code>createElm-&gt;createChildren-&gt;··</code> 递归生成每一个 <code>vnode</code> 及其子 <code>vnode</code> 对应的真实 <code>dom</code>。</p>
+<h3 id="构建孙组件"><a href="#构建孙组件" class="headerlink" title="构建孙组件"></a>构建孙组件</h3><p>在子组件 <code>App</code> 的 <code>render</code> 函数里，创建孙组件 <code>Child</code>。与子组件流程一致，他同样会经历 <code>App</code> 组件的构建逻辑（触发 <code>Child beforeCreate-&gt;Child created-&gt;Child beforeMount</code> 钩子），执行 <code>vm._update</code> 渲染成真实 <code>dom</code>， 通过 <code>createElm-&gt;createChildren-&gt;··</code> 递归在其各层 <code>vnode</code> 里得到对应的 <code>vnode.elm</code>。</p>
+<p>在孙组件 <code>Child</code> 里的根节点时（<code>createElm</code> 里），由于没有父节点 <code>parentElm</code>，所以执行 <code>insert</code> 时，不会插入节点。</p>
+<p>然后回到 <code>patch</code> 触发 <code>invokeInsertHook</code>（此时不存在 <code>insertedVnodeQueue</code>），然后返回 <code>vnode.elm</code>（<code>vnode</code> 为 <code>Child</code> 组件根 <code>vnode</code>） 赋给 <code>vm.$el</code>（<code>vm</code> 为 <code>Child</code> 组件实例）。回到 <code>mountComponent</code> 中返回孙组件实例， <code>Child</code> 构建完毕。</p>
+<h2 id="真实-dom-插入到文档"><a href="#真实-dom-插入到文档" class="headerlink" title="真实 dom 插入到文档"></a>真实 dom 插入到文档</h2><h3 id="孙组件-dom-插入到子组件-dom"><a href="#孙组件-dom-插入到子组件-dom" class="headerlink" title="孙组件 dom 插入到子组件 dom"></a>孙组件 dom 插入到子组件 dom</h3><p>回到 <code>createComponent</code> 方法里继续执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (isDef(vnode.componentInstance)) {</span><br><span class="line">  initComponent(vnode, insertedVnodeQueue);</span><br><span class="line">  insert(parentElm, vnode.elm, refElm);</span><br><span class="line">  <span class="keyword">if</span> (isTrue(isReactivated)) {</span><br><span class="line">    reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm);</span><br><span class="line">  }</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<h4 id="initComponent"><a href="#initComponent" class="headerlink" title="initComponent"></a>initComponent</h4><figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">initComponent</span>(<span class="params">vnode, insertedVnodeQueue</span>) </span>{</span><br><span class="line">  <span class="keyword">if</span> (isDef(vnode.data.pendingInsert)) {</span><br><span class="line">    insertedVnodeQueue.push.apply(insertedVnodeQueue, vnode.data.pendingInsert);</span><br><span class="line">    vnode.data.pendingInsert = <span class="literal">null</span>;</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  vnode.elm = vnode.componentInstance.$el;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (isPatchable(vnode)) {</span><br><span class="line">    invokeCreateHooks(vnode, insertedVnodeQueue);</span><br><span class="line">    setScope(vnode);</span><br><span class="line">  } <span class="keyword">else</span> {</span><br><span class="line">    registerRef(vnode); <span class="comment">// make sure to invoke the insert hook</span></span><br><span class="line"></span><br><span class="line">    insertedVnodeQueue.push(vnode);</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>在 <code>initComponent</code> 里, <code>vnode</code> 为 <code>Child</code> 组件 <code>vnode</code>。若<code>vnode.data.pendingInsert</code> 存在（存在说明有子组件 <code>vnode</code> <code>push</code> 进入）则与 <code>insertedVnodeQueue</code> 合并，然后将 <code>Child</code> 组件实例生成的真实 <code>dom</code> 节点 <code>vnode.componentInstance.$el</code> 赋给 <code>Child</code> 组件 <code>vnode.elm</code> 上。</p>
+<p>然后判断如果 <code>Child</code> 组件实例 <code>vnode</code> 有标签，则执行 <code>invokeCreateHooks</code>（此处会把 <code>Child</code> 组件 <code>vnode</code> <code>push</code> 到 <code>insertedVnodeQueue</code>）和 <code>setScope</code>。</p>
+<p><code>initComponent</code> 执行完成后，此时调用 <code>insert</code> 将 <code>vnode.elm</code> 插入到 <code>App</code> 组件对应的 <code>dom</code> 上。到此 <code>Child</code> 孙组件渲染结束。</p>
+<h3 id="子组件-dom-插入到根组件-dom"><a href="#子组件-dom-插入到根组件-dom" class="headerlink" title="子组件 dom 插入到根组件 dom"></a>子组件 dom 插入到根组件 dom</h3><p>父级即 <code>App</code> 组件的 <code>children</code> 渲染循环也结束，然后回到 <code>patch</code> 触发 <code>invokeInsertHook</code> 将 <code>insertedVnodeQueue</code> 存入 <code>vnode.parent.data.pendingInsert</code>，然后返回 <code>vnode.elm</code>（<code>vnode</code> 为 <code>App</code> 组件根 <code>vnode</code>） 赋给 <code>vm.$el</code>（<code>vm</code> 为 <code>App</code> 组件实例）。回到 <code>mountComponent</code> 中返回子组件实例， <code>App</code> 构建完毕。</p>
+<p>同 <code>Child</code> 的流程一致，回到 <code>createComponent</code> 方法执行了 <code>initComponent</code> 后，此时调用 <code>insert</code> 将 <code>vnode.elm</code> 插入到根组件对应的 <code>dom</code> 上。到此，<code>App</code> 组件渲染结束。</p>
+<h2 id="整体生命周期"><a href="#整体生命周期" class="headerlink" title="整体生命周期"></a>整体生命周期</h2><p>根组件下的 <code>createChildren</code> 里继续循环 <code>createElm</code>，遇到下一个 <code>App</code> 组件的构建 <code>dom</code> 跟之前的逻辑一样，其中构造函数复用。</p>
+<p>待到根组件的 <code>createChildren</code> 里渲染循环也结束，在 <code>createElm</code> 里因为有 <code>parentElm</code> 为 <code>body</code> 节点，所以执行 <code>insert</code> 将整个父组件 <code>vnode.elm</code> 插入到 <code>body</code> 元素中。</p>
+<p>回到 <code>patch</code> 方法里继续执行，删掉老的 <code>dom</code> 节点，然后触发 <code>invokeInsertHook</code>，此时 <code>insertedVnodeQueue</code> 里包含之前按顺序 <code>push</code> 进去的 4 个组件 <code>vnode</code>：</p>
+<ol>
+<li>第一个孙组件 <code>Child</code></li>
+<li>第一个子组件 <code>App</code></li>
+<li>第二个孙组件 <code>Child</code></li>
+<li>第二个子组件 <code>App</code></li>
+</ol>
+<p>循环依次执行 <code>insert</code> 钩子，方法里会触发各组件生命周期钩子：<code>mounted</code>。</p>
+<p>然后 <code>patch</code> 方法返回 <code>vnode.elm</code> 赋给根实例 <code>vm.$el</code>, <code>vm._update</code> 执行结束，实例化渲染 <code>watcher</code> 亦结束。</p>
+<p>然后回到 <code>mountComponent</code> 继续执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">callHook(vm, <span class="string">'mounted'</span>);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>触发生命周期钩子 <code>mounted</code>。在这之后，异步组件才加载结束，开始构建异步组件的生命周期（上一篇文章的异步组件第二阶段已分析），构建完成后，<code>Vue</code> 初始化全部完成。</p>
+<p>整个过程中，生命周期顺序为：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 开始加载 Vue ↓↓</span></span><br><span class="line">vue beforeCreate</span><br><span class="line">vue created</span><br><span class="line">vue beforeMount</span><br><span class="line"><span class="comment">// 开始加载第一个 App 组件 ↓↓</span></span><br><span class="line">App beforeCreate</span><br><span class="line">App one created</span><br><span class="line">App one beforeMount</span><br><span class="line"><span class="comment">// 开始加载第一个 App 内的 Child 组件 ↓↓</span></span><br><span class="line">Child beforeCreate</span><br><span class="line">Child created</span><br><span class="line">Child beforeMount</span><br><span class="line"><span class="comment">// 开始加载第二个 App 组件 ↓↓</span></span><br><span class="line">App beforeCreate</span><br><span class="line">App two created</span><br><span class="line">App two beforeMount</span><br><span class="line"><span class="comment">// 开始加载第二个 App 内的 Child 组件 ↓↓</span></span><br><span class="line">Child beforeCreate</span><br><span class="line">Child created</span><br><span class="line">Child beforeMount</span><br><span class="line"><span class="comment">// 调用 invokeInsertHook 依次触发各组件 mounted</span></span><br><span class="line"><span class="comment">// 第一个 App 内的 Child 组件 ↓↓</span></span><br><span class="line">Child mounted</span><br><span class="line"><span class="comment">// 第一个 App 组件 ↓↓</span></span><br><span class="line">App one mounted</span><br><span class="line"><span class="comment">// 第二个 App 内的 Child 组件 ↓↓</span></span><br><span class="line">Child mounted</span><br><span class="line"><span class="comment">// 第二个 App 组件 ↓↓</span></span><br><span class="line">App two mounted</span><br><span class="line"><span class="comment">// Vue加载完成 ↓↓</span></span><br><span class="line">vue mounted</span><br><span class="line"><span class="comment">// 开始加载异步 Bpp 组件 ↓↓</span></span><br><span class="line">vue beforeUpdate</span><br><span class="line"><span class="keyword">async</span> Bpp beforeCreate</span><br><span class="line"><span class="keyword">async</span> Bpp created</span><br><span class="line"><span class="keyword">async</span> Bpp beforeMount</span><br><span class="line"><span class="keyword">async</span> Bpp mounted</span><br><span class="line">vue updated</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><ol>
+<li>本章介绍了 <code>vue</code> 执行的 <code>Mount</code> 阶段中的通过 <code>vnode</code> 渲染为真实 <code>dom</code> 部分。</li>
+<li>同时分析了组件里子组件，孙组件的渲染过程以及如何将渲染结果 <code>dom</code> 添加到对应的组件 <code>vnode</code> 上。</li>
+<li>分析了 <code>Vue</code> 的整体生命周期。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Korey 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/397.html" rel="prev" title="Vue2.x（含组件）主流程源码笔记（六）：mount 阶段之生成 vnode">
+                  <i class="fa fa-chevron-left"></i> Vue2.x（含组件）主流程源码笔记（六）：mount 阶段之生成 vnode
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/399.html" rel="next" title="Vue2.x（含组件）主流程源码笔记（八）：update 阶段（上）">
+                  Vue2.x（含组件）主流程源码笔记（八）：update 阶段（上） <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  © 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Korey zhao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">507k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:41</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+
+
+  
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script>
+
+<script src="/bundle.js"></script><script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  ;
+L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":125,"height":150,"position":"left","hOffset":30,"vOffset":-5},"mobile":{"show":false,"scale":0.05},"react":{"opacityDefault":1,"opacityOnHover":0.2},"log":false});</script></body></html>

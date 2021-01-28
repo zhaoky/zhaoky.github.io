@@ -1,23 +1,601 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#3eaf7c">
+<meta name="generator" content="Hexo 5.2.0">
 
-{% block title %}{{ page.title }} | {{ title }}{% endblock %}
 
-{% block page_class %}page-post-detail{% endblock %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon.png" color="#3eaf7c">
 
-{% block content %}
+<link rel="stylesheet" href="/css/main.css">
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="触发 NormalModuleFactory.hooks:factory 和 resolver接上文，开始 module 构建前的 reslove 流程。目的是为了获取个 module 的相关信息及各依赖的 loader 的绝对路径。 来到 NormalModuleFactory.js 文件，该 create 方法先触发了 normalModuleFactory.hooks:beforeResol">
+<meta property="og:type" content="article">
+<meta property="og:title" content="webpack 4 源码主流程分析（五）：reslove 流程">
+<meta property="og:url" content="https://blog.flqin.com/376.html">
+<meta property="og:site_name" content="前端轻语">
+<meta property="og:description" content="触发 NormalModuleFactory.hooks:factory 和 resolver接上文，开始 module 构建前的 reslove 流程。目的是为了获取个 module 的相关信息及各依赖的 loader 的绝对路径。 来到 NormalModuleFactory.js 文件，该 create 方法先触发了 normalModuleFactory.hooks:beforeResol">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-12-11T02:35:22.000Z">
+<meta property="article:modified_time" content="2019-12-11T02:35:22.000Z">
+<meta property="article:author" content="Korey">
+<meta property="article:tag" content="前端,前端开发,css,html,js,css3,前端开发博客,fe,技术文档">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.flqin.com/376.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>webpack 4 源码主流程分析（五）：reslove 流程 | 前端轻语</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c8dec20f0d0449c8ece3c0dbab4e8f31";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
   </div>
 
-{% endblock %}
+  <div class="site-meta">
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">前端轻语</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">korey的前端笔记</p>
+  </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+
+  </li>
+        <li class="menu-item menu-item-map">
+
+    <a href="/map/" rel="section"><i class="fa fa-sitemap fa-fw"></i>map</a>
+
+  </li>
+        <li class="menu-item menu-item-link">
+
+    <a href="/link/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>link</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A6%E5%8F%91-NormalModuleFactory-hooks-factory-%E5%92%8C-resolver"><span class="nav-number">1.</span> <span class="nav-text">触发 NormalModuleFactory.hooks:factory 和 resolver</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#getResolver"><span class="nav-number">2.</span> <span class="nav-text">getResolver</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#enhanced-resolve"><span class="nav-number">2.1.</span> <span class="nav-text">enhanced-resolve</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90-inline-loader-%E5%92%8C-resource"><span class="nav-number">3.</span> <span class="nav-text">解析 inline loader 和 resource</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E9%87%8C%E7%9A%84-loader"><span class="nav-number">4.</span> <span class="nav-text">解析配置文件里的 loader</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%88%E5%B9%B6%EF%BC%8C%E6%8E%92%E5%BA%8F-loader"><span class="nav-number">5.</span> <span class="nav-text">合并，排序 loader</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%97%E5%88%B0-data"><span class="nav-number">6.</span> <span class="nav-text">得到 data</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#getParser"><span class="nav-number">6.1.</span> <span class="nav-text">getParser</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#getGenerator"><span class="nav-number">6.2.</span> <span class="nav-text">getGenerator</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">本章小结</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Korey" src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Korey</p>
+  <div class="site-description" itemprop="description">热衷于记录、分享前端开发技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="GitHub → https://github.com/zhaoky"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtleXUuemhhb0Bmb3htYWlsLmNvbQ==" title="E-Mail → mailto:keyu.zhao@foxmail.com"><i class="far fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci81N2M5MWIzYjE2NWFiZDAwNjhkYjg5YzI=" title="掘金 → https://juejin.im/user/57c91b3b165abd0068db89c2"><i class="fas fa-link fa-fw"></i>掘金</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cDovL3d3dy56aGlodS5jb20vcGVvcGxlL2ZlX2tvcmV5" title="知乎 → http://www.zhihu.com/people/fe_korey"><i class="fas fa-link fa-fw"></i>知乎</span>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/376.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          webpack 4 源码主流程分析（五）：reslove 流程
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-12-11 02:35:22" itemprop="dateCreated datePublished" datetime="2019-12-11T02:35:22+00:00">2019-12-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Build/" itemprop="url" rel="index"><span itemprop="name">FE Build</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>6.7k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>6 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="触发-NormalModuleFactory-hooks-factory-和-resolver"><a href="#触发-NormalModuleFactory-hooks-factory-和-resolver" class="headerlink" title="触发 NormalModuleFactory.hooks:factory 和 resolver"></a>触发 <code>NormalModuleFactory.hooks</code>:<code>factory</code> 和 <code>resolver</code></h2><p>接上文，开始 <code>module</code> 构建前的 <code>reslove</code> 流程。目的是为了获取个 <code>module</code> 的相关信息及各依赖的 <code>loader</code> 的绝对路径。</p>
+<p>来到 <code>NormalModuleFactory.js</code> 文件，该 <code>create</code> 方法先触发了 <code>normalModuleFactory.hooks:beforeResolve</code>，然后在回调里执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> factory = <span class="built_in">this</span>.hooks.factory.call(<span class="literal">null</span>);</span><br><span class="line">factory(result, <span class="function">(<span class="params">err, <span class="built_in">module</span></span>) =&gt;</span> {</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p>触发 <code>NormalModuleFactory.hooks:factory</code>，该事件返回了一个 <code>factory</code> 函数。接着执行该 <code>factory</code> 函数:</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> resolver = <span class="built_in">this</span>.hooks.resolver.call(<span class="literal">null</span>);</span><br><span class="line">resolver(result, <span class="function">(<span class="params">err, data</span>) =&gt;</span> {</span><br><span class="line">  <span class="comment">//... 创建一个 `normalModule` 实例</span></span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p>触发 <code>NormalModuleFactory.hooks:resolver</code> 该事件返回了一个 <code>resolver</code> 函数。接着执行 <code>resolver</code> 函数，该函数作用为解析构建所有 <code>module</code> 所需要的 <code>loaders</code> 的绝对路径及这个 <code>module</code> 的相关构建信息(例如获取 <code>module</code> 的 <code>packge.json</code> 等。</p>
+<p>在函数里执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> loaderResolver = <span class="built_in">this</span>.getResolver(<span class="string">'loader'</span>);</span><br><span class="line"><span class="keyword">const</span> normalResolver = <span class="built_in">this</span>.getResolver(<span class="string">'normal'</span>, data.resolveOptions);</span><br></pre></td></tr></tbody></table></figure>
+
+<ul>
+<li><code>loaderResolver</code> 为用于解析 <code>loader</code> 的绝对路径</li>
+<li><code>normalResolver</code> 用于解析 <code>文件</code> 和 <code>module</code> 的绝对路径</li>
+</ul>
+<h2 id="getResolver"><a href="#getResolver" class="headerlink" title="getResolver"></a>getResolver</h2><p><code>this.getResolver</code> 会执行 <code>webpack/lib/ResolverFactory.js</code> 里的 <code>this.resolverFactory.get</code>。方法里判断缓存后，执行 <code>_create</code>：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">resolveOptions = <span class="built_in">this</span>.hooks.resolveOptions.for(type).call(resolveOptions);</span><br><span class="line"><span class="keyword">const</span> resolver = Factory.createResolver(resolveOptions);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>此时触发的 <code>ResolverFactory.hooks: resolveOptions for (type)</code> 即在 <code>编译前的准备 - 注册 resolverFactory.hooks 阶段</code> 所注册。</p>
+<p>在该钩子里通过 <code>cachedCleverMerge</code> 判断缓存及融合配置（如果是 <code>loaderResolver</code> 则为 **配置项: <code>options.resolveLoader</code>**，如果是 <code>normalResolver</code> 则为 **配置项: <code>options.resolve</code>**），并添加了属性 <code>fileSystem: compiler.inputFileSystem</code>，返回一个 <code>resolveOptions</code> 对象，作为<code>Factory.createResolver</code> 执行的参数。</p>
+<p><code>Factory</code> 为 <code>require("enhanced-resolve").ResolverFactory</code>，所以此处进入到<code>enhanced-resolve</code> 包的阶段。</p>
+<h3 id="enhanced-resolve"><a href="#enhanced-resolve" class="headerlink" title="enhanced-resolve"></a>enhanced-resolve</h3><p><code>enhanced-resolve</code> 是 <code>webpack</code> 开发的一个用于解析路径的包。进入文件 <code>node_modules/enhanced-resolve/lib/ResolverFactory.js</code>，先融合处理了项目配置 <code>resolve</code> 与默认配置 <code>resolve/resolveLoader</code>，然后执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!resolver) {</span><br><span class="line">  resolver = <span class="keyword">new</span> Resolver(useSyncFileSystemCalls ? <span class="keyword">new</span> SyncAsyncFileSystemDecorator(fileSystem) : fileSystem);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>如果没有传入项目的 <code>resolver</code>，那么就自己 <code>new</code> 一个。接着定义了 <code>Resolver</code> 的生命周期钩子和根据配置 <code>push</code> 了一大堆的 <code>plugins</code>，然后执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">plugins.forEach(<span class="function">(<span class="params">plugin</span>) =&gt;</span> {</span><br><span class="line">  plugin.apply(resolver);</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p>对每一个插件执行 <code>apply</code>，主要作用是获取到 <code>hooks</code> 后，在 <code>Resolver</code> 的不同生命周期钩子上注册了一些事件，然后在事件末尾执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取hooks</span></span><br><span class="line"><span class="keyword">const</span> target = resolver.ensureHook(<span class="built_in">this</span>.target);</span><br><span class="line"><span class="comment">// 触发插件后的回调里，执行：</span></span><br><span class="line"> resolver.doResolve(target, obj, ...);</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>target</code> 为事件钩子 <code>hook</code>，在触发完当前插件后，最后通过 <code>doResolve</code> 将 <code>hook</code> 带入到下一个插件中，实现了递归串联调用一系列的插件。包括：<code>UnsafeCachePlugin，ParsePlugin，DescriptionFilePlugin，NextPlugin，AliasPlugin，AliasFieldPlugin，ModuleKindPlugin，SymlinkPlugin</code> 等等，完成各自的插件操作。</p>
+<p>注册事件完成后，最后得到返回 <code>resolver</code> 对象回到 <code>_create</code> 触发 <code>ResolverFactory.hooks: resolver for (type)</code>，此处可以对 <code>resolver</code> 进行篡改。然后返回对应的 <code>resolver</code> 回到 <code>NormalModuleFactory.hooks</code>: <code>resolver</code> 的钩子函数里继续执行。</p>
+<p><code>resolver</code> 对象暴露 <code>resolve</code> 方法，用于解析路径。</p>
+<h2 id="解析-inline-loader-和-resource"><a href="#解析-inline-loader-和-resource" class="headerlink" title="解析 inline loader 和 resource"></a>解析 inline loader 和 resource</h2><p>继续执行，先进行 <code>inline loader</code> 和对应资源文件 <code>resource</code> 的解析:</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> elements = requestWithoutMatchResource.replace(<span class="regexp">/^-?!+/</span>, <span class="string">''</span>).replace(<span class="regexp">/!!+/g</span>, <span class="string">'!'</span>).split(<span class="string">'!'</span>);</span><br><span class="line"><span class="keyword">let</span> resource = elements.pop();</span><br><span class="line">elements = elements.map(identToLoaderRequest);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>如<code>'import Styles from style-loader!css-loader?modules!./styles.css'</code>，会得到：</p>
+<figure class="highlight json"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">{</span><br><span class="line">  <span class="attr">"resource"</span>: <span class="string">"./styles.css"</span>,</span><br><span class="line">  <span class="attr">"elements"</span>: [</span><br><span class="line">    {</span><br><span class="line">      <span class="attr">"loader"</span>: <span class="string">"style-loader"</span></span><br><span class="line">    },</span><br><span class="line">    {</span><br><span class="line">      <span class="attr">"loader"</span>: <span class="string">"css-loader"</span>,</span><br><span class="line">      <span class="attr">"options"</span>: <span class="string">"modules"</span></span><br><span class="line">    }</span><br><span class="line">  ]</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>然后执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">asyncLib.parallel(</span><br><span class="line">  [</span><br><span class="line">    callback =&gt; <span class="built_in">this</span>.resolveRequestArray(contextInfo, context, elements, loaderResolver, callback), <span class="comment">// 解析`elements`(`inline loader`)</span></span><br><span class="line">    callback =&gt; {</span><br><span class="line">      <span class="comment">//...</span></span><br><span class="line">      normalResolver.resolve(contextInfo, context, resource, {}, <span class="function">(<span class="params">err, resource, resourceResolveData</span>) =&gt;</span> {...}); <span class="comment">// //解析对应的 `module` 的绝对路径等信息</span></span><br><span class="line">    }</span><br><span class="line">  ],</span><br><span class="line">  (err, results) =&gt; {</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">  }</span><br><span class="line">);</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>asyncLib</code> 来自 <code>neo-async</code> 包<span class="exturl" data-url="aHR0cHM6Ly93d3cubnBtanMuY29tL3BhY2thZ2UvbmVvLWFzeW5j">npm<i class="fa fa-external-link-alt"></i></span>， <code>asyncLib.parallel</code> <span class="exturl" data-url="aHR0cDovL3N1Z3VydTAzLmdpdGh1Yi5pby9uZW8tYXN5bmMvZG9jL2FzeW5jLnBhcmFsbGVsLmh0bWw=">API 文档<i class="fa fa-external-link-alt"></i></span> 会并行处理参数数组各任务，任务都完成之后，返回一个 <code>results</code> 列表，列表顺序为参数数组顺序，与执行顺序无关。</p>
+<p><code>this.resolveRequestArray</code> 内部采用 <code>asyncLib.map</code> 循环调用 <code>resolver.resolve</code>。</p>
+<p>得到 <code>results</code>：</p>
+<figure class="highlight json"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">{</span><br><span class="line">  <span class="attr">"results"</span>: [</span><br><span class="line">    [</span><br><span class="line">      {</span><br><span class="line">        <span class="attr">"loader"</span>: <span class="string">"loader的绝对路径1"</span>,</span><br><span class="line">        <span class="attr">"options"</span>: <span class="string">"loader参数1"</span></span><br><span class="line">      },</span><br><span class="line">      {</span><br><span class="line">        <span class="attr">"loader"</span>: <span class="string">"loader的绝对路径2"</span>,</span><br><span class="line">        <span class="attr">"options"</span>: <span class="string">"loader参数2"</span></span><br><span class="line">      }</span><br><span class="line">    ],</span><br><span class="line">    {</span><br><span class="line">      <span class="attr">"resource"</span>: <span class="string">"模块绝对路径"</span>,</span><br><span class="line">      <span class="attr">"resourceResolveData"</span>: <span class="string">"模块基本信息（即enhanced-resolve执行结果）"</span></span><br><span class="line">    }</span><br><span class="line">  ]</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="解析配置文件里的-loader"><a href="#解析配置文件里的-loader" class="headerlink" title="解析配置文件里的 loader"></a>解析配置文件里的 loader</h2><p>在回调里执行:</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> result = <span class="built_in">this</span>.ruleSet.exec({</span><br><span class="line">  resource: resourcePath,</span><br><span class="line">  realResource: matchResource !== <span class="literal">undefined</span> ? resource.replace(<span class="regexp">/\?.*/</span>, <span class="string">''</span>) : resourcePath,</span><br><span class="line">  resourceQuery, <span class="comment">// module 路径上所带的 query 参数</span></span><br><span class="line">  issuer: contextInfo.issuer, <span class="comment">// 所解析的 module 的发布者</span></span><br><span class="line">  compiler: contextInfo.compiler,</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>exec</code>（上一章已经介绍过）过滤 <code>webpack.config.js</code> 中得到 <code>module</code> 所需要的 <code>loader</code>。</p>
+<figure class="highlight json"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">{</span><br><span class="line">  <span class="attr">"result"</span>: [</span><br><span class="line">    { <span class="attr">"type"</span>: <span class="string">"type"</span>, <span class="attr">"value"</span>: <span class="string">"javascript/auto"</span> },</span><br><span class="line">    { <span class="attr">"type"</span>: <span class="string">"resolve"</span>, <span class="attr">"value"</span>: {} },</span><br><span class="line">    { <span class="attr">"type"</span>: <span class="string">"use"</span>, <span class="attr">"value"</span>: { <span class="attr">"loader"</span>: <span class="string">"babel-loader"</span> } }</span><br><span class="line">  ]</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="合并，排序-loader"><a href="#合并，排序-loader" class="headerlink" title="合并，排序 loader"></a>合并，排序 loader</h2><p>接着处理了 <code>inline loader</code> 如果带有前缀<code>!</code>,<code>!!</code>,<code>-!</code>（注意，这部分的 <code>API</code> 在中文文档上没有写，要在官方原版文档里才有<span class="exturl" data-url="aHR0cHM6Ly93ZWJwYWNrLmpzLm9yZy9jb25jZXB0cy9sb2FkZXJzLyNpbmxpbmU=">链接<i class="fa fa-external-link-alt"></i></span>）和 <code>result</code> 项带有 <code>enforce</code> 参数的情况，用来对 <code>loader</code>的禁用和排序。</p>
+<p>最后得到 <code>useLoadersPost</code>, <code>useLoadersPre</code>, <code>useLoaders</code>, <code>settings:{type: "javascript/auto", resolve: {}}</code>，并通过 <code>asyncLib.parallel</code> 与 <code>this.resolveRequestArray</code> 并行处理 <code>useLoadersPost</code>, <code>useLoadersPre</code>, <code>useLoaders</code> 得到对应的 <code>resolve</code> 结果即路径信息，在回调里执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (matchResource === <span class="literal">undefined</span>) {</span><br><span class="line">  loaders = results[<span class="number">0</span>].concat(loaders, results[<span class="number">1</span>], results[<span class="number">2</span>]); <span class="comment">//参数 loaders 为inline loader</span></span><br><span class="line">} <span class="keyword">else</span> {</span><br><span class="line">  loaders = results[<span class="number">0</span>].concat(results[<span class="number">1</span>], loaders, results[<span class="number">2</span>]);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>排序、合并 <code>loader</code>，即 <code>loaders</code> 顺序为 <code>postLoader，inlineLoader，loader（normal config loader），preLoader</code>。因为 <code>loader</code> 是从右至左执行，即执行顺序为 <code>preLoader，loader（normal config loader），inlineLoader，postLoader</code>。</p>
+<h2 id="得到-data"><a href="#得到-data" class="headerlink" title="得到 data"></a>得到 data</h2><p>最后通过 <code>process.nextTick</code>（微任务）异步输出以下组合对象:</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">callback(<span class="literal">null</span>, {</span><br><span class="line">  context: context,</span><br><span class="line">  request: loaders.map(loaderToIdent).concat([resource]).join(<span class="string">'!'</span>),</span><br><span class="line">  dependencies: data.dependencies,</span><br><span class="line">  userRequest,</span><br><span class="line">  rawRequest: request,</span><br><span class="line">  loaders,</span><br><span class="line">  resource,</span><br><span class="line">  matchResource,</span><br><span class="line">  resourceResolveData,</span><br><span class="line">  settings,</span><br><span class="line">  type,</span><br><span class="line">  parser: <span class="built_in">this</span>.getParser(type, settings.parser),</span><br><span class="line">  generator: <span class="built_in">this</span>.getGenerator(type, settings.generator),</span><br><span class="line">  resolveOptions,</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p>其中：</p>
+<h3 id="getParser"><a href="#getParser" class="headerlink" title="getParser"></a>getParser</h3><p>主要作用是为该 <code>module</code> 提供 <code>parser</code>，用于解析模块为 <code>ast</code>。</p>
+<p><code>this.getParser(type, settings.parser)</code> 创建 <code>parser</code> 并缓存。</p>
+<p>执行 <code>createParser</code>，方法里触发 <code>NormalModuleFactory.hooks:createParser for (type)</code>，该事件注册在 <code>JavascriptModulesPlugin</code> 插件，根据 <code>type</code> 不同返回不同的 <code>parser</code> 实例。</p>
+<p>实例化之后，触发 <code>NormalModuleFactory.hooks:parser for (type)</code>，会去注册一些在 <code>parser</code> 阶段（遍历解析 <code>ast</code> 的时候）被触发的 <code>hooks</code>。</p>
+<h3 id="getGenerator"><a href="#getGenerator" class="headerlink" title="getGenerator"></a>getGenerator</h3><p>主要作用是为该 <code>module</code> 提供 <code>generator</code>，用于模版生成时提供方法。</p>
+<p>与 <code>parser</code> 类似，<code>this.getGenerator(type, settings.generator)</code> 创建 <code>generator</code> 并缓存。</p>
+<p>执行 <code>createGenerator</code>，方法里触发 <code>NormalModuleFactory.hooks:createGenerator for (type)</code>,该事件注册在 <code>JavascriptModulesPlugin</code> 插件，根据 <code>type</code> 不同返回不同的 <code>generator</code> 实例（目前代码里都是返的一致的 <code>new JavascriptGenerator()</code> ）。</p>
+<p>实例化之后，触发 <code>NormalModuleFactory.hooks:generator for (type)</code>。</p>
+<p>得到这个组合对象 <code>data</code> 后，跳出 <code>resolver</code> 函数，执行 <code>resolver</code> 函数回调，到此 <code>resolve</code> 流程结束，开启创建 <code>module</code> 流程！</p>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><ol>
+<li><code>resolve</code> 流程用于获得各 <code>loader</code> 和模块的绝对路径等信息。</li>
+<li>在 <code>resolver</code> 里，先通过 <code>enhanced-resolve</code> 获取 <code>resolver</code>，提供 <code>resolve</code> 方法。</li>
+<li>解析 <code>inline loader</code> 和 <code>resource</code> 和项目配置的 <code>loader</code>，然后根据配置对其进行合并，排序。</li>
+<li>调用 <code>getParser</code> 和 <code>getGenerator</code> 得到 <code>module</code> 对应的 <code>parser</code> 和 <code>generator</code>，用于后面的 <code>ast</code> 解析及模板生成。</li>
+<li>最后输出一个组合对象 <code>data</code>， 该对象为创建 <code>module</code> 提供各种必备的环境条件。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Korey 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/375.html" rel="prev" title="webpack 4 源码主流程分析（四）：reslove 前的准备">
+                  <i class="fa fa-chevron-left"></i> webpack 4 源码主流程分析（四）：reslove 前的准备
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/377.html" rel="next" title="webpack 4 源码主流程分析（六）：构建 module（上）">
+                  webpack 4 源码主流程分析（六）：构建 module（上） <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  © 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Korey zhao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">507k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:41</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+
+
+  
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script>
+
+<script src="/bundle.js"></script><script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  ;
+L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":125,"height":150,"position":"left","hOffset":30,"vOffset":-5},"mobile":{"show":false,"scale":0.05},"react":{"opacityDefault":1,"opacityOnHover":0.2},"log":false});</script></body></html>

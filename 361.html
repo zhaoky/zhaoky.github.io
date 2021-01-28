@@ -1,23 +1,636 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#3eaf7c">
+<meta name="generator" content="Hexo 5.2.0">
 
-{% block title %}{{ page.title }} | {{ title }}{% endblock %}
 
-{% block page_class %}page-post-detail{% endblock %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon.png" color="#3eaf7c">
 
-{% block content %}
+<link rel="stylesheet" href="/css/main.css">
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="此贴记录下在 typescript 项目里的一些相关配置和包的选用，其中各种依赖包和最佳实践都在不断发展演变中，最新的配置以该仓库 MVVM 为准。 typescript 支持在webpack中使用 babel 7.0 +,摒弃了传统的 ts-loader 或 awesome-typescript-loader 方案。原因如下：  参考 1 参考 2  123yarn add @babel/cor">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用typescript下的项目架构最佳实践">
+<meta property="og:url" content="https://blog.flqin.com/361.html">
+<meta property="og:site_name" content="前端轻语">
+<meta property="og:description" content="此贴记录下在 typescript 项目里的一些相关配置和包的选用，其中各种依赖包和最佳实践都在不断发展演变中，最新的配置以该仓库 MVVM 为准。 typescript 支持在webpack中使用 babel 7.0 +,摒弃了传统的 ts-loader 或 awesome-typescript-loader 方案。原因如下：  参考 1 参考 2  123yarn add @babel/cor">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-07-24T17:55:32.000Z">
+<meta property="article:modified_time" content="2019-07-24T17:55:32.000Z">
+<meta property="article:author" content="Korey">
+<meta property="article:tag" content="前端,前端开发,css,html,js,css3,前端开发博客,fe,技术文档">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.flqin.com/361.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>使用typescript下的项目架构最佳实践 | 前端轻语</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c8dec20f0d0449c8ece3c0dbab4e8f31";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
   </div>
 
-{% endblock %}
+  <div class="site-meta">
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">前端轻语</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">korey的前端笔记</p>
+  </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+
+  </li>
+        <li class="menu-item menu-item-map">
+
+    <a href="/map/" rel="section"><i class="fa fa-sitemap fa-fw"></i>map</a>
+
+  </li>
+        <li class="menu-item menu-item-link">
+
+    <a href="/link/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>link</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#typescript-%E6%94%AF%E6%8C%81"><span class="nav-number">1.</span> <span class="nav-text">typescript 支持</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E6%A3%80%E6%9F%A5-amp-%E9%A3%8E%E6%A0%BC%E7%BB%9F%E4%B8%80"><span class="nav-number">2.</span> <span class="nav-text">代码检查 &amp; 风格统一</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="nav-number">3.</span> <span class="nav-text">单元测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#jest"><span class="nav-number">3.1.</span> <span class="nav-text">jest</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#coveralls"><span class="nav-number">3.2.</span> <span class="nav-text">coveralls</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8-vscode-%E9%87%8C%E8%B0%83%E8%AF%95-jest-webpack-%E7%AD%89-node-js"><span class="nav-number">3.3.</span> <span class="nav-text">在 vscode 里调试 jest/webpack 等 node.js</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E7%AB%AF%E6%B5%8B%E8%AF%95%E6%A6%82%E5%BF%B5"><span class="nav-number">3.4.</span> <span class="nav-text">前端测试概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.4.1.</span> <span class="nav-text">测试类型</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">4.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Typescript-%E9%94%99%E8%AF%AF%E5%BF%BD%E7%95%A5"><span class="nav-number">4.1.</span> <span class="nav-text">Typescript 错误忽略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#github-%E5%BE%BD%E7%AB%A0"><span class="nav-number">4.2.</span> <span class="nav-text">github 徽章</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#d-ts-%E6%96%87%E4%BB%B6%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">4.3.</span> <span class="nav-text">.d.ts 文件是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E6%B5%8B%E8%AF%95%E6%9C%AC%E5%9C%B0-node-%E5%8C%85"><span class="nav-number">4.4.</span> <span class="nav-text">如何测试本地 node 包</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Korey" src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Korey</p>
+  <div class="site-description" itemprop="description">热衷于记录、分享前端开发技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="GitHub → https://github.com/zhaoky"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtleXUuemhhb0Bmb3htYWlsLmNvbQ==" title="E-Mail → mailto:keyu.zhao@foxmail.com"><i class="far fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci81N2M5MWIzYjE2NWFiZDAwNjhkYjg5YzI=" title="掘金 → https://juejin.im/user/57c91b3b165abd0068db89c2"><i class="fas fa-link fa-fw"></i>掘金</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cDovL3d3dy56aGlodS5jb20vcGVvcGxlL2ZlX2tvcmV5" title="知乎 → http://www.zhihu.com/people/fe_korey"><i class="fas fa-link fa-fw"></i>知乎</span>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/361.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用typescript下的项目架构最佳实践
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-24 17:55:32" itemprop="dateCreated datePublished" datetime="2019-07-24T17:55:32+00:00">2019-07-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Build/" itemprop="url" rel="index"><span itemprop="name">FE Build</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>6.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>6 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>此贴记录下在 <code>typescript</code> 项目里的一些相关配置和包的选用，其中各种依赖包和最佳实践都在不断发展演变中，最新的配置以该仓库 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reS9tdnZt">MVVM<i class="fa fa-external-link-alt"></i></span> 为准。</p>
+<h2 id="typescript-支持"><a href="#typescript-支持" class="headerlink" title="typescript 支持"></a>typescript 支持</h2><p>在<code>webpack</code>中使用 <code>babel 7.0 +</code>,摒弃了传统的 <code>ts-loader</code> 或 <code>awesome-typescript-loader</code> 方案。原因如下：</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Zyb250ZW5kOS9mZTktbGlicmFyeS9pc3N1ZXMvMjM=">参考 1<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vcG9zdC81YzgyMmU0MjZmYjlhMDRhMGE1ZmZiNDk=">参考 2<i class="fa fa-external-link-alt"></i></span></li>
+</ul>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yarn add @babel/core babel-loader @babel/preset-env @babel/preset-typescript -D</span><br><span class="line">yarn add @babel/plugin-proposal-class-propertie -D //根据项目需求添加其他env未包含的转义插件</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>babel</code> 只负责转换，并不会做对应的类型检查，所以需要安装 <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL1R5cGVTdHJvbmcvZm9yay10cy1jaGVja2VyLXdlYnBhY2stcGx1Z2lu">fork-ts-checker-webpack-plugin<i class="fa fa-external-link-alt"></i></span> 来进行报错提示：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add fork-ts-checker-webpack-plugin -D</span><br></pre></td></tr></tbody></table></figure>
+
+<p>项目通用转 <code>ES5</code> 安装包：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add @babel/plugin-transform-runtime @babel/runtime-corejs3 -D</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>babel.config.js</code>：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = {</span><br><span class="line">  presets: [</span><br><span class="line">    [</span><br><span class="line">      <span class="string">'@babel/env'</span>,</span><br><span class="line">      {</span><br><span class="line">        targets: <span class="string">'&gt; 1%, not dead'</span>,</span><br><span class="line">      },</span><br><span class="line">    ],</span><br><span class="line">    <span class="string">'@babel/preset-typescript'</span>,</span><br><span class="line">  ],</span><br><span class="line">  plugins: [</span><br><span class="line">    [</span><br><span class="line">      <span class="string">'@babel/plugin-transform-runtime'</span>,</span><br><span class="line">      {</span><br><span class="line">        corejs: <span class="number">3</span>,</span><br><span class="line">      },</span><br><span class="line">    ],</span><br><span class="line">    <span class="string">'@babel/plugin-proposal-class-properties'</span>,</span><br><span class="line">  ],</span><br><span class="line">};</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>tsconfig.json</code> 配置：</p>
+<figure class="highlight json"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">{</span><br><span class="line">  <span class="attr">"compilerOptions"</span>: {</span><br><span class="line">    <span class="attr">"target"</span>: <span class="string">"ESNext"</span>,</span><br><span class="line">    <span class="attr">"module"</span>: <span class="string">"commonjs"</span>,</span><br><span class="line">    <span class="attr">"noImplicitAny"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"sourceMap"</span>: <span class="literal">false</span></span><br><span class="line">  },</span><br><span class="line">  <span class="attr">"include"</span>: [<span class="string">"src/**/*"</span>]</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>webpack</code> 配置：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>: {</span><br><span class="line">  rules: [</span><br><span class="line">    {</span><br><span class="line">      test: <span class="regexp">/\.(js|ts)$/</span>,</span><br><span class="line">      exclude: <span class="regexp">/(node_modules|bower_components)/</span>,</span><br><span class="line">      use: [<span class="string">'babel-loader'</span>],</span><br><span class="line">    },</span><br><span class="line">  ];</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="代码检查-amp-风格统一"><a href="#代码检查-amp-风格统一" class="headerlink" title="代码检查 &amp; 风格统一"></a>代码检查 &amp; 风格统一</h2><p><strong>代码检查</strong>使用 <code>eslint</code>（<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3R5cGVzY3JpcHQtZXNsaW50L3R5cGVzY3JpcHQtZXNsaW50">官方未来推荐<i class="fa fa-external-link-alt"></i></span>），抛弃传统的 <code>tslint</code> 方案：<span class="exturl" data-url="aHR0cHM6Ly90cy54Y2F0bGl1LmNvbS9lbmdpbmVlcmluZy9saW50">参考链接<i class="fa fa-external-link-alt"></i></span>。</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">yarn add eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin -D</span><br><span class="line"></span><br><span class="line">//@typescript-eslint/parser :将 TypeScript 转换为 ESTree，使 eslint 可以识别</span><br><span class="line">//@typescript-eslint/eslint-plugin :只是一个可以打开或关闭的规则列表</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>@typescript-eslint/parser</code> 作为 <code>babel</code> 的解析器，这时候就不需要安装 <code>babel</code> 默认推荐的 <code>eslint</code> 解析器(<code>babel-eslint</code>)了，规则列表<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3R5cGVzY3JpcHQtZXNsaW50L3R5cGVzY3JpcHQtZXNsaW50L3RyZWUvbWFzdGVyL3BhY2thZ2VzL2VzbGludC1wbHVnaW4=">查阅<i class="fa fa-external-link-alt"></i></span>。</p>
+<p><strong>风格统一</strong>使用 <code>prettier</code>，在 <code>typescript</code> 项目里将配置文件 <code>prettier.config.js</code> 里添加 <code>parser: "typescript"</code> 即可(前提是已安装 <code>@typescript-eslint/parser</code>：<span class="exturl" data-url="aHR0cHM6Ly9wcmV0dGllci5pby9kb2NzL2VuL29wdGlvbnMuaHRtbCNwYXJzZXI=">参考链接<i class="fa fa-external-link-alt"></i></span>)。</p>
+<p>项目通用 <code>prettier</code> 的其他包：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add prettier eslint-config-prettier eslint-plugin-prettier -D</span><br></pre></td></tr></tbody></table></figure>
+
+<p>结合 <code>eslint+prettier</code>，得到：</p>
+<p><code>prettier.config.js</code>:</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = {</span><br><span class="line">  singleQuote: <span class="literal">false</span>,</span><br><span class="line">  printWidth: <span class="number">200</span>,</span><br><span class="line">  parser: <span class="string">'typescript'</span>,</span><br><span class="line">};</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>.eslintrc.js</code> (这里使用的 <code>google</code> 默认规则 <code>eslint-config-google</code>):</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = {</span><br><span class="line">  root: <span class="literal">true</span>,</span><br><span class="line">  parser: <span class="string">'@typescript-eslint/parser'</span>,</span><br><span class="line">  plugins: [<span class="string">'@typescript-eslint'</span>],</span><br><span class="line">  env: {</span><br><span class="line">    browser: <span class="literal">true</span>,</span><br><span class="line">    es6: <span class="literal">true</span>,</span><br><span class="line">  },</span><br><span class="line">  <span class="keyword">extends</span>: [<span class="string">'plugin:@typescript-eslint/recommended'</span>, <span class="string">'google'</span>, <span class="string">'prettier'</span>, <span class="string">'prettier/@typescript-eslint'</span>],</span><br><span class="line">  globals: {</span><br><span class="line">    Atomics: <span class="string">'readonly'</span>,</span><br><span class="line">    SharedArrayBuffer: <span class="string">'readonly'</span>,</span><br><span class="line">  },</span><br><span class="line">  parserOptions: {</span><br><span class="line">    ecmaVersion: <span class="number">2018</span>,</span><br><span class="line">    sourceType: <span class="string">'module'</span>,</span><br><span class="line">  },</span><br><span class="line">  rules: {</span><br><span class="line">    <span class="string">'@typescript-eslint/no-explicit-any'</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">'@typescript-eslint/no-use-before-define'</span>: <span class="number">0</span>,</span><br><span class="line">  },</span><br><span class="line">};</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h2><h3 id="jest"><a href="#jest" class="headerlink" title="jest"></a>jest</h3><p>这里选用 <code>jest</code> 框架来测试。<span class="exturl" data-url="aHR0cDovL3d3dy5mbHk2My5jb20vYXJ0aWNsZS9kZXRpYWwvMTcw">jest 的优势？<i class="fa fa-external-link-alt"></i></span>。</p>
+<p>在 <code>ts</code> 项目里，摒弃了传统的 <code>ts-jest</code>，只需如上安装 <code>@babel/preset-typescript</code>，并在 <code>babel.config.js</code> 里的 <code>presets</code> 添加即可。<span class="exturl" data-url="aHR0cHM6Ly9qZXN0anMuaW8vZG9jcy9lbi9nZXR0aW5nLXN0YXJ0ZWQuaHRtbCN1c2luZy10eXBlc2NyaXB0">参考链接<i class="fa fa-external-link-alt"></i></span>。</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn jest @types/jest -D  //@types/jest 是 jest 的 ts 类型定义文件，而 vscode 便是基于 ts 进行代码提示的</span><br></pre></td></tr></tbody></table></figure>
+
+<ul>
+<li>经查 <code>jest</code> 依赖包里发现，<code>jest</code> 依赖 <code>babel-jest</code> (用于支持 <code>es6</code> 语法)，故不需要在单独引入依赖包 <code>babel-jest</code>。</li>
+<li>因为引入了 <code>@types/jest</code>，也就不需要引入 <code>eslint-plugin-jest</code> 来消除 <code>jest</code> 变量的报错。</li>
+<li><code>jest config</code> 采用默认配置即可，更多个性化配置<span class="exturl" data-url="aHR0cHM6Ly9qZXN0anMuaW8vZG9jcy9lbi9jb25maWd1cmF0aW9u">参见<i class="fa fa-external-link-alt"></i></span>。</li>
+</ul>
+<h3 id="coveralls"><a href="#coveralls" class="headerlink" title="coveralls"></a>coveralls</h3><p>这里选用了 <span class="exturl" data-url="aHR0cHM6Ly9jb3ZlcmFsbHMuaW8v">coveralls<i class="fa fa-external-link-alt"></i></span> 作为自动测试代码覆盖率的在线工具。由于项目走 <code>travis.com</code> 的持续集成，所以配置为：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add coveralls -D</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>.coveralls.yml</code>:</p>
+<figure class="highlight yml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">service_name:</span> <span class="string">travis-pro</span></span><br><span class="line"><span class="attr">repo_token:</span> <span class="string">COVERALLS_TOKEN</span> <span class="comment"># COVERALLS_TOKEN为加密变量</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>package.json</code> 添加 <code>scripts</code> (测试框架为 <code>jest</code>，<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL25pY2ttZXJ3aW4vbm9kZS1jb3ZlcmFsbHM=">更多方法查阅<i class="fa fa-external-link-alt"></i></span>):</p>
+<figure class="highlight"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">"scripts": {</span><br><span class="line">  "coveralls": "jest --coverage &amp;&amp; cat ./coverage/lcov.info | coveralls"</span><br><span class="line">},</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>.travis.yml</code> 添加：</p>
+<figure class="highlight yml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">script:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">sed</span> <span class="string">-i</span> <span class="string">"s/COVERALLS_TOKEN/$COVERALLS_TOKEN/"</span> <span class="string">.coveralls.yml</span> <span class="comment">#$COVERALLS_TOKEN为在travis.com项目里配置的加密变量</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">yarn</span> <span class="string">run</span> <span class="string">coveralls</span></span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="在-vscode-里调试-jest-webpack-等-node-js"><a href="#在-vscode-里调试-jest-webpack-等-node-js" class="headerlink" title="在 vscode 里调试 jest/webpack 等 node.js"></a>在 vscode 里调试 jest/webpack 等 node.js</h3><p><code>调试</code> -&gt; <code>添加配置</code> -&gt; 选择<code>node.js</code>，自动生成<code>.vscode/launch.json</code>，修改配置为：</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9jb2RlLnZpc3VhbHN0dWRpby5jb20vZG9jcy9ub2RlanMvbm9kZWpzLWRlYnVnZ2luZw==">文档<i class="fa fa-external-link-alt"></i></span></p>
+<figure class="highlight"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">"configurations": [</span><br><span class="line">    {</span><br><span class="line">      <span class="attr">"type"</span>: <span class="string">"node"</span>, <span class="comment">//系统默认，不可更改，标识要使用的调试器的类型</span></span><br><span class="line">      <span class="attr">"request"</span>: <span class="string">"launch"</span>, <span class="comment">//系统默认，不可更改，在指定的文件上启动调试器 program. attach: 将调试器附加到已经运行的进程。</span></span><br><span class="line">      <span class="attr">"name"</span>: <span class="string">"Launch Program"</span>, <span class="comment">//调试配置的名称</span></span><br><span class="line">      <span class="attr">"program"</span>: <span class="string">"${workspaceFolder}/index.js"</span>, <span class="comment">//要调试的Node.js程序的绝对路径</span></span><br><span class="line">      <span class="attr">"args"</span>: [<span class="string">"--runInBand"</span>, <span class="string">"--env=jsdom"</span>, <span class="string">"${fileBasename}"</span>], <span class="comment">//传递给程序进行调试的参数[array]</span></span><br><span class="line">      <span class="attr">"runtimeExecutable"</span>: <span class="string">"npm"</span>, <span class="comment">// 要使用的运行时可执行文件的绝对路径。默认是node (https://code.visualstudio.com/docs/nodejs/nodejs-debugging#_launch-configuration-support-for-npm-and-other-tools)</span></span><br><span class="line">      <span class="attr">"runtimeArgs"</span>: [<span class="string">"run-script"</span>, <span class="string">"debug"</span>], <span class="comment">// 传递给运行时可执行文件的可选参数</span></span><br><span class="line">      <span class="attr">"runtimeVersion"</span>:<span class="string">"7.10.1"</span>, <span class="comment">//使用nvm可以用此属性控制node.js版本</span></span><br><span class="line">      <span class="attr">"port"</span>: <span class="number">5858</span>, <span class="comment">//要使用的调试端口</span></span><br><span class="line">      <span class="attr">"console"</span>: <span class="string">"externalTerminal"</span>, <span class="comment">//指定如何显示程序输出: externalTerminal:独立控制台窗口,integratedTerminal(默认):VS代码集成终端</span></span><br><span class="line">      <span class="attr">"stopOnEntry"</span>: <span class="literal">true</span>, <span class="comment">// 设置为true时，在调试程序的第一行中断开调试器。如果省略（默认）或设置为false，则调试器将程序运行到第一个断点。</span></span><br><span class="line">      <span class="attr">"skipFiles"</span>: [<span class="string">"&lt;node_internals&gt;/**/*.js"</span>,<span class="string">"${workspaceFolder}/lib/**/*.js"</span>] <span class="comment">// 跳过不感兴趣的代码, Node.js的内置核心模块定义为：&lt;node_internals&gt;，其他变量定义(https://code.visualstudio.com/docs/editor/variables-reference)</span></span><br><span class="line">    }</span><br><span class="line">]</span><br></pre></td></tr></tbody></table></figure>
+
+<ul>
+<li>调试单一 <code>node</code> 文件：<ul>
+<li><code>launch.json</code> 配置：<ul>
+<li><code>program:${workspaceFolder}/index.js</code></li>
+<li><code>args:['--dev']</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>调试 <code>npm scripts</code> (包括普通 <code>node</code> 命令如 <code>index.js</code> 和非 <code>node</code> 命令如 <code>jest,webpack</code> 等)时：<ul>
+<li><code>launch.json</code> 配置：<ul>
+<li><code>runtimeExecutable:"npm"</code> //必须设置为<code>npm</code></li>
+<li><code>runtimeArgs:["run", "debug"]</code> //第一个参数必须为<code>run</code></li>
+<li><code>runtimeVersion:"10.6.0"</code> //可选</li>
+</ul>
+</li>
+<li><code>package.json</code> 的 <code>npm scripts</code> 配置：<ul>
+<li>必须加 <code>--inspect-brk=5858</code>，<code>5858</code> 与 <code>port</code> 设置须相同</li>
+<li>非普通命令需要转换成 <code>node</code> 调用: <code>webpack=&gt;./node_modules/.bin/webpack</code> (因为 <code>npm run build</code> 实际调用的是 <code>node_modules/.bin/webpack</code>)</li>
+<li>带参数的命令接在后面即可：<code>node --inspect-brk=5858 ./node_modules/.bin/jest --coverage</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><code>npm scripts</code>:</p>
+<figure class="highlight"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">"scripts": {</span><br><span class="line">  "debug": "node --inspect-brk=5858 index.js",</span><br><span class="line">  "build": "node --inspect-brk=5858 ./node_modules/.bin/webpack --mode=development",</span><br><span class="line">  "test": "node --inspect-brk=5858 ./node_modules/.bin/jest --coverage"</span><br><span class="line">},</span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="前端测试概念"><a href="#前端测试概念" class="headerlink" title="前端测试概念"></a>前端测试概念</h3><h4 id="测试类型"><a href="#测试类型" class="headerlink" title="测试类型"></a>测试类型</h4><ul>
+<li>单元测试 (<code>Unit Test</code>) - 通过模拟输入和预测输出的方式测试独立的函数或者类。</li>
+<li>集成测试 (<code>Integration Test</code>) - 测试多个模块间的联动是否和期望相同。</li>
+<li><code>E2E</code> 测试 (也被称为 <code>Functional Test</code>) - 关注点不在内部实现方式，而是测试产品在真实使用场景（比如在浏览器）中是否可以达到预想的结果，属于黑盒测试。</li>
+</ul>
+<p><span class="exturl" data-url="aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC8zMjcwMjQyMQ==">更多<i class="fa fa-external-link-alt"></i></span></p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="Typescript-错误忽略"><a href="#Typescript-错误忽略" class="headerlink" title="Typescript 错误忽略"></a>Typescript 错误忽略</h3><ul>
+<li>单行忽略 <code>// @ts-ignore</code></li>
+<li>忽略全文 <code>// @ts-nocheck</code></li>
+<li>取消忽略全文 <code>// @ts-check</code></li>
+</ul>
+<h3 id="github-徽章"><a href="#github-徽章" class="headerlink" title="github 徽章"></a>github 徽章</h3><p>在 <span class="exturl" data-url="aHR0cHM6Ly9zaGllbGRzLmlvLw==">shields<i class="fa fa-external-link-alt"></i></span> 上面可生成任意徽章。</p>
+<h3 id="d-ts-文件是什么"><a href="#d-ts-文件是什么" class="headerlink" title=".d.ts 文件是什么"></a>.d.ts 文件是什么</h3><p><code>d.ts</code> 就是 <code>TypedDefinition 类型定义文件</code>，用来定义类型信息以及接口规范。</p>
+<p><code>ts</code>代码最终会编译成 <code>.js</code> 的 <code>js</code> 代码，供他人使用。这个时候类型信息就丢失了。所以 <code>ts</code> 编译器会自动根据 <code>.ts</code> 中的信息，可以自动生成对外的 <code>.d.ts</code> 文件，和生成的 <code>js</code> 文件搭配使用。其中，<code>js</code> 文件是给运行引擎用的，而 <code>.d.ts</code> 文件是给 <code>IDE（智能编辑器）</code> 写代码时参考用的。</p>
+<h3 id="如何测试本地-node-包"><a href="#如何测试本地-node-包" class="headerlink" title="如何测试本地 node 包"></a>如何测试本地 node 包</h3><p>采用 <code>npm link</code></p>
+<ul>
+<li>在需要测试的包（如 <code>test</code> ）路径下执行：<code>npm link</code>，这时 <code>全局node_modules</code> 包下就可以看到这个 <code>test</code> 包。</li>
+<li>在需引用的目标包的项目下安装该测试包：<code>npm link test</code>（如果有作用域需要加上作用域：<code>npm link @fe_korey/test</code>）,这时 test 包就被安装在了该目录下，在 <code>test</code> 包里的修改会同步到目标包里。</li>
+<li>取消连接：在 <code>test</code> 包里执行：<code>npm unlink</code> 即可.</li>
+</ul>
+<p>注意：在 <code>webpack</code> 项目中，如果用 <code>npm link</code> 方式测试本地包，需要设置 <code>config</code>:</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">resolve: {</span><br><span class="line">  symlinks: <span class="literal">false</span>;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Korey 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/360.html" rel="prev" title="（转载）点击穿透">
+                  <i class="fa fa-chevron-left"></i> （转载）点击穿透
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/362.html" rel="next" title="自定义事件">
+                  自定义事件 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  © 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Korey zhao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">507k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:41</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+
+
+  
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script>
+
+<script src="/bundle.js"></script><script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  ;
+L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":125,"height":150,"position":"left","hOffset":30,"vOffset":-5},"mobile":{"show":false,"scale":0.05},"react":{"opacityDefault":1,"opacityOnHover":0.2},"log":false});</script></body></html>

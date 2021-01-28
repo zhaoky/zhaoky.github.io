@@ -1,23 +1,573 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#3eaf7c">
+<meta name="generator" content="Hexo 5.2.0">
 
-{% block title %}{{ page.title }} | {{ title }}{% endblock %}
 
-{% block page_class %}page-post-detail{% endblock %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon.png" color="#3eaf7c">
 
-{% block content %}
+<link rel="stylesheet" href="/css/main.css">
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="通过在 cli 执行命令 webpack 开始，以 development 模式为例，暂时忽略支线剧情（错误响应，缓存等等），只分析探索 webpack 的打包主流程。 选择 cli根据 npm 的规则，cli 执行 webpack 后，就会去执行 node_modules/.bin/webpack 文件即 node_modules/webpack/bin/webpack.js。所以这里我们的 n">
+<meta property="og:type" content="article">
+<meta property="og:title" content="webpack 4 源码主流程分析（二）：配置初始化">
+<meta property="og:url" content="https://blog.flqin.com/373.html">
+<meta property="og:site_name" content="前端轻语">
+<meta property="og:description" content="通过在 cli 执行命令 webpack 开始，以 development 模式为例，暂时忽略支线剧情（错误响应，缓存等等），只分析探索 webpack 的打包主流程。 选择 cli根据 npm 的规则，cli 执行 webpack 后，就会去执行 node_modules/.bin/webpack 文件即 node_modules/webpack/bin/webpack.js。所以这里我们的 n">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-12-10T17:12:05.000Z">
+<meta property="article:modified_time" content="2019-12-10T17:12:05.000Z">
+<meta property="article:author" content="Korey">
+<meta property="article:tag" content="前端,前端开发,css,html,js,css3,前端开发博客,fe,技术文档">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.flqin.com/373.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>webpack 4 源码主流程分析（二）：配置初始化 | 前端轻语</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c8dec20f0d0449c8ece3c0dbab4e8f31";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
   </div>
 
-{% endblock %}
+  <div class="site-meta">
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">前端轻语</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">korey的前端笔记</p>
+  </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+
+  </li>
+        <li class="menu-item menu-item-map">
+
+    <a href="/map/" rel="section"><i class="fa fa-sitemap fa-fw"></i>map</a>
+
+  </li>
+        <li class="menu-item menu-item-link">
+
+    <a href="/link/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>link</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%89%E6%8B%A9-cli"><span class="nav-number">1.</span> <span class="nav-text">选择 cli</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#webpack-cli"><span class="nav-number">2.</span> <span class="nav-text">webpack-cli</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-yargs"><span class="nav-number">2.1.</span> <span class="nav-text">配置 yargs</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%88%E5%B9%B6-cli-%E5%8F%82%E6%95%B0%E4%B8%8E%E9%A1%B9%E7%9B%AE%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0"><span class="nav-number">3.</span> <span class="nav-text">合并 cli 参数与项目配置参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%9F%E8%AE%A1%E6%95%B0%E6%8D%AE-stats-%E9%85%8D%E7%BD%AE"><span class="nav-number">4.</span> <span class="nav-text">统计数据 stats 配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#webpack-js"><span class="nav-number">5.</span> <span class="nav-text">webpack.js</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8E%E5%90%88%E9%A1%B9%E7%9B%AE%E9%BB%98%E8%AE%A4%E5%8F%82%E6%95%B0%E5%90%88%E5%B9%B6"><span class="nav-number">6.</span> <span class="nav-text">与合项目默认参数合并</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">本章小结</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Korey" src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Korey</p>
+  <div class="site-description" itemprop="description">热衷于记录、分享前端开发技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="GitHub → https://github.com/zhaoky"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtleXUuemhhb0Bmb3htYWlsLmNvbQ==" title="E-Mail → mailto:keyu.zhao@foxmail.com"><i class="far fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci81N2M5MWIzYjE2NWFiZDAwNjhkYjg5YzI=" title="掘金 → https://juejin.im/user/57c91b3b165abd0068db89c2"><i class="fas fa-link fa-fw"></i>掘金</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cDovL3d3dy56aGlodS5jb20vcGVvcGxlL2ZlX2tvcmV5" title="知乎 → http://www.zhihu.com/people/fe_korey"><i class="fas fa-link fa-fw"></i>知乎</span>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/373.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          webpack 4 源码主流程分析（二）：配置初始化
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-12-10 17:12:05" itemprop="dateCreated datePublished" datetime="2019-12-10T17:12:05+00:00">2019-12-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Build/" itemprop="url" rel="index"><span itemprop="name">FE Build</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>通过在 <code>cli</code> 执行命令 <code>webpack</code> 开始，以 <code>development</code> 模式为例，暂时忽略支线剧情（错误响应，缓存等等），只分析探索 <code>webpack</code> 的打包主流程。</p>
+<h2 id="选择-cli"><a href="#选择-cli" class="headerlink" title="选择 cli"></a>选择 cli</h2><p>根据 <code>npm</code> 的<span class="exturl" data-url="aHR0cHM6Ly9kb2NzLm5wbWpzLmNvbS9maWxlcy9wYWNrYWdlLmpzb24jYmlu">规则<i class="fa fa-external-link-alt"></i></span>，<code>cli</code> 执行 <code>webpack</code> 后，就会去执行 <code>node_modules/.bin/webpack</code> 文件即 <code>node_modules/webpack/bin/webpack.js</code>。所以这里我们的 <code>npm scripts</code> 中的 <code>debug</code> 直接调试的 <code>node_modules/.bin/webpack</code> 的代码。 代码中通过:</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">require</span>.resolve(packageName);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>判断是否安装了包 <code>webpack-cli</code> 或者 <code>webpack-command</code>，通过安装的数量处理后，执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">require</span>(path.resolve(path.dirname(pkgPath), pkg.bin[installedClis[<span class="number">0</span>].binName]));</span><br></pre></td></tr></tbody></table></figure>
+
+<p>即执行 <code>node_modules/webpack-cli/bin/cli.js</code>，</p>
+<h2 id="webpack-cli"><a href="#webpack-cli" class="headerlink" title="webpack-cli"></a>webpack-cli</h2><p>该文件为一个自执行函数，<code>import-local</code> 包用于优先选用本地包，<code>v8-compile-cache</code> 包用于 <code>v8</code> <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2ZseXlhbmcvYmxvZy9pc3N1ZXMvMTM=">缓存优化<i class="fa fa-external-link-alt"></i></span>。</p>
+<h3 id="配置-yargs"><a href="#配置-yargs" class="headerlink" title="配置 yargs"></a>配置 yargs</h3><p>接下来配置了 <code>yargs</code>的帮助等信息：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">require</span>(<span class="string">"./config/config-yargs"</span>)(yargs)；</span><br></pre></td></tr></tbody></table></figure>
+
+<p>在文件 <code>node_modules/webpack-cli/bin/config/config-yargs.js</code> 里可以查阅具体的配置内容。</p>
+<p>然后执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yargs.parse(process.argv.slice(<span class="number">2</span>), <span class="function">(<span class="params">err, argv, output</span>) =&gt;</span> {</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p>在 <code>yargs.parse</code> 的回调里执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">options = <span class="built_in">require</span>(<span class="string">'./utils/convert-argv'</span>)(argv);</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="合并-cli-参数与项目配置参数"><a href="#合并-cli-参数与项目配置参数" class="headerlink" title="合并 cli 参数与项目配置参数"></a>合并 cli 参数与项目配置参数</h2><p>进入 <code>convert-argv.js</code>， 主要做了对 <code>cli</code> 所传的参数与项目配置进行融合，并处理部分参数，最终得到一个 <code>options</code>。</p>
+<p>先处理了部分特定参数后（可能会有多个项目配置），然后通过一系列（<code>findup</code>,<code>interpret</code>）的处理，得到配置文件的路径值: <code>/nice/wpDemo/webpack.config.js</code>。然后读取 <code>webpack.config.js</code> 这个文件后，执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">processConfiguredOptions(options[<span class="number">0</span>]);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>方法里先对 <code>options</code> 的类型进行了验证：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">validateOptions(options);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>验证无误后，对项目配置文件进行了一系列的判断，包括是否是多数组，函数等等。最后执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">processOptions(options);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>在该方法里，通过 <code>ifArg</code> 对融合了 <code>cli</code> 参数配置和项目配置（<code>cli</code> 参数优先级更高），包括 <code>mode</code>，<code>entry</code> 等等，然后跳出 <code>processOptions</code> 继续执行，根据 <code>cli</code> 参数有没有 <code>watch</code> 相关而做一些处理。</p>
+<h2 id="统计数据-stats-配置"><a href="#统计数据-stats-配置" class="headerlink" title="统计数据 stats 配置"></a>统计数据 stats 配置</h2><p><code>processOptions</code> 执行完后，回到 <code>cli.js</code> 文件执行同名方法 <code>processOptions</code> ，传入了融合了后的配置 <code>options</code>，然后对配置中的统计信息（<code>options.stats</code>）进行了处理。</p>
+<h2 id="webpack-js"><a href="#webpack-js" class="headerlink" title="webpack.js"></a>webpack.js</h2><p>最后执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> webpack = <span class="built_in">require</span>(<span class="string">'webpack'</span>);</span><br><span class="line"><span class="comment">//...</span></span><br><span class="line"><span class="keyword">try</span> {</span><br><span class="line">  compiler = webpack(options);</span><br><span class="line">} <span class="keyword">catch</span> (err) {</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这里引入了<code>webpack</code>（<code>node_modules/webpack/lib/webpack.js</code>）, <code>webpack</code> 挂载了很多内置的插件，如 <code>BannerPlugin</code> 等等, 然后执行 <code>webpack</code>。</p>
+<p>先通过 <code>ajv</code> 验证配置的每一项是否合法：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> webpackOptionsValidationErrors = validateSchema(webpackOptionsSchema, options);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>然后判断如果 <code>options</code> 是数组则执行多个<code>webpack(options)</code>，然后执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">options = <span class="keyword">new</span> WebpackOptionsDefaulter().process(options);</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="与合项目默认参数合并"><a href="#与合项目默认参数合并" class="headerlink" title="与合项目默认参数合并"></a>与合项目默认参数合并</h2><p>该方法在文件 <code>WebpackOptionsDefaulter.js</code> 里，初始化默认的 <code>config</code> 配置后，然后通过 <code>WebpackOptionsDefaulter</code> 的原始类 <code>OptionsDefaulter</code> 上的 <code>process</code> 方法 <code>merge</code> 了项目配置。然后执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compiler = <span class="keyword">new</span> Compiler(options.context); <span class="comment">// options.context为当前项目绝对路径</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>options</code> 是系统默认的配置、cli 配置、配置文件配置三种融合的结果，此时<code>项目配置</code>与<code>默认配置</code>都已处理完毕，进入编译前的准备。</p>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><ol>
+<li><code>webpack</code> 先选择了 <code>cli</code> 后，配置了 <code>yargs</code> 相关信息；</li>
+<li>通过 <code>yarg</code> 解析了 <code>cli</code> 相关参数后，与读取到的配置文件的配置相融合；</li>
+<li>统计数据 <code>stats</code> 配置后，执行方法 <code>webpack</code>，融合了项目配置与默认配置，最终得到 <code>options</code> 挂载到变量 <code>compiler</code> 下。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Korey 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/372.html" rel="prev" title="webpack 4 源码主流程分析（一）：前言及总流程概览">
+                  <i class="fa fa-chevron-left"></i> webpack 4 源码主流程分析（一）：前言及总流程概览
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/374.html" rel="next" title="webpack 4 源码主流程分析（三）：编译前的准备">
+                  webpack 4 源码主流程分析（三）：编译前的准备 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  © 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Korey zhao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">507k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:41</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+
+
+  
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script>
+
+<script src="/bundle.js"></script><script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  ;
+L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":125,"height":150,"position":"left","hOffset":30,"vOffset":-5},"mobile":{"show":false,"scale":0.05},"react":{"opacityDefault":1,"opacityOnHover":0.2},"log":false});</script></body></html>

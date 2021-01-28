@@ -1,23 +1,564 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#3eaf7c">
+<meta name="generator" content="Hexo 5.2.0">
 
-{% block title %}{{ page.title }} | {{ title }}{% endblock %}
 
-{% block page_class %}page-post-detail{% endblock %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon.png" color="#3eaf7c">
 
-{% block content %}
+<link rel="stylesheet" href="/css/main.css">
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="项目准备拉取 vue 代码到本地仓库，并切换版本到 v2.6.11： 12git clone https://github.com/vuejs/vue.gitgit checkout v2.6.11  进入 vue 文件夹根目录下安装依赖： 1yarn">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue2.x（含组件）主流程源码笔记（二）：源码结构及调试相关介绍">
+<meta property="og:url" content="https://blog.flqin.com/393.html">
+<meta property="og:site_name" content="前端轻语">
+<meta property="og:description" content="项目准备拉取 vue 代码到本地仓库，并切换版本到 v2.6.11： 12git clone https://github.com/vuejs/vue.gitgit checkout v2.6.11  进入 vue 文件夹根目录下安装依赖： 1yarn">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-03-18T17:08:59.000Z">
+<meta property="article:modified_time" content="2020-03-18T17:08:59.000Z">
+<meta property="article:author" content="Korey">
+<meta property="article:tag" content="前端,前端开发,css,html,js,css3,前端开发博客,fe,技术文档">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.flqin.com/393.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Vue2.x（含组件）主流程源码笔记（二）：源码结构及调试相关介绍 | 前端轻语</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c8dec20f0d0449c8ece3c0dbab4e8f31";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
   </div>
 
-{% endblock %}
+  <div class="site-meta">
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">前端轻语</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">korey的前端笔记</p>
+  </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+
+  </li>
+        <li class="menu-item menu-item-map">
+
+    <a href="/map/" rel="section"><i class="fa fa-sitemap fa-fw"></i>map</a>
+
+  </li>
+        <li class="menu-item menu-item-link">
+
+    <a href="/link/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>link</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E5%87%86%E5%A4%87"><span class="nav-number">1.</span> <span class="nav-text">项目准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">目录结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%92%88%E5%AF%B9%E7%9B%AE%E5%BD%95%E7%9A%84%E4%B8%80%E4%BA%9B%E8%A7%A3%E9%87%8A"><span class="nav-number">3.</span> <span class="nav-text">针对目录的一些解释</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dist"><span class="nav-number">3.1.</span> <span class="nav-text">dist</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#flow"><span class="nav-number">3.2.</span> <span class="nav-text">flow</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#packages"><span class="nav-number">3.3.</span> <span class="nav-text">packages</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#vue-server-renderer"><span class="nav-number">3.3.1.</span> <span class="nav-text">vue-server-renderer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vue-template-compiler"><span class="nav-number">3.3.2.</span> <span class="nav-text">vue-template-compiler</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#weex-template-compiler"><span class="nav-number">3.3.3.</span> <span class="nav-text">weex-template-compiler</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#weex-vue-framework"><span class="nav-number">3.3.4.</span> <span class="nav-text">weex-vue-framework</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#weex"><span class="nav-number">3.4.</span> <span class="nav-text">weex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sfc"><span class="nav-number">3.5.</span> <span class="nav-text">sfc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#test"><span class="nav-number">3.6.</span> <span class="nav-text">test</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E5%A7%8B%E8%B0%83%E8%AF%95"><span class="nav-number">4.</span> <span class="nav-text">开始调试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E5%85%A5%E5%8F%A3"><span class="nav-number">4.1.</span> <span class="nav-text">程序入口</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#demo-%E5%88%86%E6%9E%90%E4%BD%BF%E7%94%A8%E7%BC%96%E8%AF%91%E5%90%8E%E7%9A%84-vue"><span class="nav-number">5.</span> <span class="nav-text">demo 分析使用编译后的 vue</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Korey" src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Korey</p>
+  <div class="site-description" itemprop="description">热衷于记录、分享前端开发技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="GitHub → https://github.com/zhaoky"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtleXUuemhhb0Bmb3htYWlsLmNvbQ==" title="E-Mail → mailto:keyu.zhao@foxmail.com"><i class="far fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci81N2M5MWIzYjE2NWFiZDAwNjhkYjg5YzI=" title="掘金 → https://juejin.im/user/57c91b3b165abd0068db89c2"><i class="fas fa-link fa-fw"></i>掘金</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cDovL3d3dy56aGlodS5jb20vcGVvcGxlL2ZlX2tvcmV5" title="知乎 → http://www.zhihu.com/people/fe_korey"><i class="fas fa-link fa-fw"></i>知乎</span>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/393.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Vue2.x（含组件）主流程源码笔记（二）：源码结构及调试相关介绍
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-18 17:08:59" itemprop="dateCreated datePublished" datetime="2020-03-18T17:08:59+00:00">2020-03-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Frame/" itemprop="url" rel="index"><span itemprop="name">FE Frame</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="项目准备"><a href="#项目准备" class="headerlink" title="项目准备"></a>项目准备</h2><p>拉取 <code>vue</code> 代码到本地仓库，并切换版本到 <code>v2.6.11</code>：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/vuejs/vue.git</span><br><span class="line">git checkout v2.6.11</span><br></pre></td></tr></tbody></table></figure>
+
+<p>进入 <code>vue</code> 文件夹根目录下安装依赖：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h2><p>忽略掉 <code>.babelrc.js,.editorconfig</code> 等常规项目文件，只介绍 <code>vue</code> 相关。</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">├─ benchmarks                 <span class="comment">// 基准数据,一些测试性能的 demo，用于与竞品框架对比</span></span><br><span class="line">├─ dist                       <span class="comment">// 构建后输出的不同版本的 Vue 文件</span></span><br><span class="line">├─ examples                   <span class="comment">// 用 Vue 写的一些小 demo</span></span><br><span class="line">├─ flow                       <span class="comment">// flow 静态类型声明文件</span></span><br><span class="line">├─ packages                   <span class="comment">// 构建后输出的服务端渲染、模板编译器、weex 相关的NPM包</span></span><br><span class="line">├─ scripts                    <span class="comment">// 存放 npm scripts 执行的各种 script，用于项目编译、测试、构建。</span></span><br><span class="line">├─ src                        <span class="comment">// 核心</span></span><br><span class="line">│   ├─ compiler               <span class="comment">// 编译器相关，用于解析模版，template-&gt;render()</span></span><br><span class="line">│       ├─ codegen            <span class="comment">// AST 转换为 render()</span></span><br><span class="line">│       ├─ directives         <span class="comment">// 生成 render() 之前需要处理的指令</span></span><br><span class="line">│       ├─ parser             <span class="comment">// template 解析为 AST</span></span><br><span class="line">│       ├─ codeframe.js       <span class="comment">// 导出 generateCodeFrame，用于格式化 console template</span></span><br><span class="line">│       ├─ create-compiler.js <span class="comment">// 导出 createCompilerCreator，用于返回 createCompiler</span></span><br><span class="line">│       ├─ error-detector.js  <span class="comment">// 检查 AST 的错误</span></span><br><span class="line">│       ├─ helpers.js         <span class="comment">// 一些编译的帮助方法</span></span><br><span class="line">│       ├─ index.js           <span class="comment">// 导出 createCompiler 方法，用于返回 compile 和 compileToFunctions</span></span><br><span class="line">│       ├─ optimizer.js       <span class="comment">// 标记静态节点，用于重建优化</span></span><br><span class="line">│       └─ tofunction.js      <span class="comment">// 导出 createCompileToFunctionFn，用于返回 compileToFunctions</span></span><br><span class="line">│   ├─ core                   <span class="comment">// 核心代码，包括内置组件，全局API封装，Vue 实例化，观察者，虚拟DOM, 工具函数等等。</span></span><br><span class="line">│       ├─ components         <span class="comment">// 内置组件定义，目前包含 Keep-Alive</span></span><br><span class="line">│       ├─ <span class="built_in">global</span>-api         <span class="comment">// 全局 api 定义，如 Vue.component,Vue.use,Vue.extend,Vue.mixin等</span></span><br><span class="line">│       ├─ instance           <span class="comment">// 实例化相关内容，生命周期定义、事件等</span></span><br><span class="line">│       ├─ observer           <span class="comment">// 数据监听，双向数据绑定，订阅中心设置等</span></span><br><span class="line">│       ├─ util               <span class="comment">// 工具方法</span></span><br><span class="line">│       ├─ vdom               <span class="comment">// 虚拟DOM相关</span></span><br><span class="line">│       ├─ config.js          <span class="comment">// 基础配置</span></span><br><span class="line">│       └─ index.js           <span class="comment">// 导出 Vue</span></span><br><span class="line">│   ├─ platforms              <span class="comment">// 跨平台相关</span></span><br><span class="line">│       ├─ web                <span class="comment">// web端</span></span><br><span class="line">│           ├─ compiler       <span class="comment">// 创建 createCompiler 所需参数 baseOptions，导出compile，compileToFunctions</span></span><br><span class="line">│           ├─ runtime        <span class="comment">// 在Vue上挂载了一些新的directives，components，config，__patch__，$mount(重写)等</span></span><br><span class="line">│           ├─ server         <span class="comment">// 服务端渲染</span></span><br><span class="line">│           ├─ util           <span class="comment">// 工具方法</span></span><br><span class="line">│           └─ xxx.js         <span class="comment">// 5个入口js，不同构建调用不用的方法</span></span><br><span class="line">│       └─ weex               <span class="comment">// weex相关</span></span><br><span class="line">│   ├─ server                 <span class="comment">// 服务端渲染（ssr）</span></span><br><span class="line">│   ├─ sfc                    <span class="comment">// 单文件组件解析（*.vue）</span></span><br><span class="line">│   └─ shared                 <span class="comment">// 全局共享的常量，方法</span></span><br><span class="line">├─ test                       <span class="comment">// 测试用例</span></span><br><span class="line">├─ types                      <span class="comment">// typescript 类型声明文件</span></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="针对目录的一些解释"><a href="#针对目录的一些解释" class="headerlink" title="针对目录的一些解释"></a>针对目录的一些解释</h2><h3 id="dist"><a href="#dist" class="headerlink" title="dist"></a>dist</h3><p><code>dist</code> 下有 10 几种不同版本的 <code>vue</code> 文件，他们是根据 <code>不同规范（包括 CommonJS 规范，ES Module，UMD）</code> 和 <code>是否包含编译器</code> 和 <code>不同环境</code> 构建出的不同版本。</p>
+<p>具体查阅 <span class="exturl" data-url="aHR0cHM6Ly9jbi52dWVqcy5vcmcvdjIvZ3VpZGUvaW5zdGFsbGF0aW9uLmh0bWw/c3BtPWEyYzdqLi16aC1ndWlkZS11c2UtdnVlLWluLXdlZXguMC4wLjc4Mjg0MDBlMEZyb0plIyVFNSVBRiVCOSVFNCVCOCU4RCVFNSU5MCU4QyVFNiU5RSU4NCVFNSVCQiVCQSVFNyU4OSU4OCVFNiU5QyVBQyVFNyU5QSU4NCVFOCVBNyVBMyVFOSU4NyU4QQ==">文档<i class="fa fa-external-link-alt"></i></span></p>
+<h3 id="flow"><a href="#flow" class="headerlink" title="flow"></a>flow</h3><p>类似 <code>TypeScript</code>，<span class="exturl" data-url="aHR0cHM6Ly9mbG93Lm9yZy8=">Flow<i class="fa fa-external-link-alt"></i></span> 是 <code>facebook</code> 出品的 <code>JavaScript</code> 静态类型检查工具。<code>Vue.js</code> 的源码利用了 <code>Flow</code> 做了静态类型检查。</p>
+<h3 id="packages"><a href="#packages" class="headerlink" title="packages"></a>packages</h3><p>通过执行 <code>npm script</code> 对应的命令可编译出以下 <code>npm</code> 包。</p>
+<h4 id="vue-server-renderer"><a href="#vue-server-renderer" class="headerlink" title="vue-server-renderer"></a>vue-server-renderer</h4><p><code>Vue.js</code> <span class="exturl" data-url="aHR0cHM6Ly9zc3IudnVlanMub3JnL3poLw==">服务器端渲染(SSR)<i class="fa fa-external-link-alt"></i></span> 所用。</p>
+<h4 id="vue-template-compiler"><a href="#vue-template-compiler" class="headerlink" title="vue-template-compiler"></a>vue-template-compiler</h4><p><code>vue-template-compiler</code> 通常与 <span class="exturl" data-url="aHR0cHM6Ly92dWUtbG9hZGVyLnZ1ZWpzLm9yZy96aC8=">vue-loader<i class="fa fa-external-link-alt"></i></span> 连用，用于将单文件组件 (<code>SFCs</code>)预编译为渲染函数。</p>
+<p><code>vue-template-compiler</code> 作为 <code>compiler</code> 在 <code>vue-loader/lib/index.js</code> 的 <code>parse</code> 方法里传入，（其中会调用 <code>compiler.parseComponent</code>）得到 <code>descriptor</code>，根据 <code>descriptor</code> 可以生成不同模块的 <code>import</code> 请求，然后通过 <code>pitcher</code> 将原 <code>import</code> 请求转化为新的 <code>import</code> 请求，然后根据新的 <code>import</code> 请求执行 <code>js</code>，转化不同模块，其中转化 <code>template</code> 执行 <code>templateLoader.js</code> 时会去依赖 <code>vue-template-compiler</code> 提供 <code>compiler.compile</code> 方法解析。</p>
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3hpeGl6aGFuZ2ZlL3Z1ZS1sb2FkZXIvYmxvYi9tYXN0ZXIvUkVBRE1FLm1k">vue-loader 解析<i class="fa fa-external-link-alt"></i></span></p>
+<h4 id="weex-template-compiler"><a href="#weex-template-compiler" class="headerlink" title="weex-template-compiler"></a>weex-template-compiler</h4><p><code>weex</code> 相关（略过）</p>
+<h4 id="weex-vue-framework"><a href="#weex-vue-framework" class="headerlink" title="weex-vue-framework"></a>weex-vue-framework</h4><p><code>weex</code> 相关（略过）</p>
+<h3 id="weex"><a href="#weex" class="headerlink" title="weex"></a>weex</h3><p><span class="exturl" data-url="aHR0cHM6Ly93ZWV4LmFwYWNoZS5vcmcvemgvZ3VpZGUvaW50cm9kdWN0aW9uLmh0bWw=">Weex<i class="fa fa-external-link-alt"></i></span> 是使用流行的 <code>Web</code> 开发体验来开发高性能原生应用的框架，集成的是运行时版本的 <code>Vue</code>。</p>
+<p>加载流程参考：<span class="exturl" data-url="aHR0cDovL3d3dy56aWppYW4uc2l0ZS8/cD0xMzE=">Weex 加载流程<i class="fa fa-external-link-alt"></i></span>，<span class="exturl" data-url="aHR0cHM6Ly93d3cuamlhbnNodS5jb20vcC8zMjI4NWM3MDk2ODI=">浅说 Weex 工作原理<i class="fa fa-external-link-alt"></i></span></p>
+<h3 id="sfc"><a href="#sfc" class="headerlink" title="sfc"></a>sfc</h3><p><code>sfc</code> 即单文件组件（<code>Single File Components</code>），执行 <code>sfc</code> 下的 <code>parse.js</code> 里导出的 <code>parseComponent</code> 方法得到 <code>SFCDescriptor</code> 对象。该文件最终会打包到 <code>vue-template-compiler</code> 里。</p>
+<h3 id="test"><a href="#test" class="headerlink" title="test"></a>test</h3><p>包含 <span class="exturl" data-url="aHR0cDovL2thcm1hLXJ1bm5lci5naXRodWIuaW8vNC4wL2luZGV4Lmh0bWw=">karma<i class="fa fa-external-link-alt"></i></span> 和 <span class="exturl" data-url="aHR0cHM6Ly9qYXNtaW5lLmdpdGh1Yi5pby8=">jasmine<i class="fa fa-external-link-alt"></i></span> 两种测试工具。</p>
+<h2 id="开始调试"><a href="#开始调试" class="headerlink" title="开始调试"></a>开始调试</h2><p><code>vue</code> 采用 <span class="exturl" data-url="aHR0cHM6Ly93d3cucm9sbHVwanMuY29tL2d1aWRlL2ludHJvZHVjdGlvbi8=">rollup<i class="fa fa-external-link-alt"></i></span> 作为构建工具。</p>
+<p>修改 <code>npm scripts</code> 里的 <code>dev</code> 字段对应的命令，在命令后面增加 <code>--sourcemap</code>，然后执行：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm run dev</span><br></pre></td></tr></tbody></table></figure>
+
+<p>此时会在 <code>dist</code> 生成 <code>vue.js</code> 和 <code>vue.js.map</code>，然后在在任意处新增 <code>html</code> 文件，然后 <code>script</code> 标签引入刚生成的 <code>vue.js</code>，然后书写 <code>vue</code> 代码在浏览器打开即可断点到源代码而不是打包后的代码。</p>
+<h3 id="程序入口"><a href="#程序入口" class="headerlink" title="程序入口"></a>程序入口</h3><p><code>dev</code> 命令对应的 <code>TARGET</code> 为 <code>web-full-dev</code>，即对应的平台入口为 <code>platforms/web/entry-runtime-with-compiler.js</code>，该文件里面引入：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'./runtime/index'</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+<p>该文件会从 <code>core/index</code>(他又会从 <code>./instance/index</code> 引入<code>Vue</code>，该文件里会初始化 <code>Vue</code> 的各项，通过传入 <code>Vue</code> 作为参数的方式（<code>Mixin</code>）扩展原型) 里引入 <code>Vue</code>，并进行平台化相关的定制，如扩展了 <code>Vue.options.directives、Vue.options.components</code>。 初始化了 <code>Vue.prototype.__patch__</code> 为 <code>patch</code> 方法，初始化了 <code>Vue.prototype.$mount</code>，该 <code>$mount</code> 会调用 <code>core/instance/lifecycle</code> 里的 <code>mountComponent</code>。</p>
+<p>回到 <code>entry-runtime-with-compiler.js</code> 分析，继续引入：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> { compileToFunctions } <span class="keyword">from</span> <span class="string">'./compiler/index'</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+<p>该文件里执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> { compile, compileToFunctions } = createCompiler(baseOptions);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>其中 <code>createCompiler</code> 为 <code>compiler/index</code> 的导出，用于创建编译器。这里传入平台相关的参数 <code>baseOptions</code> 得到对应的 <code>compile，compileToFunctions</code>。<code>compileToFunctions</code> 用于将 <code>template</code> 转化为 <code>render</code> 函数。</p>
+<p>回到 <code>entry-runtime-with-compiler.js</code> 继续分析，重写了 <code>Vue.prototype.$mount</code>，并在方法里末尾执行了原 <code>$mount</code>，然后将 <code>compileToFunctions</code> 赋给了 <code>Vue.compile</code>，最后导出 <code>Vue</code>。</p>
+<h2 id="demo-分析使用编译后的-vue"><a href="#demo-分析使用编译后的-vue" class="headerlink" title="demo 分析使用编译后的 vue"></a>demo 分析使用编译后的 vue</h2><p>因为 <code>demo</code> 里会涉及到组件引入和其他模块，所以采用 <code>webpack</code> 打包，将 <code>vue</code> 作为 <code>npm</code> 包引入，所以意味着断点将会打到编译后的 <code>vue</code> 的 <code>js</code> 里，后续分析将会在那个文件里进行。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Korey 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/392.html" rel="prev" title="Vue2.x（含组件）主流程源码笔记（一）：前言及总流程概览">
+                  <i class="fa fa-chevron-left"></i> Vue2.x（含组件）主流程源码笔记（一）：前言及总流程概览
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/394.html" rel="next" title="Vue2.x（含组件）主流程源码笔记（三）：beforeCreate 阶段">
+                  Vue2.x（含组件）主流程源码笔记（三）：beforeCreate 阶段 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  © 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Korey zhao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">507k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:41</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+
+
+  
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script>
+
+<script src="/bundle.js"></script><script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  ;
+L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":125,"height":150,"position":"left","hOffset":30,"vOffset":-5},"mobile":{"show":false,"scale":0.05},"react":{"opacityDefault":1,"opacityOnHover":0.2},"log":false});</script></body></html>

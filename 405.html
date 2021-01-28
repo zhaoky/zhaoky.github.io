@@ -1,23 +1,755 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#3eaf7c">
+<meta name="generator" content="Hexo 5.2.0">
 
-{% block title %}{{ page.title }} | {{ title }}{% endblock %}
 
-{% block page_class %}page-post-detail{% endblock %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon.png" color="#3eaf7c">
 
-{% block content %}
+<link rel="stylesheet" href="/css/main.css">
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="总览函数坐标图 排序算法对比图   类别 时间复杂度（平均） 时间复杂度（最好） 时间复杂度（最坏） 空间复杂度（辅助存储） 排序方式 稳定性    冒泡排序（交换） O(n2) O(n) O(n2) O(1) In-place 稳定   快速排序（交换） O(nlogn) O(nlogn) O(n2) 看情况 In-place 不稳定   插入排序（插入） O(n2) O(n) O(n2) O(">
+<meta property="og:type" content="article">
+<meta property="og:title" content="排序算法小结">
+<meta property="og:url" content="https://blog.flqin.com/405.html">
+<meta property="og:site_name" content="前端轻语">
+<meta property="og:description" content="总览函数坐标图 排序算法对比图   类别 时间复杂度（平均） 时间复杂度（最好） 时间复杂度（最坏） 空间复杂度（辅助存储） 排序方式 稳定性    冒泡排序（交换） O(n2) O(n) O(n2) O(1) In-place 稳定   快速排序（交换） O(nlogn) O(nlogn) O(n2) 看情况 In-place 不稳定   插入排序（插入） O(n2) O(n) O(n2) O(">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.flqin.com/p405-1.jpeg">
+<meta property="og:image" content="http://cdn.flqin.com/p405-2.gif">
+<meta property="og:image" content="http://cdn.flqin.com/p405-3.jpeg">
+<meta property="og:image" content="http://cdn.flqin.com/p405-4.gif">
+<meta property="og:image" content="http://cdn.flqin.com/p405-5.gif">
+<meta property="og:image" content="http://cdn.flqin.com/p405-6.gif">
+<meta property="og:image" content="http://cdn.flqin.com/p405-7.gif">
+<meta property="og:image" content="http://cdn.flqin.com/p405-8.gif">
+<meta property="og:image" content="http://cdn.flqin.com/p405-9.gif">
+<meta property="og:image" content="http://cdn.flqin.com/p405-10.gif">
+<meta property="og:image" content="http://cdn.flqin.com/p405-11.gif">
+<meta property="article:published_time" content="2020-06-29T09:54:31.000Z">
+<meta property="article:modified_time" content="2020-06-29T09:54:31.000Z">
+<meta property="article:author" content="Korey">
+<meta property="article:tag" content="前端,前端开发,css,html,js,css3,前端开发博客,fe,技术文档">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.flqin.com/p405-1.jpeg">
+
+
+<link rel="canonical" href="https://blog.flqin.com/405.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>排序算法小结 | 前端轻语</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c8dec20f0d0449c8ece3c0dbab4e8f31";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
   </div>
 
-{% endblock %}
+  <div class="site-meta">
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">前端轻语</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">korey的前端笔记</p>
+  </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+
+  </li>
+        <li class="menu-item menu-item-map">
+
+    <a href="/map/" rel="section"><i class="fa fa-sitemap fa-fw"></i>map</a>
+
+  </li>
+        <li class="menu-item menu-item-link">
+
+    <a href="/link/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>link</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E8%A7%88"><span class="nav-number">1.</span> <span class="nav-text">总览</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E5%9D%90%E6%A0%87%E5%9B%BE"><span class="nav-number">1.1.</span> <span class="nav-text">函数坐标图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E5%AF%B9%E6%AF%94%E5%9B%BE"><span class="nav-number">1.2.</span> <span class="nav-text">排序算法对比图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F%EF%BC%88Bubble-Sort%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">冒泡排序（Bubble Sort）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%EF%BC%88Quick-Sort%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">快速排序（Quick Sort）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F%EF%BC%88Insertion-Sort%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">插入排序（Insertion Sort）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F%EF%BC%88Shell-Sort%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">希尔排序（Shell Sort）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E6%8E%92%E5%BA%8F%EF%BC%88Selection-Sort%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">选择排序（Selection Sort）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86%E6%8E%92%E5%BA%8F%EF%BC%88Heap-Sort%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">堆排序（Heap Sort）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F%EF%BC%88Merge-Sort%EF%BC%89"><span class="nav-number">8.</span> <span class="nav-text">归并排序（Merge Sort）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A1%E6%95%B0%E6%8E%92%E5%BA%8F%EF%BC%88Counting-Sort%EF%BC%89"><span class="nav-number">9.</span> <span class="nav-text">计数排序（Counting Sort）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A1%B6%E6%8E%92%E5%BA%8F%EF%BC%88Bucket-Sort%EF%BC%89"><span class="nav-number">10.</span> <span class="nav-text">桶排序（Bucket Sort）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%95%B0%E6%8E%92%E5%BA%8F%EF%BC%88Radix-Sort%EF%BC%89"><span class="nav-number">11.</span> <span class="nav-text">基数排序（Radix Sort）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">12.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E7%9A%84%E6%8E%92%E5%BA%8F"><span class="nav-number">12.1.</span> <span class="nav-text">简单的排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E6%95%88%E7%9A%84%E6%8E%92%E5%BA%8F"><span class="nav-number">12.2.</span> <span class="nav-text">高效的排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%88%86%E6%B2%BB%E9%80%92%E5%BD%92%E7%9A%84%E6%8E%92%E5%BA%8F"><span class="nav-number">12.3.</span> <span class="nav-text">基于分治递归的排序</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Korey" src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Korey</p>
+  <div class="site-description" itemprop="description">热衷于记录、分享前端开发技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="GitHub → https://github.com/zhaoky"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtleXUuemhhb0Bmb3htYWlsLmNvbQ==" title="E-Mail → mailto:keyu.zhao@foxmail.com"><i class="far fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci81N2M5MWIzYjE2NWFiZDAwNjhkYjg5YzI=" title="掘金 → https://juejin.im/user/57c91b3b165abd0068db89c2"><i class="fas fa-link fa-fw"></i>掘金</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cDovL3d3dy56aGlodS5jb20vcGVvcGxlL2ZlX2tvcmV5" title="知乎 → http://www.zhihu.com/people/fe_korey"><i class="fas fa-link fa-fw"></i>知乎</span>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/405.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          排序算法小结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-06-29 09:54:31" itemprop="dateCreated datePublished" datetime="2020-06-29T09:54:31+00:00">2020-06-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/Computer-Basics/" itemprop="url" rel="index"><span itemprop="name">Computer Basics</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>7.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="总览"><a href="#总览" class="headerlink" title="总览"></a>总览</h2><h3 id="函数坐标图"><a href="#函数坐标图" class="headerlink" title="函数坐标图"></a>函数坐标图</h3><p><img data-src="http://cdn.flqin.com/p405-1.jpeg" alt="函数坐标图"></p>
+<h3 id="排序算法对比图"><a href="#排序算法对比图" class="headerlink" title="排序算法对比图"></a>排序算法对比图</h3><table>
+<thead>
+<tr>
+<th>类别</th>
+<th>时间复杂度（平均）</th>
+<th>时间复杂度（最好）</th>
+<th>时间复杂度（最坏）</th>
+<th>空间复杂度（辅助存储）</th>
+<th>排序方式</th>
+<th>稳定性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>冒泡排序（交换）</td>
+<td>O(n<sup>2</sup>)</td>
+<td>O(n)</td>
+<td>O(n<sup>2</sup>)</td>
+<td>O(1)</td>
+<td>In-place</td>
+<td>稳定</td>
+</tr>
+<tr>
+<td>快速排序（交换）</td>
+<td>O(nlogn)</td>
+<td>O(nlogn)</td>
+<td>O(n<sup>2</sup>)</td>
+<td>看情况</td>
+<td>In-place</td>
+<td>不稳定</td>
+</tr>
+<tr>
+<td>插入排序（插入）</td>
+<td>O(n<sup>2</sup>)</td>
+<td>O(n)</td>
+<td>O(n<sup>2</sup>)</td>
+<td>O(1)</td>
+<td>In-place</td>
+<td>稳定</td>
+</tr>
+<tr>
+<td>希尔排序（插入）</td>
+<td>根据步长序列</td>
+<td>O(n)</td>
+<td>根据步长序列</td>
+<td>O(1)</td>
+<td>In-place</td>
+<td>不稳定</td>
+</tr>
+<tr>
+<td>选择排序（选择）</td>
+<td>O(n<sup>2</sup>)</td>
+<td>O(n<sup>2</sup>)</td>
+<td>O(n<sup>2</sup>)</td>
+<td>O(1)</td>
+<td>In-place</td>
+<td>不稳定</td>
+</tr>
+<tr>
+<td>堆排序（选择）</td>
+<td>O(nlogn))</td>
+<td>O(nlogn))</td>
+<td>O(nlogn))</td>
+<td>O(1)</td>
+<td>In-place</td>
+<td>不稳定</td>
+</tr>
+<tr>
+<td>归并排序</td>
+<td>O(nlogn))</td>
+<td>O(nlogn))</td>
+<td>O(nlogn))</td>
+<td>O(n)</td>
+<td>Out-place</td>
+<td>稳定</td>
+</tr>
+<tr>
+<td>计数排序</td>
+<td>O(n+k)</td>
+<td>O(n+k)</td>
+<td>O(n+k)</td>
+<td>O(n+k)</td>
+<td>Out-place</td>
+<td>稳定</td>
+</tr>
+<tr>
+<td>桶排序</td>
+<td>O(n+k)</td>
+<td>O(n+k)</td>
+<td>O(n<sup>2</sup>)</td>
+<td>O(n*k)</td>
+<td>Out-place</td>
+<td>稳定</td>
+</tr>
+<tr>
+<td>基数排序</td>
+<td>O(n*k)</td>
+<td>O(n*k)</td>
+<td>O(n*k)</td>
+<td>O(n+k)</td>
+<td>Out-place</td>
+<td>稳定</td>
+</tr>
+</tbody></table>
+<ul>
+<li>n: 数据量</li>
+<li>k: 桶的个数</li>
+<li>In-place: 占用常数内存</li>
+<li>Out-place: 占用额外内存</li>
+<li>稳定性：排序后 2 个相等键值的顺序和排序之前它们的顺序相同</li>
+</ul>
+<h2 id="冒泡排序（Bubble-Sort）"><a href="#冒泡排序（Bubble-Sort）" class="headerlink" title="冒泡排序（Bubble Sort）"></a>冒泡排序（Bubble Sort）</h2><p><img data-src="http://cdn.flqin.com/p405-2.gif" alt="冒泡排序"></p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bubbleSort</span>(<span class="params">arr</span>) </span>{</span><br><span class="line">  <span class="keyword">let</span> len = arr.length;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; len; i++) {</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; len - <span class="number">1</span> - i; j++) {</span><br><span class="line">      <span class="keyword">if</span> (arr[j] &gt; arr[j + <span class="number">1</span>]) {</span><br><span class="line">        <span class="keyword">let</span> temp = arr[j + <span class="number">1</span>];</span><br><span class="line">        arr[j + <span class="number">1</span>] = arr[j];</span><br><span class="line">        arr[j] = temp;</span><br><span class="line">      }</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">  <span class="keyword">return</span> arr;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>注：</p>
+<ul>
+<li>冒泡排序是一种交换排序，核心是冒泡，把数组中最小的那个往上冒，冒的过程就是和他相邻的元素交换。</li>
+<li>冒泡排序毕竟是一种效率低下的排序方法，在数据规模很小时，可以采用。</li>
+</ul>
+<h2 id="快速排序（Quick-Sort）"><a href="#快速排序（Quick-Sort）" class="headerlink" title="快速排序（Quick Sort）"></a>快速排序（Quick Sort）</h2><p><img data-src="http://cdn.flqin.com/p405-3.jpeg" alt="快速排序"></p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">quickSort</span>(<span class="params">arr, left, right</span>) </span>{</span><br><span class="line">  <span class="keyword">let</span> len = arr.length,</span><br><span class="line">    partitionIndex,</span><br><span class="line">    left = <span class="keyword">typeof</span> left != <span class="string">'number'</span> ? <span class="number">0</span> : left,</span><br><span class="line">    right = <span class="keyword">typeof</span> right != <span class="string">'number'</span> ? len - <span class="number">1</span> : right;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (left &lt; right) {</span><br><span class="line">    partitionIndex = partition(arr, left, right);</span><br><span class="line">    quickSort(arr, left, partitionIndex - <span class="number">1</span>);</span><br><span class="line">    quickSort(arr, partitionIndex + <span class="number">1</span>, right);</span><br><span class="line">  }</span><br><span class="line">  <span class="keyword">return</span> arr;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">partition</span>(<span class="params">arr, left, right</span>) </span>{</span><br><span class="line">  <span class="comment">//分区操作</span></span><br><span class="line">  <span class="keyword">let</span> pivot = left, <span class="comment">//设定基准值（pivot）</span></span><br><span class="line">    index = pivot + <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = index; i &lt;= right; i++) {</span><br><span class="line">    <span class="keyword">if</span> (arr[i] &lt; arr[pivot]) {</span><br><span class="line">      swap(arr, i, index);</span><br><span class="line">      index++;</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">  swap(arr, pivot, index - <span class="number">1</span>);</span><br><span class="line">  <span class="keyword">return</span> index - <span class="number">1</span>;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">swap</span>(<span class="params">arr, i, j</span>) </span>{</span><br><span class="line">  <span class="keyword">let</span> temp = arr[i];</span><br><span class="line">  arr[i] = arr[j];</span><br><span class="line">  arr[j] = temp;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>注：</p>
+<ul>
+<li>递归分治法，随机选择一个元素作为中心点，其他值与中心点比较，左小右大进行分区，然后递归对两个区重复分区。</li>
+<li>快速排序的最坏运行情况是 O(n²)，比如说顺序数列的快排。但它的平摊期望时间是 O(n log n) ，且 O(n log n)记号中隐含的常数因子很小，比复杂度稳定等于 O(n log n)的归并排序要小很多。所以，对绝大多数顺序性较弱的随机数列而言，快速排序总是优于归并排序。</li>
+</ul>
+<h2 id="插入排序（Insertion-Sort）"><a href="#插入排序（Insertion-Sort）" class="headerlink" title="插入排序（Insertion Sort）"></a>插入排序（Insertion Sort）</h2><p><img data-src="http://cdn.flqin.com/p405-4.gif" alt="插入排序"></p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">insertionSort</span>(<span class="params">arr</span>) </span>{</span><br><span class="line">  <span class="keyword">let</span> len = arr.length;</span><br><span class="line">  <span class="keyword">let</span> preIndex, current;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">1</span>; i &lt; len; i++) {</span><br><span class="line">    preIndex = i - <span class="number">1</span>;</span><br><span class="line">    current = arr[i];</span><br><span class="line">    <span class="keyword">while</span> (preIndex &gt;= <span class="number">0</span> &amp;&amp; arr[preIndex] &gt; current) {</span><br><span class="line">      arr[preIndex + <span class="number">1</span>] = arr[preIndex];</span><br><span class="line">      preIndex--;</span><br><span class="line">    }</span><br><span class="line">    arr[preIndex + <span class="number">1</span>] = current;</span><br><span class="line">  }</span><br><span class="line">  <span class="keyword">return</span> arr;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>注：</p>
+<ul>
+<li>插入排序是排序序列中从后向前扫描，找到相应位置并插入对应的未排序数据，类似斗地主理牌的情景。</li>
+<li>插入排序不适合对于数据量比较大的排序应用。</li>
+</ul>
+<h2 id="希尔排序（Shell-Sort）"><a href="#希尔排序（Shell-Sort）" class="headerlink" title="希尔排序（Shell Sort）"></a>希尔排序（Shell Sort）</h2><p><img data-src="http://cdn.flqin.com/p405-5.gif" alt="希尔排序"></p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">shellSort</span>(<span class="params">arr</span>) </span>{</span><br><span class="line">  <span class="keyword">let</span> len = arr.length,</span><br><span class="line">    temp,</span><br><span class="line">    gap = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">while</span> (gap &lt; len / <span class="number">3</span>) {</span><br><span class="line">    gap = gap * <span class="number">3</span> + <span class="number">1</span>; <span class="comment">//动态定义间隔序列</span></span><br><span class="line">  }</span><br><span class="line">  <span class="keyword">for</span> (gap; gap &gt; <span class="number">0</span>; gap = <span class="built_in">Math</span>.floor(gap / <span class="number">3</span>)) {</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = gap; i &lt; len; i++) {</span><br><span class="line">      temp = arr[i];</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">let</span> j = i - gap; j &gt;= <span class="number">0</span> &amp;&amp; arr[j] &gt; temp; j -= gap) {</span><br><span class="line">        arr[j + gap] = arr[j];</span><br><span class="line">      }</span><br><span class="line">      arr[j + gap] = temp;</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">  <span class="keyword">return</span> arr;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>注：</p>
+<ul>
+<li>希尔排序实质就是分组插入排序，插入排序的一种更高效率的实现，核心在于步长序列的设定。</li>
+<li>最好步长序列至今还是数学难题，平均时间复杂度根据增量序列不同而不同。</li>
+</ul>
+<h2 id="选择排序（Selection-Sort）"><a href="#选择排序（Selection-Sort）" class="headerlink" title="选择排序（Selection Sort）"></a>选择排序（Selection Sort）</h2><p><img data-src="http://cdn.flqin.com/p405-6.gif" alt="选择排序"></p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">selectionSort</span>(<span class="params">arr</span>) </span>{</span><br><span class="line">  <span class="keyword">let</span> len = arr.length;</span><br><span class="line">  <span class="keyword">let</span> minIndex, temp;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; len - <span class="number">1</span>; i++) {</span><br><span class="line">    minIndex = i;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> j = i + <span class="number">1</span>; j &lt; len; j++) {</span><br><span class="line">      <span class="keyword">if</span> (arr[j] &lt; arr[minIndex]) {</span><br><span class="line">        minIndex = j;</span><br><span class="line">      }</span><br><span class="line">    }</span><br><span class="line">    temp = arr[i];</span><br><span class="line">    arr[i] = arr[minIndex];</span><br><span class="line">    arr[minIndex] = temp;</span><br><span class="line">  }</span><br><span class="line">  <span class="keyword">return</span> arr;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>注：</p>
+<ul>
+<li>与冒泡不同，冒泡排序是通过相邻的比较和交换，而选择排序是通过整体的选择，找到最大（小）值交换无序区起始位置。</li>
+<li>算法稳定在 <code>O(n²)</code> 的时间复杂度。</li>
+</ul>
+<h2 id="堆排序（Heap-Sort）"><a href="#堆排序（Heap-Sort）" class="headerlink" title="堆排序（Heap Sort）"></a>堆排序（Heap Sort）</h2><p><img data-src="http://cdn.flqin.com/p405-7.gif" alt="堆排序"></p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">heapSort</span>(<span class="params">arr</span>) </span>{</span><br><span class="line">  <span class="comment">//1.构建大顶堆</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="built_in">Math</span>.floor(arr.length / <span class="number">2</span>) - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) {</span><br><span class="line">    <span class="comment">//从第一个非叶子结点从下至上，从右至左调整结构</span></span><br><span class="line">    adjustHeap(arr, i, arr.length);</span><br><span class="line">  }</span><br><span class="line">  <span class="comment">//2.调整堆结构+交换堆顶元素与末尾元素</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> j = arr.length - <span class="number">1</span>; j &gt; <span class="number">0</span>; j--) {</span><br><span class="line">    <span class="keyword">let</span> temp = arr[a]; <span class="comment">//将堆顶元素与末尾元素进行交换</span></span><br><span class="line">    arr[a] = arr[b];</span><br><span class="line">    arr[b] = temp;</span><br><span class="line">    adjustHeap(arr, <span class="number">0</span>, j); <span class="comment">//重新对堆进行调整</span></span><br><span class="line">  }</span><br><span class="line">}</span><br><span class="line"><span class="comment">// 构建堆</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">adjustHeap</span>(<span class="params">arr, i, length</span>) </span>{</span><br><span class="line">  <span class="keyword">let</span> temp = arr[i]; <span class="comment">//先取出当前元素i</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> k = i * <span class="number">2</span> + <span class="number">1</span>; k &lt; length; k = k * <span class="number">2</span> + <span class="number">1</span>) {</span><br><span class="line">    <span class="comment">//从i结点的左子结点开始，也就是2i+1处开始</span></span><br><span class="line">    <span class="keyword">if</span> (k + <span class="number">1</span> &lt; length &amp;&amp; arr[k] &lt; arr[k + <span class="number">1</span>]) {</span><br><span class="line">      <span class="comment">//如果左子结点小于右子结点，k指向右子结点</span></span><br><span class="line">      k++;</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">if</span> (arr[k] &gt; temp) {</span><br><span class="line">      <span class="comment">//如果子节点大于父节点，将子节点值赋给父节点（不用进行交换）</span></span><br><span class="line">      arr[i] = arr[k];</span><br><span class="line">      i = k;</span><br><span class="line">    } <span class="keyword">else</span> {</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">  arr[i] = temp; <span class="comment">//将temp值放到最终的位置</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>注：</p>
+<ul>
+<li>堆是具一个完全二叉树。</li>
+<li>每个结点的值都大于或等于其左右孩子结点的值，称为大顶堆；或者每个结点的值都小于或等于其左右孩子结点的值，称为小顶堆。</li>
+<li>堆排序思想：将待排序序列构造成一个大顶堆，此时整个序列的最大值就是堆顶的根节点。将其与末尾元素进行交换，此时末尾就为最大值。然后将剩余 n-1 个元素重新构造成一个堆，这样会得到 n 个元素的次小值。如此反复执行，便能得到一个有序序列。</li>
+<li>堆排序是一种选择排序，整体主要由构建初始堆+交换堆顶元素和末尾元素并重建堆两部分组成。</li>
+</ul>
+<h2 id="归并排序（Merge-Sort）"><a href="#归并排序（Merge-Sort）" class="headerlink" title="归并排序（Merge Sort）"></a>归并排序（Merge Sort）</h2><p><img data-src="http://cdn.flqin.com/p405-8.gif" alt="归并排序"></p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">mergeSort</span>(<span class="params">arr</span>) </span>{</span><br><span class="line">  <span class="comment">//采用自上而下的递归方法</span></span><br><span class="line">  <span class="keyword">let</span> len = arr.length;</span><br><span class="line">  <span class="keyword">if</span> (len &lt; <span class="number">2</span>) {</span><br><span class="line">    <span class="keyword">return</span> arr;</span><br><span class="line">  }</span><br><span class="line">  <span class="keyword">let</span> middle = <span class="built_in">Math</span>.floor(len / <span class="number">2</span>),</span><br><span class="line">    left = arr.slice(<span class="number">0</span>, middle),</span><br><span class="line">    right = arr.slice(middle);</span><br><span class="line">  <span class="keyword">return</span> merge(mergeSort(left), mergeSort(right));</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">merge</span>(<span class="params">left, right</span>) </span>{</span><br><span class="line">  <span class="keyword">let</span> result = [];</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> (left.length &amp;&amp; right.length) {</span><br><span class="line">    <span class="keyword">if</span> (left[<span class="number">0</span>] &lt;= right[<span class="number">0</span>]) {</span><br><span class="line">      result.push(left.shift());</span><br><span class="line">    } <span class="keyword">else</span> {</span><br><span class="line">      result.push(right.shift());</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> (left.length) result.push(left.shift());</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> (right.length) result.push(right.shift());</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>注：</p>
+<ul>
+<li>分而治之。</li>
+<li>两种方式实现：分为自顶向下（递归）和自底向上（迭代）。</li>
+</ul>
+<h2 id="计数排序（Counting-Sort）"><a href="#计数排序（Counting-Sort）" class="headerlink" title="计数排序（Counting Sort）"></a>计数排序（Counting Sort）</h2><p><img data-src="http://cdn.flqin.com/p405-9.gif" alt="计数排序"></p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">countingSort</span>(<span class="params">arr, maxValue</span>) </span>{</span><br><span class="line">  <span class="keyword">let</span> bucket = <span class="keyword">new</span> <span class="built_in">Array</span>(maxValue + <span class="number">1</span>),</span><br><span class="line">    sortedIndex = <span class="number">0</span>;</span><br><span class="line">  (arrLen = arr.length), (bucketLen = maxValue + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; arrLen; i++) {</span><br><span class="line">    <span class="keyword">if</span> (!bucket[arr[i]]) {</span><br><span class="line">      bucket[arr[i]] = <span class="number">0</span>;</span><br><span class="line">    }</span><br><span class="line">    bucket[arr[i]]++;</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; bucketLen; j++) {</span><br><span class="line">    <span class="keyword">while</span> (bucket[j] &gt; <span class="number">0</span>) {</span><br><span class="line">      arr[sortedIndex++] = j;</span><br><span class="line">      bucket[j]--;</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> arr;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>注：</p>
+<ul>
+<li>计数排序要求输入的数据必须是有确定范围的整数</li>
+<li>计数排序的核心在于将输入的数据值转化为键存储在额外开辟的数组空间中</li>
+</ul>
+<h2 id="桶排序（Bucket-Sort）"><a href="#桶排序（Bucket-Sort）" class="headerlink" title="桶排序（Bucket Sort）"></a>桶排序（Bucket Sort）</h2><p><img data-src="http://cdn.flqin.com/p405-10.gif" alt="桶排序"></p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bucketSort</span>(<span class="params">arr, bucketSize</span>) </span>{</span><br><span class="line">  <span class="keyword">if</span> (arr.length === <span class="number">0</span>) {</span><br><span class="line">    <span class="keyword">return</span> arr;</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> i;</span><br><span class="line">  <span class="keyword">let</span> minValue = arr[<span class="number">0</span>];</span><br><span class="line">  <span class="keyword">let</span> maxValue = arr[<span class="number">0</span>];</span><br><span class="line">  <span class="keyword">for</span> (i = <span class="number">1</span>; i &lt; arr.length; i++) {</span><br><span class="line">    <span class="keyword">if</span> (arr[i] &lt; minValue) {</span><br><span class="line">      minValue = arr[i]; <span class="comment">//输入数据的最小值</span></span><br><span class="line">    } <span class="keyword">else</span> <span class="keyword">if</span> (arr[i] &gt; maxValue) {</span><br><span class="line">      maxValue = arr[i]; <span class="comment">//输入数据的最大值</span></span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="comment">//桶的初始化</span></span><br><span class="line">  <span class="keyword">let</span> DEFAULT_BUCKET_SIZE = <span class="number">5</span>; <span class="comment">//设置桶的默认数量为5</span></span><br><span class="line">  bucketSize = bucketSize || DEFAULT_BUCKET_SIZE;</span><br><span class="line">  <span class="keyword">let</span> bucketCount = <span class="built_in">Math</span>.floor((maxValue - minValue) / bucketSize) + <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">let</span> buckets = <span class="keyword">new</span> <span class="built_in">Array</span>(bucketCount);</span><br><span class="line">  <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; buckets.length; i++) {</span><br><span class="line">    buckets[i] = [];</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="comment">//利用映射函数将数据分配到各个桶中</span></span><br><span class="line">  <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; arr.length; i++) {</span><br><span class="line">    buckets[<span class="built_in">Math</span>.floor((arr[i] - minValue) / bucketSize)].push(arr[i]);</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  arr.length = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; buckets.length; i++) {</span><br><span class="line">    insertionSort(buckets[i]); <span class="comment">//对每个桶进行排序，这里使用了插入排序</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; buckets[i].length; j++) {</span><br><span class="line">      arr.push(buckets[i][j]);</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> arr;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>注：</p>
+<ul>
+<li>分治思想</li>
+<li>桶排序基于计数排序，将数组的元素分布到多个桶中</li>
+<li>对每个桶被单独地排序，应用其他排序方法</li>
+</ul>
+<h2 id="基数排序（Radix-Sort）"><a href="#基数排序（Radix-Sort）" class="headerlink" title="基数排序（Radix Sort）"></a>基数排序（Radix Sort）</h2><p><img data-src="http://cdn.flqin.com/p405-11.gif" alt="基数排序"></p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> counter = [];</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">radixSort</span>(<span class="params">arr, maxDigit</span>) </span>{</span><br><span class="line">  <span class="keyword">let</span> mod = <span class="number">10</span>;</span><br><span class="line">  <span class="keyword">let</span> dev = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; maxDigit; i++, dev *= <span class="number">10</span>, mod *= <span class="number">10</span>) {</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; arr.length; j++) {</span><br><span class="line">      <span class="keyword">let</span> bucket = <span class="built_in">parseInt</span>((arr[j] % mod) / dev);</span><br><span class="line">      <span class="keyword">if</span> (counter[bucket] == <span class="literal">null</span>) {</span><br><span class="line">        counter[bucket] = [];</span><br><span class="line">      }</span><br><span class="line">      counter[bucket].push(arr[j]);</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">let</span> pos = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; counter.length; j++) {</span><br><span class="line">      <span class="keyword">let</span> value = <span class="literal">null</span>;</span><br><span class="line">      <span class="keyword">if</span> (counter[j] != <span class="literal">null</span>) {</span><br><span class="line">        <span class="keyword">while</span> ((value = counter[j].shift()) != <span class="literal">null</span>) {</span><br><span class="line">          arr[pos++] = value;</span><br><span class="line">        }</span><br><span class="line">      }</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">  <span class="keyword">return</span> arr;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>注：</p>
+<ul>
+<li>基数排序是一种非比较的整数排序算法。</li>
+<li>原理是将整数按位数切割成不同的数字，然后对每个位数上的数字进行分别比较(低位到高位)。</li>
+<li>基数排序与计数排序、桶排序这三种排序算法都利用了桶的概念，并且都是<strong>线性时间非比较类排序</strong>（其他排序是<strong>非线性时间比较类排序</strong>）但对桶的使用方法上有明显差异：<ul>
+<li>基数排序：根据键值的每位数字来分配桶；</li>
+<li>计数排序：每个桶只存储单一键值；</li>
+<li>桶排序：每个桶存储一定范围的数值；</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>非线性时间比较类排序：通过比较来决定元素间的相对次序，由于其时间复杂度不能突破 O(nlogn)，因此称为非线性时间比较类排序。</p>
+<p>线性时间非比较类排序：不通过比较来决定元素间的相对次序，它可以突破基于比较排序的时间下界，以线性时间运行，因此称为线性时间非比较类排序。</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h3 id="简单的排序"><a href="#简单的排序" class="headerlink" title="简单的排序"></a>简单的排序</h3><ul>
+<li>冒泡排序：循环遍历左右比较，较小的元素前移，较大的元素后移。</li>
+<li>选择排序：在未排序序列中找到最小的元素一次性放到已排序序列的末端。</li>
+<li>插入排序：从未排序序列中取出每一个元素，依次在已排序序列里从后向前扫描，插入到合适的位置。</li>
+</ul>
+<h3 id="高效的排序"><a href="#高效的排序" class="headerlink" title="高效的排序"></a>高效的排序</h3><ul>
+<li>快速排序：找到基准，进行分区操作（基准左边的小，右边大），递归对分区的分区继续进行分区操作，直至分区元素有序或则剩余一个元素。</li>
+<li>堆排序：建堆，首尾交换，断尾，再建堆，直至最后一个元素。</li>
+<li>希尔排序：本质上就是分组插入排序的一种更高效的改善型，希尔排序并非是每次一个元素挨着另一个元素的进行比较，它采用了较大的增量（也就是间隔几个元素而非 1 个元素）；先将待排序序列分割成几个子序列，每个子序列间隔相同的特定的增量（几个元素），以跳跃式的方式进行插入排序；然后依次缩小增量再进行插入排序直至最后的增量为 1，对所有元素进行最后一次插入排序。</li>
+</ul>
+<h3 id="基于分治递归的排序"><a href="#基于分治递归的排序" class="headerlink" title="基于分治递归的排序"></a>基于分治递归的排序</h3><ul>
+<li>归并排序：两两分组进行排序，排序后两组合并再排序。</li>
+<li>计数排序：用待排序的数作为计数数组的下标，统计每个数字的个数。然后依次输出即可得到有序序列。</li>
+<li>桶排序：把每个数字按照一定的映射函数放到相应的桶中，然后对桶内的数字排序。</li>
+<li>基数排序：所有待比较数值（正整数）先统一为同样的数位长度，数位较短的数前面补零。然后，从最低位开始，依次进行一次排序。这样从最低位排序一直到最高位排序完成以后，数列就变成一个有序序列。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Korey 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/404.html" rel="prev" title="（转载）鉴权方案实现小结">
+                  <i class="fa fa-chevron-left"></i> （转载）鉴权方案实现小结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/406.html" rel="next" title="（转载）JavaScript设计模式">
+                  （转载）JavaScript设计模式 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  © 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Korey zhao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">507k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:41</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+
+
+  
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script>
+
+<script src="/bundle.js"></script><script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  ;
+L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":125,"height":150,"position":"left","hOffset":30,"vOffset":-5},"mobile":{"show":false,"scale":0.05},"react":{"opacityDefault":1,"opacityOnHover":0.2},"log":false});</script></body></html>

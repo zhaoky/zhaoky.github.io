@@ -1,23 +1,618 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#3eaf7c">
+<meta name="generator" content="Hexo 5.2.0">
 
-{% block title %}{{ page.title }} | {{ title }}{% endblock %}
 
-{% block page_class %}page-post-detail{% endblock %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon.png" color="#3eaf7c">
 
-{% block content %}
+<link rel="stylesheet" href="/css/main.css">
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="相关概念在介绍各方案之前，先有必要了解一些必备的名词。 px全称 pixel，像素。一个像素就是计算机屏幕所能显示一种特定颜色的最小区域。屏幕上显示数据最基本的点，不是长度单位。 如果点很小，那画面就清晰，我们称它为“分辨率高”，反之，就是“分辨率低”。 ppi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="移动端前端适配方案总结">
+<meta property="og:url" content="https://blog.flqin.com/218.html">
+<meta property="og:site_name" content="前端轻语">
+<meta property="og:description" content="相关概念在介绍各方案之前，先有必要了解一些必备的名词。 px全称 pixel，像素。一个像素就是计算机屏幕所能显示一种特定颜色的最小区域。屏幕上显示数据最基本的点，不是长度单位。 如果点很小，那画面就清晰，我们称它为“分辨率高”，反之，就是“分辨率低”。 ppi">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-05-10T16:28:17.000Z">
+<meta property="article:modified_time" content="2017-05-10T16:28:17.000Z">
+<meta property="article:author" content="Korey">
+<meta property="article:tag" content="前端,前端开发,css,html,js,css3,前端开发博客,fe,技术文档">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.flqin.com/218.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>移动端前端适配方案总结 | 前端轻语</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c8dec20f0d0449c8ece3c0dbab4e8f31";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
   </div>
 
-{% endblock %}
+  <div class="site-meta">
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">前端轻语</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">korey的前端笔记</p>
+  </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+
+  </li>
+        <li class="menu-item menu-item-map">
+
+    <a href="/map/" rel="section"><i class="fa fa-sitemap fa-fw"></i>map</a>
+
+  </li>
+        <li class="menu-item menu-item-link">
+
+    <a href="/link/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>link</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">相关概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#px"><span class="nav-number">1.1.</span> <span class="nav-text">px</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ppi"><span class="nav-number">1.2.</span> <span class="nav-text">ppi</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E8%BE%A8%E7%8E%87"><span class="nav-number">1.3.</span> <span class="nav-text">分辨率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rem"><span class="nav-number">1.4.</span> <span class="nav-text">rem</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#em"><span class="nav-number">1.5.</span> <span class="nav-text">em</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vw%EF%BC%8Cvh"><span class="nav-number">1.6.</span> <span class="nav-text">vw，vh</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%A9%E7%90%86%E5%83%8F%E7%B4%A0%EF%BC%88%E8%AE%BE%E5%A4%87%E5%83%8F%E7%B4%A0%EF%BC%89"><span class="nav-number">1.7.</span> <span class="nav-text">物理像素（设备像素）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E5%A4%87%E7%8B%AC%E7%AB%8B%E5%83%8F%E7%B4%A0%EF%BC%88%E9%80%BB%E8%BE%91%E5%83%8F%E7%B4%A0-css-%E5%83%8F%E7%B4%A0%EF%BC%89"><span class="nav-number">1.8.</span> <span class="nav-text">设备独立像素（逻辑像素/css 像素）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E5%A4%87%E5%83%8F%E7%B4%A0%E6%AF%94-device-pixel-ratio-%E5%B1%8F%E5%B9%95%E5%88%86%E8%BE%A9%E6%AF%94-dpr"><span class="nav-number">1.9.</span> <span class="nav-text">设备像素比(device pixel ratio/屏幕分辩比/dpr)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#scale"><span class="nav-number">1.10.</span> <span class="nav-text">scale</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%86%E5%8F%A3%EF%BC%88viewport%EF%BC%89"><span class="nav-number">1.11.</span> <span class="nav-text">视口（viewport）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E5%89%8D%E4%B8%BB%E6%B5%81%E7%9A%84%E8%87%AA%E9%80%82%E5%BA%94%E5%B8%83%E5%B1%80%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">2.</span> <span class="nav-text">目前主流的自适应布局解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%93%8D%E5%BA%94%E5%BC%8F%EF%BC%88Responsive-web-design"><span class="nav-number">2.1.</span> <span class="nav-text">响应式（Responsive web design)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E5%BC%8F%E5%B8%83%E5%B1%80"><span class="nav-number">2.2.</span> <span class="nav-text">流式布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%BB%E5%8A%A8%E7%AB%AF-vw-rem-%E5%B8%83%E5%B1%80%EF%BC%88%E4%B8%BB%E6%B5%81%EF%BC%89"><span class="nav-number">2.3.</span> <span class="nav-text">移动端 vw+rem 布局（主流）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#scale-%E4%BC%B8%E7%BC%A9%E5%B8%83%E5%B1%80"><span class="nav-number">2.4.</span> <span class="nav-text">scale 伸缩布局</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B3%95%E4%B8%80"><span class="nav-number">2.4.1.</span> <span class="nav-text">法一</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B3%95%E4%BA%8C"><span class="nav-number">2.4.2.</span> <span class="nav-text">法二</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">3.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PX-%E9%80%82%E9%85%8D"><span class="nav-number">3.1.</span> <span class="nav-text">PX 适配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#retina-%E4%B8%8B%E5%9B%BE%E7%89%87%E9%AB%98%E6%B8%85%E6%96%B9%E6%A1%88"><span class="nav-number">3.2.</span> <span class="nav-text">retina 下图片高清方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#retina-%E4%B8%8B-1px-%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">3.3.</span> <span class="nav-text">retina 下 1px 解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%83%E7%B4%A0-scale%EF%BC%88%E6%96%B9%E4%BE%BF%E4%BD%86%E5%9C%86%E8%A7%92%E7%AD%89%E6%97%A0%E6%B3%95%E7%94%A8%EF%BC%89"><span class="nav-number">3.3.1.</span> <span class="nav-text">元素 scale（方便但圆角等无法用）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A4%E6%96%AD%E6%B7%BB%E5%8A%A0-class"><span class="nav-number">3.3.2.</span> <span class="nav-text">判断添加 class</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE-viewport-%E7%9A%84-scale-%E5%80%BC%EF%BC%88%E4%B8%8D%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">3.3.3.</span> <span class="nav-text">设置 viewport 的 scale 值（不推荐）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E6%96%B9%E5%BC%8F"><span class="nav-number">3.3.4.</span> <span class="nav-text">其他方式</span></a></li></ol></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Korey" src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Korey</p>
+  <div class="site-description" itemprop="description">热衷于记录、分享前端开发技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="GitHub → https://github.com/zhaoky"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtleXUuemhhb0Bmb3htYWlsLmNvbQ==" title="E-Mail → mailto:keyu.zhao@foxmail.com"><i class="far fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci81N2M5MWIzYjE2NWFiZDAwNjhkYjg5YzI=" title="掘金 → https://juejin.im/user/57c91b3b165abd0068db89c2"><i class="fas fa-link fa-fw"></i>掘金</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cDovL3d3dy56aGlodS5jb20vcGVvcGxlL2ZlX2tvcmV5" title="知乎 → http://www.zhihu.com/people/fe_korey"><i class="fas fa-link fa-fw"></i>知乎</span>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/218.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          移动端前端适配方案总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-05-10 16:28:17" itemprop="dateCreated datePublished" datetime="2017-05-10T16:28:17+00:00">2017-05-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Field/" itemprop="url" rel="index"><span itemprop="name">FE Field</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h2><p>在介绍各方案之前，先有必要了解一些必备的名词。</p>
+<h3 id="px"><a href="#px" class="headerlink" title="px"></a>px</h3><p>全称 <code>pixel</code>，像素。一个像素就是计算机屏幕所能显示一种特定颜色的最小区域。屏幕上显示数据最基本的点，不是长度单位。 如果点很小，那画面就清晰，我们称它为“分辨率高”，反之，就是“分辨率低”。</p>
+<h3 id="ppi"><a href="#ppi" class="headerlink" title="ppi"></a>ppi</h3><p>全称 <code>Pixels Per Inch</code>，屏幕像素密度。单位是 <code>dpi</code>，表示的是每英寸所拥有的像素(<code>Pixel</code>)数目。 越大屏幕越高清。</p>
+<h3 id="分辨率"><a href="#分辨率" class="headerlink" title="分辨率"></a>分辨率</h3><p>屏幕分辨率确定计算机屏幕上显示多少信息的设置，以水平和垂直像素来衡量，iphone5 屏幕上垂直有 1136 个物理像素，水平有 640 个物理像素。<span class="exturl" data-url="aHR0cHM6Ly93d3cuc3Zlbi5kZS9kcGkv">查询设备的分辨率及 ppi<i class="fa fa-external-link-alt"></i></span></p>
+<h3 id="rem"><a href="#rem" class="headerlink" title="rem"></a>rem</h3><p>相对长度单位。相对于根元素(即 <code>html</code> 元素)的 <code>font-size</code> 计算值的倍数。</p>
+<h3 id="em"><a href="#em" class="headerlink" title="em"></a>em</h3><p>相对长度单位。在 <code>font-size</code> 中使用是相对于父元素的字体大小，在其他属性中使用是相对于自身的字体大小，如 <code>width</code>。</p>
+<h3 id="vw，vh"><a href="#vw，vh" class="headerlink" title="vw，vh"></a>vw，vh</h3><p>视窗宽度/高度的 <code>1%</code></p>
+<h3 id="物理像素（设备像素）"><a href="#物理像素（设备像素）" class="headerlink" title="物理像素（设备像素）"></a>物理像素（设备像素）</h3><p>设备屏幕上的实际像素。如 <code>iphone6</code> 宽为 <code>750</code>。</p>
+<h3 id="设备独立像素（逻辑像素-css-像素）"><a href="#设备独立像素（逻辑像素-css-像素）" class="headerlink" title="设备独立像素（逻辑像素/css 像素）"></a>设备独立像素（逻辑像素/css 像素）</h3><p>设备独立像素(也叫密度无关像素)，可以认为是计算机坐标系统中得一个点，这个点代表一个可以由程序使用的虚拟像素(比如: <code>css</code> 像素)，然后由相关系统转换为物理像素。如 <code>iphone6</code> 为 <code>375×667</code>。</p>
+<h3 id="设备像素比-device-pixel-ratio-屏幕分辩比-dpr"><a href="#设备像素比-device-pixel-ratio-屏幕分辩比-dpr" class="headerlink" title="设备像素比(device pixel ratio/屏幕分辩比/dpr)"></a>设备像素比(device pixel ratio/屏幕分辩比/dpr)</h3><p><code>设备像素比 = 物理像素 / 设备独立像素</code></p>
+<p>在某一方向上，<code>x</code> 方向或者 <code>y</code> 方向。在控制台通过 <code>window.devicePixelRatio</code> 可得。</p>
+<p>所以 <code>iphone6</code> 的 <code>DPR</code> 为 2。</p>
+<h3 id="scale"><a href="#scale" class="headerlink" title="scale"></a>scale</h3><p><code>scale</code> 是屏幕拉伸比。也就是视口上的 <code>initial-scale</code> , <code>maximum-sacle</code> 等属性。</p>
+<h3 id="视口（viewport）"><a href="#视口（viewport）" class="headerlink" title="视口（viewport）"></a>视口（viewport）</h3><ul>
+<li><p>布局视口：网页在开始设计时候的 <code>dom</code> 宽度（比如 <code>960px</code>）</p>
+</li>
+<li><p>可视视口：整个屏幕的视口（比如 <code>iphone6</code> <code>375px</code>）</p>
+</li>
+<li><p>完美视口：</p>
+<figure class="highlight html"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"initial-scale=1.0,width=device-width,user-scalable=0,maximum-scale=1.0"</span> /&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- </span></span><br><span class="line"><span class="comment">  width：设置布局视口的宽 </span></span><br><span class="line"><span class="comment">  init-scale：设置页面的初始缩放程度 </span></span><br><span class="line"><span class="comment">  minimum-scale：设置了页面最小缩放程度</span></span><br><span class="line"><span class="comment">  maximum-scale：设置了页面最大缩放程度 </span></span><br><span class="line"><span class="comment">  user-scalable：是否允许用户对页面进行缩放操作</span></span><br><span class="line"><span class="comment">  --&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+
+</li>
+</ul>
+<h2 id="目前主流的自适应布局解决方案"><a href="#目前主流的自适应布局解决方案" class="headerlink" title="目前主流的自适应布局解决方案"></a>目前主流的自适应布局解决方案</h2><h3 id="响应式（Responsive-web-design"><a href="#响应式（Responsive-web-design" class="headerlink" title="响应式（Responsive web design)"></a>响应式（Responsive web design)</h3><p>通过媒体查询根据不同的屏幕分辨率来进行适配。</p>
+<p>优点:</p>
+<ul>
+<li><code>media query</code> 可以做到设备像素比的判断，方法简单，成本低，特别是对移动和 <code>PC</code> 维护同一套代码的时候。目前像 <code>Bootstrap</code> 等框架使用这种方式布局。</li>
+<li>图片便于修改，只需修改 <code>css</code> 文件。</li>
+<li>调整屏幕宽度的时候不用刷新页面即可响应式展示。</li>
+</ul>
+<p>缺点:</p>
+<ul>
+<li>代码量比较大，维护不方便。</li>
+<li>为了兼顾大屏幕或高清设备，会造成其他设备资源浪费，特别是加载图片资源。</li>
+<li>为了兼顾移动端和 <code>PC</code> 端各自响应式的展示效果，难免会损失各自特有的交互方式。</li>
+</ul>
+<h3 id="流式布局"><a href="#流式布局" class="headerlink" title="流式布局"></a>流式布局</h3><figure class="highlight html"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"width=width=device-width,initial-scale=1,maximum-scale=1, minimum-scale=1,user-scalable=no"</span> /&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>流式布局需要用到<code>百分比</code>或者 <code>flex</code>，即宽度永远铺满页面宽度，但高度和其他单位仍然用 <code>px</code>。它的字体精度可以保持跟设备系统一致（<code>dpi</code>）。</p>
+<h3 id="移动端-vw-rem-布局（主流）"><a href="#移动端-vw-rem-布局（主流）" class="headerlink" title="移动端 vw+rem 布局（主流）"></a>移动端 vw+rem 布局（主流）</h3><p>在没有 <code>vw</code> 的上古时代，我们通常这样来设置根字体 <code>font-size</code> 的大小：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>{</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">autoRootFontSize</span>(<span class="params"></span>) </span>{</span><br><span class="line">    <span class="keyword">const</span> width = <span class="built_in">Math</span>.min(screen.width, <span class="built_in">document</span>.documentElement.getBoundingClientRect().width);</span><br><span class="line">    <span class="built_in">document</span>.documentElement.style.fontSize = width &gt; <span class="number">600</span> ? <span class="string">'16px'</span> : (width / <span class="number">750</span>) * <span class="number">32</span> + <span class="string">'px'</span>; <span class="comment">//只适配移动端，且默认根字体为 32px，默认设计稿宽度 750px</span></span><br><span class="line">  }</span><br><span class="line">  <span class="built_in">window</span>.addEventListener(<span class="string">'resize'</span>, autoRootFontSize);</span><br><span class="line">  autoRootFontSize();</span><br><span class="line">})();</span><br></pre></td></tr></tbody></table></figure>
+
+<p>通过屏幕尺寸发生变化就获取屏幕宽度的方式，动态获取计算根字体的大小。</p>
+<p>如果支持 <code>css vw</code>，则 <code>1vw</code> 本质即等于上文中 <code>width/100</code>。则换算过来为 <code>fontSize = (100vw/750) * 32</code>，且不需要运行 <code>js</code> 及监听，直接设置 <code>css</code> 为：</p>
+<figure class="highlight css"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">html</span> {</span><br><span class="line">  <span class="attribute">font-size</span>: <span class="built_in">calc</span>((<span class="number">100vw</span> / <span class="number">750</span>) * <span class="number">32</span>);</span><br><span class="line">} <span class="comment">/* 以iphone6 750的设计稿为准 */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 其他元素用rem作为单位 */</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>然后启用 <code>postcss</code> 的 <code>postcss-pxtorem</code> 将其他元素的 <code>px</code> 转为 <code>rem</code>：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = {</span><br><span class="line">  plugins: {</span><br><span class="line">    autoprefixer: {},</span><br><span class="line">    <span class="string">'postcss-pxtorem'</span>: {</span><br><span class="line">      rootValue: <span class="number">32</span>,</span><br><span class="line">      propList: [<span class="string">'*'</span>],</span><br><span class="line">      minPixelValue: <span class="number">3</span>,</span><br><span class="line">      mediaQuery: <span class="literal">false</span>,</span><br><span class="line">    },</span><br><span class="line">  },</span><br><span class="line">};</span><br></pre></td></tr></tbody></table></figure>
+
+<p>其中 <code>rootValue</code> 为默认的根字体尺寸，通过 <code>pxtorem</code> 确定了<strong>其他元素尺寸</strong>与<strong>根元素尺寸</strong>固定的比例对应关系。</p>
+<h3 id="scale-伸缩布局"><a href="#scale-伸缩布局" class="headerlink" title="scale 伸缩布局"></a>scale 伸缩布局</h3><p>视觉稿、页面宽度、<code>viewport width</code> 使用统一宽度，利用浏览器自身缩放完成适配。页面样式（包括图像元素）完全按照视觉稿的尺寸，使用定值单位 （<code>px、em</code>）即可完成。</p>
+<h4 id="法一"><a href="#法一" class="headerlink" title="法一"></a>法一</h4><p>通过 <code>js</code> 更改 <code>viewport</code> 的 <code>initial-scale</code>。</p>
+<h4 id="法二"><a href="#法二" class="headerlink" title="法二"></a>法二</h4><p>写死 <code>viewport</code> 的宽度.</p>
+<figure class="highlight html"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"width=360, user-scalable=no"</span> /&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>优点:</p>
+<ul>
+<li>开发简单：缩放交给浏览器，完全按视觉稿切图。</li>
+<li>还原精准：绝对等比例缩放，可以精准还原视觉稿（不考虑清晰度的情况下）。</li>
+<li>测试方便：在 <code>PC</code> 端即可完成大部分测试，手机端只需酌情调整一些细节（比如图标、字体混合排列时，因为字体不同造成的对齐问题）。</li>
+</ul>
+<p>缺点:</p>
+<ul>
+<li>像素丢失：对于一些分辨率较低的手机，可能设备像素还未达到指定的 <code>viewport</code> 宽度，此时屏幕的渲染可能就不准确了。比较常见的是边框“消失”了，不过随着手机硬件的更新，这个问题会越来越少的。</li>
+<li>缩放失效：某些安卓机不能正常的根据 <code>meta</code> 标签中 <code>width</code> 的值来缩放 <code>viewport</code>，需要配合 <code>initial-scale</code>。</li>
+<li>文本折行：存在于缩放失效的机型中，某些手机为了便于文本的阅读，在文本到达 <code>viewport</code> 边缘（非元素容器的边缘）时即进行折行，而当 <code>viewport</code> 宽度被修正后，浏览器并没有正确的重绘，所以就发现文本没有占满整行。一些常用的段落性文本标签会存在该问题。</li>
+<li>不能开启 <code>gpu raster</code> 硬件加速：不能显式设置 <code>minimum-scale=1.0</code>，否则就达不到效果。而这个值是 <code>chromium37</code> 以上的 <code>webview</code> 触发 <code>gpu raster</code> 的一个条件，所以用这种方法就没法利用 <code>gpu raster</code> 硬件加速。</li>
+</ul>
+<p>注：</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="PX-适配"><a href="#PX-适配" class="headerlink" title="PX 适配"></a>PX 适配</h3><p>在新闻，社区等可阅读内容较多的场景直接使用 <code>px</code> 单位可以营造更好地体验。<code>px</code> 方案可以让大屏幕手机展示出更多的内容，更符合人们的阅读习惯。就无需 <code>rem</code> 来等比缩放。</p>
+<ul>
+<li>新闻，社区等可阅读内容较多的场景：<code>px+flex+百分比</code></li>
+<li>对视觉组件种类较多，视觉设计对元素位置的相对关系依赖较强的移动端页面：<code>vw + rem</code></li>
+</ul>
+<h3 id="retina-下图片高清方案"><a href="#retina-下图片高清方案" class="headerlink" title="retina 下图片高清方案"></a>retina 下图片高清方案</h3><ol>
+<li>两倍图片(<code>@2x</code>)，然后图片容器缩小 <code>50%</code>(方便但会造成资源浪费)。</li>
+<li>不同的 <code>dpr</code> 下，加载不同的尺寸的图片。</li>
+</ol>
+<h3 id="retina-下-1px-解决方案"><a href="#retina-下-1px-解决方案" class="headerlink" title="retina 下 1px 解决方案"></a>retina 下 1px 解决方案</h3><p>对于一条 1px 宽的直线，它们在屏幕上的物理尺寸是相同的，不同的其实是屏幕上最小的物理显示单元，即物理像素。所以对于一条直线，<code>iphone6</code> 它能显示的最小宽度用 <code>css</code> 来表示，理论上说是 0.5px。</p>
+<p>所以，设计师想要的 retina 下 <code>border: 1px;</code>，其实就是 1 物理像素宽，对于 css 而言，可以认为是 <code>border: 0.5px;</code>，这是 retina 下(<code>dpr=2</code>)下能显示的最小单位。</p>
+<h4 id="元素-scale（方便但圆角等无法用）"><a href="#元素-scale（方便但圆角等无法用）" class="headerlink" title="元素 scale（方便但圆角等无法用）"></a>元素 <code>scale</code>（方便但圆角等无法用）</h4><figure class="highlight css"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.scale</span> {</span><br><span class="line">  <span class="attribute">position</span>: relative;</span><br><span class="line">}</span><br><span class="line"><span class="selector-class">.scale</span><span class="selector-pseudo">:after</span> {</span><br><span class="line">  <span class="attribute">content</span>: <span class="string">''</span>;</span><br><span class="line">  <span class="attribute">position</span>: absolute;</span><br><span class="line">  <span class="attribute">bottom</span>: <span class="number">0px</span>;</span><br><span class="line">  <span class="attribute">left</span>: <span class="number">0px</span>;</span><br><span class="line">  <span class="attribute">right</span>: <span class="number">0px</span>;</span><br><span class="line">  <span class="attribute">border-bottom</span>: <span class="number">1px</span> solid <span class="number">#ddd</span>;</span><br><span class="line">  <span class="attribute">-webkit-transform</span>: <span class="built_in">scaleY</span>(<span class="number">0.5</span>);</span><br><span class="line">  <span class="attribute">-webkit-transform-origin</span>: <span class="number">0</span> <span class="number">0</span>;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<h4 id="判断添加-class"><a href="#判断添加-class" class="headerlink" title="判断添加 class"></a>判断添加 class</h4><p><code>js</code> 来判断当前浏览器是否支持 <code>border</code> 的 0.5px，如果支持就会在 <code>HTML</code> 上添加一个 <code>class</code> 名 <code>hairlines</code>。</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="built_in">window</span>.devicePixelRatio &amp;&amp; devicePixelRatio &gt;= <span class="number">2</span>) {</span><br><span class="line">  <span class="keyword">var</span> testElem = <span class="built_in">document</span>.createElement(<span class="string">'div'</span>);</span><br><span class="line">  testElem.style.border = <span class="string">'.5px solid transparent'</span>;</span><br><span class="line">  <span class="built_in">document</span>.body.appendChild(testElem);</span><br><span class="line">  <span class="keyword">if</span> (testElem.offsetHeight == <span class="number">1</span>) {</span><br><span class="line">    <span class="built_in">document</span>.querySelector(<span class="string">'html'</span>).classList.add(<span class="string">'hairlines'</span>);</span><br><span class="line">  }</span><br><span class="line">  <span class="built_in">document</span>.body.removeChild(testElem);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<figure class="highlight css"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">div</span> {</span><br><span class="line">  <span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#bbb</span>;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.hairlines</span> <span class="selector-tag">div</span> {</span><br><span class="line">  <span class="attribute">border-width</span>: <span class="number">0.5px</span>;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>注：3 倍屏下，不是 0.3333px？在 Chrome 上模拟 iPhone 8Plus，小于 0.46px 时无法显示。</p>
+<h4 id="设置-viewport-的-scale-值（不推荐）"><a href="#设置-viewport-的-scale-值（不推荐）" class="headerlink" title="设置 viewport 的 scale 值（不推荐）"></a>设置 viewport 的 scale 值（不推荐）</h4><figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> viewport = <span class="built_in">document</span>.querySelector(<span class="string">'meta[name=viewport]'</span>);</span><br><span class="line"><span class="comment">//下面是根据设备像素设置viewport</span></span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">window</span>.devicePixelRatio == <span class="number">1</span>) {</span><br><span class="line">  viewport.setAttribute(<span class="string">'content'</span>, <span class="string">'width=device-width,initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no'</span>);</span><br><span class="line">}</span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">window</span>.devicePixelRatio == <span class="number">2</span>) {</span><br><span class="line">  viewport.setAttribute(<span class="string">'content'</span>, <span class="string">'width=device-width,initial-scale=0.5, maximum-scale=0.5, minimum-scale=0.5, user-scalable=no'</span>);</span><br><span class="line">}</span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">window</span>.devicePixelRatio == <span class="number">3</span>) {</span><br><span class="line">  viewport.setAttribute(<span class="string">'content'</span>, <span class="string">'width=device-width,initial-scale=0.3333333333333333, maximum-scale=0.3333333333333333, minimum-scale=0.3333333333333333, user-scalable=no'</span>);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>因为涉及到所有的尺寸都要调整，且其他第三方组件不一定适配。</p>
+<h4 id="其他方式"><a href="#其他方式" class="headerlink" title="其他方式"></a>其他方式</h4><ul>
+<li>使用边框图片</li>
+<li>使用 <code>box-shadow</code> 实现： <code>box-shadow: inset 0px -1px 1px -1px #d4d6d7</code>;</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Korey 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/213.html" rel="prev" title="（转载）书写高效CSS">
+                  <i class="fa fa-chevron-left"></i> （转载）书写高效CSS
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/224.html" rel="next" title="BFC等Formatting Contexts浅析">
+                  BFC等Formatting Contexts浅析 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  © 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Korey zhao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">507k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:41</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+
+
+  
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script>
+
+<script src="/bundle.js"></script><script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  ;
+L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":125,"height":150,"position":"left","hOffset":30,"vOffset":-5},"mobile":{"show":false,"scale":0.05},"react":{"opacityDefault":1,"opacityOnHover":0.2},"log":false});</script></body></html>

@@ -1,23 +1,622 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#3eaf7c">
+<meta name="generator" content="Hexo 5.2.0">
 
-{% block title %}{{ page.title }} | {{ title }}{% endblock %}
 
-{% block page_class %}page-post-detail{% endblock %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon.png" color="#3eaf7c">
 
-{% block content %}
+<link rel="stylesheet" href="/css/main.css">
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="AMD/CMD 模块（requireJS/seaJs）（即将退出历史舞台） AMD（Asynchronous Module Definition 异步模块定义）和 CMD（Common Module Definition 通用模块定义）是基于浏览器使用并且是异步执行 AMD 推崇依赖前置，在定义模块的时候就要声明其依赖的模块 CMD 推崇就近依赖，只有在用到某个模块的时候再去 require  1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="amd,umd,commonJs,ES6模块的相关总结">
+<meta property="og:url" content="https://blog.flqin.com/348.html">
+<meta property="og:site_name" content="前端轻语">
+<meta property="og:description" content="AMD/CMD 模块（requireJS/seaJs）（即将退出历史舞台） AMD（Asynchronous Module Definition 异步模块定义）和 CMD（Common Module Definition 通用模块定义）是基于浏览器使用并且是异步执行 AMD 推崇依赖前置，在定义模块的时候就要声明其依赖的模块 CMD 推崇就近依赖，只有在用到某个模块的时候再去 require  1">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-06-27T17:31:12.000Z">
+<meta property="article:modified_time" content="2019-06-27T17:31:12.000Z">
+<meta property="article:author" content="Korey">
+<meta property="article:tag" content="前端,前端开发,css,html,js,css3,前端开发博客,fe,技术文档">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.flqin.com/348.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>amd,umd,commonJs,ES6模块的相关总结 | 前端轻语</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c8dec20f0d0449c8ece3c0dbab4e8f31";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
   </div>
 
-{% endblock %}
+  <div class="site-meta">
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">前端轻语</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">korey的前端笔记</p>
+  </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+
+  </li>
+        <li class="menu-item menu-item-map">
+
+    <a href="/map/" rel="section"><i class="fa fa-sitemap fa-fw"></i>map</a>
+
+  </li>
+        <li class="menu-item menu-item-link">
+
+    <a href="/link/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>link</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#AMD-CMD-%E6%A8%A1%E5%9D%97%EF%BC%88requireJS-seaJs%EF%BC%89%EF%BC%88%E5%8D%B3%E5%B0%86%E9%80%80%E5%87%BA%E5%8E%86%E5%8F%B2%E8%88%9E%E5%8F%B0%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">AMD/CMD 模块（requireJS/seaJs）（即将退出历史舞台）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#commonJS-%E6%A8%A1%E5%9D%97%EF%BC%88nodejs%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">commonJS 模块（nodejs）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%80%BC%E7%9A%84%E6%8B%B7%E8%B4%9D"><span class="nav-number">2.1.</span> <span class="nav-text">值的拷贝</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#commonjs-%E5%BE%AA%E7%8E%AF%E5%8A%A0%E8%BD%BD"><span class="nav-number">2.2.</span> <span class="nav-text">commonjs 循环加载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ES6-%E6%A8%A1%E5%9D%97"><span class="nav-number">3.</span> <span class="nav-text">ES6 模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#import"><span class="nav-number">3.1.</span> <span class="nav-text">import</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#export"><span class="nav-number">3.2.</span> <span class="nav-text">export</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%80%BC%E7%9A%84%E5%BC%95%E7%94%A8"><span class="nav-number">3.3.</span> <span class="nav-text">值的引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ES6-%E5%BE%AA%E7%8E%AF%E5%8A%A0%E8%BD%BD"><span class="nav-number">3.4.</span> <span class="nav-text">ES6 循环加载</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BE%8B-1"><span class="nav-number">3.4.1.</span> <span class="nav-text">例 1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BE%8B-2"><span class="nav-number">3.4.2.</span> <span class="nav-text">例 2</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E7%89%88%E6%9C%AC%E6%B5%8F%E8%A7%88%E5%99%A8%E5%8F%AF%E4%BB%A5%E7%9B%B4%E6%8E%A5%E4%BD%BF%E7%94%A8-es6-module"><span class="nav-number">3.5.</span> <span class="nav-text">高版本浏览器可以直接使用 es6 module</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E5%BC%82%E6%AD%A5%E5%8A%A0%E8%BD%BD-import"><span class="nav-number">3.6.</span> <span class="nav-text">动态异步加载 import()</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UMD-%E6%A8%A1%E5%9D%97"><span class="nav-number">4.</span> <span class="nav-text">UMD 模块</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Korey" src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Korey</p>
+  <div class="site-description" itemprop="description">热衷于记录、分享前端开发技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="GitHub → https://github.com/zhaoky"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtleXUuemhhb0Bmb3htYWlsLmNvbQ==" title="E-Mail → mailto:keyu.zhao@foxmail.com"><i class="far fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci81N2M5MWIzYjE2NWFiZDAwNjhkYjg5YzI=" title="掘金 → https://juejin.im/user/57c91b3b165abd0068db89c2"><i class="fas fa-link fa-fw"></i>掘金</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cDovL3d3dy56aGlodS5jb20vcGVvcGxlL2ZlX2tvcmV5" title="知乎 → http://www.zhihu.com/people/fe_korey"><i class="fas fa-link fa-fw"></i>知乎</span>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/348.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          amd,umd,commonJs,ES6模块的相关总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-06-27 17:31:12" itemprop="dateCreated datePublished" datetime="2019-06-27T17:31:12+00:00">2019-06-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Build/" itemprop="url" rel="index"><span itemprop="name">FE Build</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>7.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="AMD-CMD-模块（requireJS-seaJs）（即将退出历史舞台）"><a href="#AMD-CMD-模块（requireJS-seaJs）（即将退出历史舞台）" class="headerlink" title="AMD/CMD 模块（requireJS/seaJs）（即将退出历史舞台）"></a>AMD/CMD 模块（requireJS/seaJs）（即将退出历史舞台）</h2><ul>
+<li><code>AMD</code>（<code>Asynchronous Module Definition</code> 异步模块定义）和 <code>CMD</code>（<code>Common Module Definition</code> 通用模块定义）是基于浏览器使用并且是<code>异步执行</code></li>
+<li><code>AMD</code> 推崇依赖前置，在定义模块的时候就要声明其依赖的模块</li>
+<li><code>CMD</code> 推崇就近依赖，只有在用到某个模块的时候再去 <code>require</code></li>
+</ul>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AMD</span></span><br><span class="line"><span class="comment">// 定义模块 myModule.js</span></span><br><span class="line">define([<span class="string">'dependency'</span>], <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>{</span><br><span class="line">  <span class="keyword">var</span> name = <span class="string">'Byron'</span>;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">printName</span>(<span class="params"></span>) </span>{</span><br><span class="line">    <span class="built_in">console</span>.log(name);</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> {</span><br><span class="line">    printName: printName,</span><br><span class="line">  };</span><br><span class="line">});</span><br><span class="line"></span><br><span class="line"><span class="comment">// 加载模块</span></span><br><span class="line"><span class="built_in">require</span>([<span class="string">'myModule'</span>], <span class="function"><span class="keyword">function</span> (<span class="params">my</span>) </span>{</span><br><span class="line">  my.printName();</span><br><span class="line">});</span><br><span class="line"></span><br><span class="line"><span class="comment">// CMD</span></span><br><span class="line"><span class="comment">// 定义模块  myModule.js</span></span><br><span class="line">define(<span class="function"><span class="keyword">function</span> (<span class="params"><span class="built_in">require</span>, <span class="built_in">exports</span>, <span class="built_in">module</span></span>) </span>{</span><br><span class="line">  <span class="keyword">var</span> $ = <span class="built_in">require</span>(<span class="string">'jquery.js'</span>);</span><br><span class="line">  $(<span class="string">'div'</span>).addClass(<span class="string">'active'</span>);</span><br><span class="line">});</span><br><span class="line"></span><br><span class="line"><span class="comment">// 加载模块</span></span><br><span class="line">seajs.use([<span class="string">'myModule.js'</span>], <span class="function"><span class="keyword">function</span> (<span class="params">my</span>) </span>{});</span><br></pre></td></tr></tbody></table></figure>
+
+<ul>
+<li><code>AMD</code> 在加载模块完成后就会执行改模块，所有模块都加载执行完后会进入 <code>require</code> 的回调函数，执行主逻辑，这样的效果就是依赖模块的执行顺序和书写顺序不一定一致，看网络速度，哪个先下载下来，哪个先执行，但是主逻辑一定在所有依赖加载完成后才执行。</li>
+<li><code>CMD</code> 加载完某个依赖模块后并不执行，只是下载而已，在所有依赖模块加载完成后进入主逻辑，遇到 <code>require</code> 语句的时候才执行对应的模块，这样模块的执行顺序和书写顺序是完全一致的。</li>
+</ul>
+<h2 id="commonJS-模块（nodejs）"><a href="#commonJS-模块（nodejs）" class="headerlink" title="commonJS 模块（nodejs）"></a>commonJS 模块（nodejs）</h2><ul>
+<li>使用 <code>require</code> 来引入其他模块的代码，使用 <code>module.exports</code> 来引出。</li>
+<li><code>exports</code> 与 <code>module.exports</code> 的初始指针相同，即 <code>module.exports === exports</code>,如果 <code>exports</code> 一旦指向了其他对象，即不能用于导出。</li>
+<li>运行时加载，输出的是一个值的拷贝。</li>
+</ul>
+<h3 id="值的拷贝"><a href="#值的拷贝" class="headerlink" title="值的拷贝"></a>值的拷贝</h3><p><code>require</code> 引入的是值的拷贝(基本类型拷贝值，引用类型拷贝地址)。</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//4.js</span></span><br><span class="line"><span class="keyword">var</span> age = <span class="number">0</span>;</span><br><span class="line"><span class="built_in">exports</span>.age = age;</span><br><span class="line"><span class="built_in">exports</span>.getAge = <span class="function">() =&gt;</span> {</span><br><span class="line">  age = age + <span class="number">1</span>;</span><br><span class="line">};</span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> {</span><br><span class="line">  <span class="built_in">console</span>.log(age); <span class="comment">//1 原本的会改变</span></span><br><span class="line">}, <span class="number">2000</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//5.js</span></span><br><span class="line"><span class="keyword">const</span> a = <span class="built_in">require</span>(<span class="string">'./4'</span>);</span><br><span class="line"><span class="keyword">var</span> age = a.age;</span><br><span class="line"><span class="keyword">var</span> getAge = a.getAge;</span><br><span class="line">getAge();</span><br><span class="line"><span class="built_in">console</span>.log(age); <span class="comment">//0 不会改变age，一旦生成缓存后就会从缓存里读这个值</span></span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="commonjs-循环加载"><a href="#commonjs-循环加载" class="headerlink" title="commonjs 循环加载"></a>commonjs 循环加载</h3><figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//4.js</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'4开始执行'</span>);</span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> {</span><br><span class="line">  <span class="built_in">exports</span>.name = <span class="string">'qxq1'</span>;</span><br><span class="line">});</span><br><span class="line"><span class="built_in">exports</span>.name = <span class="string">'qxq'</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'4执行一半'</span>);</span><br><span class="line"><span class="keyword">const</span> b = <span class="built_in">require</span>(<span class="string">'./5'</span>);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'in 4, b.done ='</span>, b.done);</span><br><span class="line"><span class="built_in">exports</span>.done = <span class="literal">true</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'4执行结束'</span>);</span><br></pre></td></tr></tbody></table></figure>
+
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//5.js</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'5开始执行'</span>);</span><br><span class="line"><span class="built_in">exports</span>.done = <span class="literal">false</span>;</span><br><span class="line"><span class="keyword">const</span> a = <span class="built_in">require</span>(<span class="string">'./4'</span>);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'in 5, a.name ='</span>, a.name);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'in 5, a.done ='</span>, a.done);</span><br><span class="line"><span class="built_in">exports</span>.done = <span class="literal">true</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'5执行结束'</span>);</span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> {</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="number">666</span>, a);</span><br><span class="line">}, <span class="number">5000</span>);</span><br></pre></td></tr></tbody></table></figure>
+
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//打印结果</span></span><br><span class="line"><span class="number">4</span>开始执行</span><br><span class="line"><span class="number">4</span>执行一半</span><br><span class="line"><span class="number">5</span>开始执行</span><br><span class="line"><span class="keyword">in</span> <span class="number">5</span>, a.name = qxq</span><br><span class="line"><span class="keyword">in</span> <span class="number">5</span>, a.done = <span class="literal">undefined</span></span><br><span class="line"><span class="number">5</span>执行结束</span><br><span class="line"><span class="keyword">in</span> <span class="number">4</span>, b.done = <span class="literal">true</span></span><br><span class="line"><span class="number">4</span>执行结束</span><br><span class="line"><span class="number">666</span> <span class="built_in">Object</span> {<span class="attr">name</span>: <span class="string">"qxq1"</span>, <span class="attr">done</span>: <span class="literal">true</span>}</span><br></pre></td></tr></tbody></table></figure>
+
+<ul>
+<li>执行到 <code>require</code> 那行才会去加载该脚本</li>
+<li><code>require</code> 命令第一次加载该脚本，就会执行整个脚本，然后在内存生成一个对象，本质就是一个一次性赋值操作。</li>
+<li>再次执行 <code>require</code> 命令，也不会再次执行该模块，而是到缓存之中取值。</li>
+<li>一旦出现某个模块被”循环加载”，就只输出已经执行的部分，还未执行的部分不会输出。</li>
+</ul>
+<h2 id="ES6-模块"><a href="#ES6-模块" class="headerlink" title="ES6 模块"></a>ES6 模块</h2><ul>
+<li><code>import/export</code> 命令可以出现在模块的任何位置，只要处于模块顶层就可以。如果处于块级作用域内，则会报错。</li>
+<li><code>ES6</code> 模块输入是 <code>export</code> 的动态 <code>只读视图（live read-only views）</code></li>
+</ul>
+<h3 id="import"><a href="#import" class="headerlink" title="import"></a>import</h3><p>使用 <code>import</code> 命令加载其他模块，<code>import</code> 命令输入的变量都是 <code>只读</code> 的，因为它的本质是 <code>输入接口</code>。</p>
+<ol>
+<li><p>语法<span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXIubW96aWxsYS5vcmcvemgtQ04vZG9jcy9XZWIvSmF2YVNjcmlwdC9SZWZlcmVuY2UvU3RhdGVtZW50cy9pbXBvcnQ=">查阅<i class="fa fa-external-link-alt"></i></span></p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//默认导出的导入</span></span><br><span class="line"><span class="keyword">import</span> defaultExport <span class="keyword">from</span> <span class="string">"module-name"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//整体导入</span></span><br><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> name <span class="keyword">from</span> <span class="string">"module-name"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//导入单个接口</span></span><br><span class="line"><span class="keyword">import</span> { <span class="keyword">export</span> } <span class="keyword">from</span> <span class="string">"module-name"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//重命名接口</span></span><br><span class="line"><span class="keyword">import</span> { <span class="keyword">export</span> <span class="keyword">as</span> alias } <span class="keyword">from</span> <span class="string">"module-name"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 导入多个接口</span></span><br><span class="line"><span class="keyword">import</span> { export1 , export2 } <span class="keyword">from</span> <span class="string">"module-name"</span>;</span><br><span class="line"><span class="keyword">import</span> { foo , bar } <span class="keyword">from</span> <span class="string">"module-name/path/to/specific/un-exported/file"</span>;</span><br><span class="line"><span class="keyword">import</span> { export1 , export2 <span class="keyword">as</span> alias2 , [...] } <span class="keyword">from</span> <span class="string">"module-name"</span>;个接口</span><br><span class="line"></span><br><span class="line"><span class="comment">//同时导入默认和多个接口</span></span><br><span class="line"><span class="keyword">import</span> defaultExport, { <span class="keyword">export</span> [ , [...] ] } <span class="keyword">from</span> <span class="string">"module-name"</span>;</span><br><span class="line"><span class="keyword">import</span> defaultExport, * <span class="keyword">as</span> name <span class="keyword">from</span> <span class="string">"module-name"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//只运行模块代码不导入接口</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">"module-name"</span>;</span><br></pre></td></tr></tbody></table></figure>
+</li>
+<li><p>如果多次重复执行同一句 <code>import</code> 语句，那么只会执行一次.</p>
+</li>
+<li><p><code>import</code>是静态执行，所以不能使用表达式和变量，这些只有在运行时才能得到结果的语法结构。</p>
+</li>
+</ol>
+<h3 id="export"><a href="#export" class="headerlink" title="export"></a>export</h3><ol>
+<li><p>使用 <code>export</code> 命令规定对外的 <code>接口</code>，必须与模块内部的变量建立一一对应关系。<code>export</code> 语句输出的接口，与其对应的值是 <code>动态绑定</code> 关系，即通过该接口，可以取到模块内部实时的值。</p>
+</li>
+<li><p>语法<span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXIubW96aWxsYS5vcmcvemgtQ04vZG9jcy9XZWIvSmF2YVNjcmlwdC9SZWZlcmVuY2UvU3RhdGVtZW50cy9leHBvcnQ=">查阅<i class="fa fa-external-link-alt"></i></span></p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 导出单个特性</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">let</span> name1, name2, …, nameN; <span class="comment">// also var, const</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">let</span> name1 = …, name2 = …, …, nameN; <span class="comment">// also var, const</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">FunctionName</span>(<span class="params"></span>)</span>{...}</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ClassName</span> </span>{...}</span><br><span class="line"></span><br><span class="line"><span class="comment">// 导处列表</span></span><br><span class="line"><span class="keyword">export</span> { name1, name2, …, nameN };</span><br><span class="line"></span><br><span class="line"><span class="comment">// 重命名导出</span></span><br><span class="line"><span class="keyword">export</span> { variable1 <span class="keyword">as</span> name1, variable2 <span class="keyword">as</span> name2, …, nameN };</span><br><span class="line"></span><br><span class="line"><span class="comment">// 默认导出</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> expression;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> (<span class="params">…</span>) </span>{ … } <span class="comment">// also class, function*</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> <span class="title">name1</span>(<span class="params">…</span>) </span>{ … } <span class="comment">// also class, function*</span></span><br><span class="line"><span class="keyword">export</span> { name1 <span class="keyword">as</span> <span class="keyword">default</span>, … };</span><br><span class="line"></span><br><span class="line"><span class="comment">// 复合导出</span></span><br><span class="line"><span class="keyword">export</span> * <span class="keyword">from</span> …;</span><br><span class="line"><span class="keyword">export</span> { name1, name2, …, nameN } <span class="keyword">from</span> …;</span><br><span class="line"><span class="keyword">export</span> { import1 <span class="keyword">as</span> name1, import2 <span class="keyword">as</span> name2, …, nameN } <span class="keyword">from</span> …;</span><br><span class="line"><span class="keyword">export</span> { <span class="keyword">default</span> } <span class="keyword">from</span> …;</span><br></pre></td></tr></tbody></table></figure>
+</li>
+<li><p>默认导出 <code>export default</code></p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 正确</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">var</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="comment">// 正确</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="number">42</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 正确</span></span><br><span class="line"><span class="keyword">var</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> a;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 正确</span></span><br><span class="line"><span class="keyword">let</span> k;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> k = <span class="number">12</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 错误</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">var</span> a = <span class="number">1</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+<p>因为 <code>export default</code> 命令的本质是将后面的值，赋给 <code>default</code> 变量，所以可以直接将一个值写在 <code>export default</code> 之后。</p>
+</li>
+</ol>
+<h3 id="值的引用"><a href="#值的引用" class="headerlink" title="值的引用"></a>值的引用</h3><figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//4.js</span></span><br><span class="line"><span class="keyword">import</span> { age, getAge } <span class="keyword">from</span> <span class="string">'./5.js'</span>;</span><br><span class="line"><span class="built_in">console</span>.log(age); <span class="comment">//原本为0</span></span><br><span class="line">getAge();</span><br><span class="line"><span class="built_in">console</span>.log(age); <span class="comment">//因为是值的引用，所以要变，为1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//5.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">var</span> age = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">getAge</span>(<span class="params"></span>) </span>{</span><br><span class="line">  age = age + <span class="number">1</span>;</span><br><span class="line">}</span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> {</span><br><span class="line">  <span class="built_in">console</span>.log(age); <span class="comment">//要变，为1</span></span><br><span class="line">}, <span class="number">2000</span>);</span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="ES6-循环加载"><a href="#ES6-循环加载" class="headerlink" title="ES6 循环加载"></a>ES6 循环加载</h3><ul>
+<li><code>import</code> 命令会被 JavaScript 引擎静态分析，具有提升效果，会提升到整个模块的头部，首先执行。</li>
+<li><code>export</code> 命令会有变量声明提前的效果。</li>
+<li><code>ES6</code> 模块遇到模块加载命令 <code>import</code> 时，不会去执行模块，而是只生成一个 <code>引用</code>。等到真的需要用到时，再到模块里面去取值。</li>
+<li><code>ES6</code> 根本不会关心是否发生了”循环加载”，只是生成一个指向被加载模块的引用，需要开发者自己保证，真正取值的时候能够取到值。</li>
+<li>通常存在强耦合，应避免出现。</li>
+</ul>
+<h4 id="例-1"><a href="#例-1" class="headerlink" title="例 1"></a>例 1</h4><figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// a.js</span></span><br><span class="line"><span class="keyword">import</span> { foo } <span class="keyword">from</span> <span class="string">'./b'</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'a.js'</span>);</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> bar = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> bar2 = <span class="function">() =&gt;</span> {</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'bar2'</span>);</span><br><span class="line">};</span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">bar3</span>(<span class="params"></span>) </span>{</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'bar3'</span>);</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment">// b.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">let</span> foo = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> a <span class="keyword">from</span> <span class="string">'./a'</span>;</span><br><span class="line"><span class="built_in">console</span>.log(a);</span><br><span class="line"><span class="comment">// 注意函数表达式和函数声明的区别（提升）</span></span><br></pre></td></tr></tbody></table></figure>
+
+<h4 id="例-2"><a href="#例-2" class="headerlink" title="例 2"></a>例 2</h4><figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// a.js</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'a starting'</span>);</span><br><span class="line"><span class="keyword">import</span> { foo } <span class="keyword">from</span> <span class="string">'./b'</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'in b, foo:'</span>, foo);</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">var</span> bar = <span class="number">2</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'a done'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// b.js</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'b starting'</span>);</span><br><span class="line"><span class="keyword">import</span> { bar } <span class="keyword">from</span> <span class="string">'./a'</span>;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">var</span> foo = <span class="string">'foo'</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'in a, bar:'</span>, bar);</span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> {</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'in a, setTimeout bar:'</span>, bar);</span><br><span class="line">});</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'b done'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// babel-node a.js</span></span><br><span class="line"><span class="comment">// 执行结果：</span></span><br><span class="line"><span class="comment">// b starting</span></span><br><span class="line"><span class="comment">// in a, bar: undefined</span></span><br><span class="line"><span class="comment">// b done</span></span><br><span class="line"><span class="comment">// a starting</span></span><br><span class="line"><span class="comment">// in b, foo: foo</span></span><br><span class="line"><span class="comment">// a done</span></span><br><span class="line"><span class="comment">// in a, setTimeout bar: 2</span></span><br><span class="line"><span class="comment">// 注意该例不能用const或let，否则报错:Cannot access 'bar' before initialization 暂时性死区</span></span><br><span class="line"><span class="comment">// export变量声明提升</span></span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="高版本浏览器可以直接使用-es6-module"><a href="#高版本浏览器可以直接使用-es6-module" class="headerlink" title="高版本浏览器可以直接使用 es6 module"></a>高版本浏览器可以直接使用 es6 module</h3><p><span class="exturl" data-url="aHR0cHM6Ly9jYW5pdXNlLmNvbS8jc2VhcmNoPW1vZHVsZQ==">点此查询版本支持<i class="fa fa-external-link-alt"></i></span></p>
+<ol>
+<li><p><code>script</code> 标签加 <code>type='module'</code> 属性启动支持</p>
+</li>
+<li><p>支持相对路径和绝对路径</p>
+<figure class="highlight html"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"module"</span>&gt;</span></span><br><span class="line"><span class="javascript">  <span class="keyword">import</span> { getName } <span class="keyword">from</span> <span class="string">'utils.js'</span>; <span class="comment">// error</span></span></span><br><span class="line"><span class="javascript">  <span class="keyword">import</span> { getName } <span class="keyword">from</span> <span class="string">'./utils.js'</span>; <span class="comment">// right</span></span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+</li>
+<li><p>使用 <code>nomodule</code> 向下兼容</p>
+<figure class="highlight html"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"module"</span> <span class="attr">src</span>=<span class="string">"module.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">nomodule</span> <span class="attr">src</span>=<span class="string">"fallback.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>因老版本不识别 <code>type="module"</code> 即不会执行 <code>module.js</code>，同时不识别 <code>nomodule</code> 即忽略该属性 <span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXIubW96aWxsYS5vcmcvemgtQ04vZG9jcy9XZWIvSFRNTC9FbGVtZW50L3NjcmlwdA==">参考<i class="fa fa-external-link-alt"></i></span></p>
+</li>
+<li><p>加载方式默认使用 <code>defer</code></p>
+</li>
+<li><p>只执行一次</p>
+<figure class="highlight html"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 1.js 只会被加载执行一次--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"module"</span> <span class="attr">src</span>=<span class="string">"1.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"module"</span> <span class="attr">src</span>=<span class="string">"1.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"module"</span>&gt;</span></span><br><span class="line"><span class="javascript">  <span class="keyword">import</span> <span class="string">'./1.js'</span>;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--  普通JS 也只会被加载一次，但是会被执行多次--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"2.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"2.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+</li>
+<li><p><code>type="module"</code> 默认不支持跨域,需要服务器设置 <code>cors</code></p>
+</li>
+<li><p>服务器必须要设置有效的 <code>MIME types</code>：<code>text/javascript</code></p>
+</li>
+</ol>
+<h3 id="动态异步加载-import"><a href="#动态异步加载-import" class="headerlink" title="动态异步加载 import()"></a>动态异步加载 import()</h3><ul>
+<li><code>import()</code>返回一个<code>promise对象</code>,可以用在任何地方，运行时加载</li>
+<li>主要用在<code>按需加载</code>及<code>条件加载</code></li>
+<li>使用 babel 编译时，需要添加<code>syntax-dynamic-import</code>插件</li>
+</ul>
+<h2 id="UMD-模块"><a href="#UMD-模块" class="headerlink" title="UMD 模块"></a>UMD 模块</h2><p>实际上就是 <code>amd/cmd + commonjs + 全局变量</code> 这三种风格的结合，对当前运行环境的判断，如果是 <code>Node</code> 环境 就是使用 <code>CommonJs</code> 规范， 如果不是就判断是否为 <code>AMD</code> 环境， 最后导出全局变量。（<code>AMD</code>）</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"><span class="built_in">global</span>, factory</span>) </span>{</span><br><span class="line">  <span class="keyword">typeof</span> <span class="built_in">exports</span> === <span class="string">'object'</span> &amp;&amp; <span class="keyword">typeof</span> <span class="built_in">module</span> !== <span class="string">'undefined'</span> ? (<span class="built_in">module</span>.exports = factory()) : <span class="keyword">typeof</span> define === <span class="string">'function'</span> &amp;&amp; define.amd ? define(factory) : (<span class="built_in">global</span>.libName = factory());</span><br><span class="line">})(<span class="built_in">this</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>{</span><br><span class="line"><span class="meta">  'use strict'</span>;</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Korey 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/346.html" rel="prev" title="blog从wordpress迁移至hexo+next，并通过travis自动部署到ftp及github">
+                  <i class="fa fa-chevron-left"></i> blog从wordpress迁移至hexo+next，并通过travis自动部署到ftp及github
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/349.html" rel="next" title="var let const fn变量提升">
+                  var let const fn变量提升 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  © 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Korey zhao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">507k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:41</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+
+
+  
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script>
+
+<script src="/bundle.js"></script><script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  ;
+L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":125,"height":150,"position":"left","hOffset":30,"vOffset":-5},"mobile":{"show":false,"scale":0.05},"react":{"opacityDefault":1,"opacityOnHover":0.2},"log":false});</script></body></html>

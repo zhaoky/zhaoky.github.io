@@ -1,23 +1,625 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#3eaf7c">
+<meta name="generator" content="Hexo 5.2.0">
 
-{% block title %}{{ page.title }} | {{ title }}{% endblock %}
 
-{% block page_class %}page-post-detail{% endblock %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon.png" color="#3eaf7c">
 
-{% block content %}
+<link rel="stylesheet" href="/css/main.css">
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="module 构建完成后，回到文件 Compiler.js 的 compile 的 make 钩子的回调里: 12345678910111213this.hooks.make.callAsync(compilation, (err) => &amp;#123;  //...  compilation.finish((err) => &amp;#123;    //...    compilation.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="webpack 4 源码主流程分析（八）：生成 chunk">
+<meta property="og:url" content="https://blog.flqin.com/379.html">
+<meta property="og:site_name" content="前端轻语">
+<meta property="og:description" content="module 构建完成后，回到文件 Compiler.js 的 compile 的 make 钩子的回调里: 12345678910111213this.hooks.make.callAsync(compilation, (err) => &amp;#123;  //...  compilation.finish((err) => &amp;#123;    //...    compilation.">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-12-12T12:02:23.000Z">
+<meta property="article:modified_time" content="2019-12-12T12:02:23.000Z">
+<meta property="article:author" content="Korey">
+<meta property="article:tag" content="前端,前端开发,css,html,js,css3,前端开发博客,fe,技术文档">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.flqin.com/379.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>webpack 4 源码主流程分析（八）：生成 chunk | 前端轻语</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c8dec20f0d0449c8ece3c0dbab4e8f31";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
   </div>
 
-{% endblock %}
+  <div class="site-meta">
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">前端轻语</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">korey的前端笔记</p>
+  </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+
+  </li>
+        <li class="menu-item menu-item-map">
+
+    <a href="/map/" rel="section"><i class="fa fa-sitemap fa-fw"></i>map</a>
+
+  </li>
+        <li class="menu-item menu-item-link">
+
+    <a href="/link/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>link</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#compilation-finish-amp-compilation-seal"><span class="nav-number">1.</span> <span class="nav-text">compilation.finish &amp; compilation.seal</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#chunk-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">chunk 初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90-chunk-graph"><span class="nav-number">3.</span> <span class="nav-text">生成 chunk graph</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E9%98%B6%E6%AE%B5"><span class="nav-number">3.1.</span> <span class="nav-text">第一阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E9%98%B6%E6%AE%B5"><span class="nav-number">3.2.</span> <span class="nav-text">第二阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E9%98%B6%E6%AE%B5"><span class="nav-number">3.3.</span> <span class="nav-text">第三阶段</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-chunk-ChunkGroup-%E5%8C%BA%E5%88%AB"><span class="nav-number">4.</span> <span class="nav-text">module chunk ChunkGroup 区别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#module"><span class="nav-number">4.1.</span> <span class="nav-text">module</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#chunk"><span class="nav-number">4.2.</span> <span class="nav-text">chunk</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ChunkGroup"><span class="nav-number">4.3.</span> <span class="nav-text">ChunkGroup</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">本章小结</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Korey" src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Korey</p>
+  <div class="site-description" itemprop="description">热衷于记录、分享前端开发技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="GitHub → https://github.com/zhaoky"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtleXUuemhhb0Bmb3htYWlsLmNvbQ==" title="E-Mail → mailto:keyu.zhao@foxmail.com"><i class="far fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci81N2M5MWIzYjE2NWFiZDAwNjhkYjg5YzI=" title="掘金 → https://juejin.im/user/57c91b3b165abd0068db89c2"><i class="fas fa-link fa-fw"></i>掘金</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cDovL3d3dy56aGlodS5jb20vcGVvcGxlL2ZlX2tvcmV5" title="知乎 → http://www.zhihu.com/people/fe_korey"><i class="fas fa-link fa-fw"></i>知乎</span>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/379.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          webpack 4 源码主流程分析（八）：生成 chunk
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-12-12 12:02:23" itemprop="dateCreated datePublished" datetime="2019-12-12T12:02:23+00:00">2019-12-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Build/" itemprop="url" rel="index"><span itemprop="name">FE Build</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>8.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>8 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><code>module</code> 构建完成后，回到文件 <code>Compiler.js</code> 的 <code>compile</code> 的 <code>make</code> 钩子的回调里:</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.hooks.make.callAsync(compilation, <span class="function">(<span class="params">err</span>) =&gt;</span> {</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">  compilation.finish(<span class="function">(<span class="params">err</span>) =&gt;</span> {</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">    compilation.seal(<span class="function">(<span class="params">err</span>) =&gt;</span> {</span><br><span class="line">      <span class="comment">//...</span></span><br><span class="line">      <span class="built_in">this</span>.hooks.afterCompile.callAsync(compilation, <span class="function">(<span class="params">err</span>) =&gt;</span> {</span><br><span class="line">        <span class="comment">//...</span></span><br><span class="line">        <span class="keyword">return</span> callback(<span class="literal">null</span>, compilation);</span><br><span class="line">      });</span><br><span class="line">    });</span><br><span class="line">  });</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="compilation-finish-amp-compilation-seal"><a href="#compilation-finish-amp-compilation-seal" class="headerlink" title="compilation.finish &amp; compilation.seal"></a>compilation.finish &amp; compilation.seal</h2><p>执行 <code>compilation.finish</code>，触发 <code>compilation.hooks</code>：<code>finishModules</code>，执行插件 <code>FlagDependencyExportsPlugin</code> 注册的事件，作用是遍历所有 <code>module</code> 将 <code>export</code> 出来的变量以数组的形式，单独存储到 <code>module.buildMeta.providedExports</code>变量下。</p>
+<p>然后执行 <code>reportDependencyErrorsAndWarnings</code> 收集生成每一个 <code>module</code> 时暴露出来的 <code>err</code> 和 <code>warning</code>。</p>
+<p>然后走回调执行 <code>compilation.seal</code> 触发了海量 <code>hooks</code>，为我们侵入 <code>webpack</code> 构建流程提供了海量钩子。我们略过本 <code>demo</code> 没有注册方法的钩子，执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.hooks.seal.call();</span><br></pre></td></tr></tbody></table></figure>
+
+<p>触发插件 <code>WarnCaseSensitiveModulesPlugin</code>：模块文件路径需要区分大小写的警告</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.hooks.optimizeDependencies.call(<span class="built_in">this</span>.modules);</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>production</code> 模式会触发插件：</p>
+<ul>
+<li><code>SideEffectsFlagPlugin</code>：识别 <code>package.json</code> 或者 <code>module.rules</code> 的 <code>sideEffects</code> 标志（纯的 ES2015 模块)，安全地删除未用到的 <code>export</code> 导出</li>
+<li><code>FlagDependencyUsagePlugin</code>：编译时标记依赖 <code>unused harmony export</code> 用于 <code>Tree shaking</code></li>
+</ul>
+<h2 id="chunk-初始化"><a href="#chunk-初始化" class="headerlink" title="chunk 初始化"></a>chunk 初始化</h2><p>在触发 <code>compilation.hooks</code>:<code>beforeChunks</code> 后，开始遍历入口对象 <code>this._preparedEntrypoints</code>，为<strong>每一个入口</strong>生成一个 <code>chunk</code>：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> chunk = <span class="built_in">this</span>.addChunk(name);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>该方法里做了缓存判断后执行 <code>new Chunk(name)</code>，并同时添加 <code>chunk</code> 到 <code>Compilation.chunks</code>，继续执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> entrypoint = <span class="keyword">new</span> Entrypoint(name);</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>Entrypoint</code> 类扩展于 <code>ChunkGroup</code> 类，是 <code>chunks</code> 的集合，主要用来优化 <code>chunk graph</code>。</p>
+<p>继续执行设置了 <code>Compilation.runtimeChunk &amp; Compilation.namedChunkGroups &amp; Compilation.entrypoints &amp; Compilation.chunkGroups</code> 和 <code>ChunkGroup.origins</code>，然后执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GraphHelpers.connectChunkGroupAndChunk(entrypoint, chunk);</span><br><span class="line">GraphHelpers.connectChunkAndModule(chunk, <span class="built_in">module</span>);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>建立了 <code>chunk</code> 与 <code>entrypoint</code>，<code>chunk</code> 与 <code>module</code> 之间的联系，然后执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.assignDepth(<span class="built_in">module</span>);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>根据各个模块依赖的深度（多次依赖取最小值）设置 <code>module.depth</code>，入口模块则为 <code>depth = 0</code>。</p>
+<p>遍历完 <code>this._preparedEntrypoints</code> 后，然后执行：</p>
+<h2 id="生成-chunk-graph"><a href="#生成-chunk-graph" class="headerlink" title="生成 chunk graph"></a>生成 chunk graph</h2><figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">buildChunkGraph(<span class="built_in">this</span>, <span class="comment">/** <span class="doctag">@type <span class="type">{Entrypoint[]}</span> </span>*/</span> (<span class="built_in">this</span>.chunkGroups.slice()));</span><br></pre></td></tr></tbody></table></figure>
+
+<p><strong><code>buildChunkGraph</code> 用于生成并优化 <code>chunk</code> 依赖图，建立起各模块之前的关系。</strong> 分为三阶段：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// PART ONE</span></span><br><span class="line">visitModules(compilation, inputChunkGroups, chunkGroupInfoMap, chunkDependencies, blocksWithNestedBlocks, allCreatedChunkGroups);</span><br><span class="line"><span class="comment">// PART TWO</span></span><br><span class="line">connectChunkGroups(blocksWithNestedBlocks, chunkDependencies, chunkGroupInfoMap);</span><br><span class="line"><span class="comment">// Cleaup work</span></span><br><span class="line">cleanupUnconnectedGroups(compilation, allCreatedChunkGroups);</span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="第一阶段"><a href="#第一阶段" class="headerlink" title="第一阶段"></a>第一阶段</h3><p>第一阶段主要建立了 <code>chunkGroup,chunk,module</code>（包括同步异步）之间的从属关系。</p>
+<p>先执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> blockInfoMap = extraceBlockInfoMap(compilation);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>得到一个 <code>map</code> 结构： <code>module</code> 与该 <code>module</code> 内导入其他模块的关系，同步存入 <code>modules</code>，异步存入 <code>blocks</code>。以 <code>demo</code> 为例，得到 <code>blockInfoMap</code>：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">{</span><br><span class="line">  <span class="comment">//...map结构</span></span><br><span class="line">  <span class="number">0</span>:{</span><br><span class="line">    key:NormalModule, <span class="comment">//a</span></span><br><span class="line">    value:{</span><br><span class="line">      blocks:[ImportDependenciesBlock],<span class="comment">//异步</span></span><br><span class="line">      modules:[NormalModule] <span class="comment">//b  modules为set结构</span></span><br><span class="line">    }</span><br><span class="line">  },</span><br><span class="line">  <span class="number">1</span>:{</span><br><span class="line">    key: ImportDependenciesBlock,</span><br><span class="line">    value:{</span><br><span class="line">      blocks: [],</span><br><span class="line">      modules:[NormalModule] <span class="comment">//c</span></span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">  <span class="number">2</span>:{</span><br><span class="line">    key: NormalModule, <span class="comment">//c</span></span><br><span class="line">    value:{</span><br><span class="line">      blocks: [ImportDependenciesBlock],</span><br><span class="line">      modules:[NormalModule] <span class="comment">//d</span></span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">  <span class="comment">//........</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>继续执行，设置了 <code>queue</code> 数组，<code>push</code> 入口 <code>module</code> 和对应的 <code>action</code> 等信息组成的对象，用于 <code>while</code> 循环：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">queue.push({</span><br><span class="line">  action: ENTER_MODULE,</span><br><span class="line">  block: <span class="built_in">module</span>,</span><br><span class="line">  <span class="built_in">module</span>,</span><br><span class="line">  chunk,</span><br><span class="line">  chunkGroup,</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p>设置了 <code>chunkGroupInfoMap</code>，他映射了 <code>chunkGroup</code> 和与他相关的信息对象：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">chunkGroupInfoMap.set(chunkGroup, {</span><br><span class="line">  chunkGroup,</span><br><span class="line">  minAvailableModules: <span class="keyword">new</span> <span class="built_in">Set</span>(),</span><br><span class="line">  minAvailableModulesOwned: <span class="literal">true</span>,</span><br><span class="line">  availableModulesToBeMerged: [],</span><br><span class="line">  skippedItems: [],</span><br><span class="line">  resultingAvailableModules: <span class="literal">undefined</span>,</span><br><span class="line">  children: <span class="literal">undefined</span>,</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p>然后执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (queue.length) {</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">  <span class="keyword">while</span> (queue.length) {</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">    <span class="keyword">if</span> (chunkGroup !== queueItem.chunkGroup) {</span><br><span class="line">      <span class="comment">// 重置更新chunkGroup</span></span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">switch</span> (queueItem.action) {</span><br><span class="line">      <span class="keyword">case</span> ADD_AND_ENTER_MODULE: {</span><br><span class="line">        <span class="comment">// 如果 queueItem.module 在 minAvailableModules，则将该 queueItem 存入 skippedItems</span></span><br><span class="line">        <span class="comment">// 建立 chunk 和 module 之间的联系，将依赖的 module 存入该 chunk 里</span></span><br><span class="line">      }</span><br><span class="line">      <span class="keyword">case</span> ENTER_MODULE: {</span><br><span class="line">        <span class="comment">// 设置 chunkGroup._moduleIndices 和 module.index，然后 queue.push 一个新的该 module 的 queueItem，action 设为 LEAVE_MODULE</span></span><br><span class="line">      }</span><br><span class="line">      <span class="keyword">case</span> PROCESS_BLOCK: {</span><br><span class="line">        <span class="comment">// 0. 通过上文 blockInfoMap 映射关系及入口 module，找到入口 module 所依赖的其他同步、异步模块</span></span><br><span class="line">        <span class="comment">// 1. 遍历其同步模块 modules，如果对应 chunk 已有此 module 则跳过；判断此 module 是否在 minAvailableModules，有则将一个新的 queueItem 存入 skippedItems，没有则存入 queue，其中 queueItem.action 都设为 ADD_AND_ENTER_MODULE</span></span><br><span class="line">        <span class="comment">// 2. 遍历 blockInfoMap 里的异步模块 blocks</span></span><br><span class="line">        <span class="comment">// 2.1 创建一个对应异步依赖的 chunkGroup 和 chunk，并建立两者的联系，然后更新了 compilation.chunkGroups 和 compilation.namedChunkGroups，chunkGroupCounters(计数 map)，blockChunkGroups（映射依赖和 ChunkGroup 的关系 map），allCreatedChunkGroups（收集被创建的ChunkGroup set）</span></span><br><span class="line">        <span class="comment">// 2.2 更新 chunkDependencies（map） 建立前一个 ChunkGroup 与新的 ChunkGroup 和 import 依赖的映射</span></span><br><span class="line">        <span class="comment">// 2.3 更新 queueConnect（map） 建立前一个 ChunkGroup 与新的 ChunkGroup 的映射</span></span><br><span class="line">        <span class="comment">// 2.4 更新 queueDelayed，同 queue，注意 module 是前一个的 module，action 为 PROCESS_BLOCK</span></span><br><span class="line">      }</span><br><span class="line">      <span class="keyword">case</span> LEAVE_MODULE: {</span><br><span class="line">        <span class="comment">// 设置 chunkGroup._moduleIndices2 和 module.index2</span></span><br><span class="line">      }</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">  <span class="comment">// 上文 while (queue.length) 从 enter module 开始，循环将所有同步依赖都加入到同一个 chunk 里，将 enter module 及它的同步依赖里的异步依赖都各自新建了chunkGroup 和 chunk，并将异步模块存入 queueDelayed，异步依赖中的异步依赖还未处理。</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> (queueConnect.size &gt; <span class="number">0</span>) {</span><br><span class="line">    <span class="comment">// 计算可用的模块</span></span><br><span class="line">    <span class="comment">// 1. 在 chunkGroupInfoMap 中设置前一个 ChunkGroup 的信息对象的 resultingAvailableModules, children</span></span><br><span class="line">    <span class="comment">// 2. 在 chunkGroupInfoMap 中初始化新的 ChunkGroup 与他相关的信息对象的映射并设置了 availableModulesToBeMerged</span></span><br><span class="line">    <span class="keyword">if</span> (outdatedChunkGroupInfo.size &gt; <span class="number">0</span>) {</span><br><span class="line">      <span class="comment">// 合并可用模块</span></span><br><span class="line">      <span class="comment">// 1.获取设置新的 ChunkGroup 信息对象的 minAvailableModules</span></span><br><span class="line">      <span class="comment">// 2.如果新的 ChunkGroup 信息对象的 skippedItems 不为空则 push 到 queue</span></span><br><span class="line">      <span class="comment">// 3.如果新的 ChunkGroup 信息对象的 children 不为空，则更新 queueConnect 递归循环</span></span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">  <span class="comment">// 把 queueDelayed 放入 queue 走 while 的最外层循环，目的的所有同步循环处理完后，然后才处理异步 module，如果异步 module 里还有异步 module，将放到下一次的 queue 走 while 的最外层循环</span></span><br><span class="line">  <span class="keyword">if</span> (queue.length === <span class="number">0</span>) {</span><br><span class="line">    <span class="keyword">const</span> tempQueue = queue; <span class="comment">// ImportDependenciesBlock</span></span><br><span class="line">    queue = queueDelayed.reverse();</span><br><span class="line">    queueDelayed = tempQueue;</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<ul>
+<li>在内部 <code>while</code> 对 <code>queue.length</code> 循环里（ <code>while+push</code> 防递归爆栈，后序深度优先），从入口 <code>module</code> 开始，解析了所有同步 <code>module</code> 并建立了 <code>module</code> 与 <code>chunk</code> 的联系；解析了所有第一层异步(即非嵌套异步模块)的 <code>module</code>，并为每个不同的异步 <code>mudule</code> 都新建了 <code>chunkGroup</code> 和 <code>chunk</code> 并建立了两者的联系。</li>
+<li>然后在 <code>while</code> 对 <code>queueConnect.size</code> 的循环里，更新了 <code>chunkGroupInfoMap</code> 中前一个 <code>ChunkGroup</code> 的信息对象和初始化了新的 <code>ChunkGroup</code> 的信息对象，并获取了最小可用 <code>module</code>。</li>
+<li>同步 <code>module</code> 循环处理结束后，开始处理异步 <code>module</code>，将 <code>queueDelayed</code> 赋给 <code>queue</code>，走外部 <code>while</code> 对 <code>queue.length</code> 的循环。</li>
+<li>处理异步模块的时候，<code>queue</code> 里的 <code>block</code> 为 <code>ImportDependenciesBlock</code> 依赖，然后更新 <code>chunkGroup</code> 后， <code>switch</code> 走 <code>PROCESS_BLOCK</code> 获得本次异步对应的真正模块，后面的处理数据都将在新的 <code>ChunkGroup</code> 信息对象上。就这样循环处理，最终得到一个 <code>Map</code> 结构的 <code>chunkGroupInfoMap</code>。以本 <code>demo</code> 为例，得到:</li>
+</ul>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">{</span><br><span class="line">  <span class="comment">//...map结构</span></span><br><span class="line">  <span class="number">0</span>:{</span><br><span class="line">    key:Entrypoint, <span class="comment">//groupDebugId:5000</span></span><br><span class="line">    value:{</span><br><span class="line">      availableModulesToBeMerged:<span class="built_in">Array</span>(<span class="number">0</span>)</span><br><span class="line">      children:<span class="function"><span class="title">Set</span>(<span class="params"><span class="number">1</span></span>)</span> {} <span class="comment">//ChunkGroup 5001</span></span><br><span class="line">      chunkGroup:Entrypoint</span><br><span class="line">      minAvailableModules:<span class="built_in">Set</span>(<span class="number">0</span>)</span><br><span class="line">      minAvailableModulesOwned:<span class="literal">true</span></span><br><span class="line">      resultingAvailableModules:<span class="built_in">Set</span>(<span class="number">3</span>)</span><br><span class="line">      skippedItems:<span class="built_in">Array</span>(<span class="number">0</span>)</span><br><span class="line">    }</span><br><span class="line">  },</span><br><span class="line">  <span class="number">1</span>:{</span><br><span class="line">    key: ChunkGroup, <span class="comment">//groupDebugId:5001</span></span><br><span class="line">    value:{</span><br><span class="line">      availableModulesToBeMerged:<span class="built_in">Array</span>(<span class="number">0</span>)</span><br><span class="line">      children:<span class="function"><span class="title">Set</span>(<span class="params"><span class="number">1</span></span>)</span> {} <span class="comment">//ChunkGroup 5002</span></span><br><span class="line">      chunkGroup:Entrypoint</span><br><span class="line">      minAvailableModules:<span class="built_in">Set</span>(<span class="number">3</span>)</span><br><span class="line">      minAvailableModulesOwned:<span class="literal">true</span></span><br><span class="line">      resultingAvailableModules:<span class="built_in">Set</span>(<span class="number">5</span>)</span><br><span class="line">      skippedItems:<span class="built_in">Array</span>(<span class="number">0</span>)</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">  <span class="number">2</span>:{</span><br><span class="line">    key: ChunkGroup, <span class="comment">//groupDebugId:5002</span></span><br><span class="line">    value:{</span><br><span class="line">      availableModulesToBeMerged:<span class="built_in">Array</span>(<span class="number">0</span>)</span><br><span class="line">      children:<span class="literal">undefined</span></span><br><span class="line">      chunkGroup:Entrypoint</span><br><span class="line">      minAvailableModules:<span class="built_in">Set</span>(<span class="number">5</span>)</span><br><span class="line">      minAvailableModulesOwned:<span class="literal">true</span></span><br><span class="line">      resultingAvailableModules:<span class="literal">undefined</span></span><br><span class="line">      skippedItems:<span class="built_in">Array</span>(<span class="number">1</span>)</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="第二阶段"><a href="#第二阶段" class="headerlink" title="第二阶段"></a>第二阶段</h3><p>第二阶段主要根据 <code>ImportDependenciesBlock</code> 建立了不同 <code>chunkGroup</code> 之间的父子关系。</p>
+<p>遍历 <code>chunkDependencies</code>，<code>chunkDependencies</code> 是 <code>Map</code> 结构，保存着前一个 <code>ChunkGroup</code> 与新的 <code>ChunkGroup</code> 和 <code>import</code> 依赖之间的映射：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">{</span><br><span class="line">  <span class="comment">//...map结构</span></span><br><span class="line">  <span class="number">0</span>:{</span><br><span class="line">    key:Entrypoint, <span class="comment">//groupDebugId:5000</span></span><br><span class="line">    value:[</span><br><span class="line">      {</span><br><span class="line">        block:ImportDependenciesBlock,</span><br><span class="line">        chunkGroup:ChunkGroup <span class="comment">//groupDebugId:5001</span></span><br><span class="line">      }</span><br><span class="line">    ]</span><br><span class="line">  },</span><br><span class="line">  <span class="number">1</span>:{</span><br><span class="line">    key:ChunkGroup, <span class="comment">//groupDebugId:5001</span></span><br><span class="line">    value:[</span><br><span class="line">      {</span><br><span class="line">        block:ImportDependenciesBlock,</span><br><span class="line">        chunkGroup:ChunkGroup <span class="comment">//groupDebugId:5002</span></span><br><span class="line">      }</span><br><span class="line">    ]</span><br><span class="line">  },</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>在判断如果前一个 <code>ChunkGroup</code> 信息对象的可用模块 <code>resultingAvailableModules</code> 包含后一个 <code>ChunkGroup.chunks[]._modules</code>，则分别建立 <code>import</code> 依赖与对应的 <code>ChunkGroup</code>，前一个 <code>chunkGroup</code> 和后一个 <code>chunkGroup</code> 的关系：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">GraphHelpers.connectDependenciesBlockAndChunkGroup(depBlock, depChunkGroup); <span class="comment">// ImportDependenciesBlock与chunkGroup建立联系</span></span><br><span class="line"></span><br><span class="line">GraphHelpers.connectChunkGroupParentAndChild(chunkGroup, depChunkGroup); <span class="comment">// chunkGroup之间建立联系：_children和_parents</span></span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="第三阶段"><a href="#第三阶段" class="headerlink" title="第三阶段"></a>第三阶段</h3><p>第三阶段主要清理了无用 <code>chunk</code> 并清理相关的联系。</p>
+<p>遍历 <code>allCreatedChunkGroups</code>，<code>allCreatedChunkGroups</code> 即为异步被创建的 <code>ChunkGroup</code>，判断 <code>chunkGroup</code> 有没有父的 <code>chunkGroup</code>（<code>_parents</code>）,如果没有执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">const</span> chunk <span class="keyword">of</span> chunkGroup.chunks) {</span><br><span class="line">  <span class="keyword">const</span> idx = compilation.chunks.indexOf(chunk);</span><br><span class="line">  <span class="keyword">if</span> (idx &gt;= <span class="number">0</span>) compilation.chunks.splice(idx, <span class="number">1</span>);</span><br><span class="line">  chunk.remove(<span class="string">'unconnected'</span>);</span><br><span class="line">}</span><br><span class="line">chunkGroup.remove(<span class="string">'unconnected'</span>);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>即解除 <code>module，chunkGroup，chunk</code> 三者之间的联系。</p>
+<p>最终每个 <code>module</code> 与每个 <code>chunk</code>，每个 <code>chunkGroup</code> 和他们之间都建立了联系，优化形成了 <code>chunk Graph</code>。</p>
+<hr>
+<p><code>seal</code> 里继续执行，先将 <code>compilation.modules</code> 按 <code>index</code> 属性大小排序，然后执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.hooks.afterChunks.call(<span class="built_in">this</span>.chunks);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>触发插件 <code>WebAssemblyModulesPlugin</code>：设置与 <code>webassembly</code> 相关的报错信息，到此 <code>chunk</code> 生成结束。</p>
+<h2 id="module-chunk-ChunkGroup-区别"><a href="#module-chunk-ChunkGroup-区别" class="headerlink" title="module chunk ChunkGroup 区别"></a>module chunk ChunkGroup 区别</h2><h3 id="module"><a href="#module" class="headerlink" title="module"></a>module</h3><p><code>module</code> 即每一个资源文件的模块对应，如 <code>js / css / 图片</code> 等。由 <code>NormalModule</code> 实例化而来，存于 <code>compilation.modules</code>。</p>
+<ul>
+<li><code>module.blocks</code>: 异步模块的依赖</li>
+<li><code>module.dependencies</code> 存同步模块的依赖</li>
+<li><code>module._chunks</code> 保存 <code>module</code> 所属 <code>chunk</code> 列表</li>
+</ul>
+<h3 id="chunk"><a href="#chunk" class="headerlink" title="chunk"></a>chunk</h3><p><code>chunk</code> 即每一个输出文件的对应，包括入口文件，异步加载文件，优化切割后的文件等等，存于 <code>compilation.chunks</code>。</p>
+<ul>
+<li><code>chunk._groups</code>: 保存 <code>chunk</code> 所属 <code>ChunkGroup</code> 列表</li>
+<li><code>chunk._modules</code>: 由哪些 <code>module</code> 组成</li>
+</ul>
+<h3 id="ChunkGroup"><a href="#ChunkGroup" class="headerlink" title="ChunkGroup"></a>ChunkGroup</h3><p><code>ChunkGroup</code> 一般包含一个 <code>chunk</code>（入口 <code>chunk</code> 或异步模块的 <code>chunk</code>）。<code>entrypoint</code> 就是一个 <code>ChunkGroup</code>，里包含入口 <code>chunk</code>。存于 <code>compilation.chunkGroups</code>。</p>
+<ul>
+<li><code>ChunkGroup.chunks</code>: 由哪些 <code>chunk</code> 组成</li>
+<li><code>ChunkGroup._blocks</code>: 保存异步依赖 <code>ImportDependenciesBlock</code></li>
+<li><code>ChunkGroup._children</code>: 保存子 <code>ChunkGroup</code></li>
+<li><code>ChunkGroup._parent</code>: 保存父 <code>ChunkGroup</code></li>
+</ul>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><ol>
+<li>在 <code>finish</code> 回调中执行的 <code>seal</code> 方法里，包含了海量钩子用于我们侵入 <code>webpack</code> 的封包阶段；</li>
+<li>在遍历入口文件实例化生成 <code>chunk</code> 时，同时实例化了 <code>Entrypoint</code> 等，并建立了入口 <code>module</code> 和 <code>chunk</code>，<code>Entrypoint</code> 之间的联系；</li>
+<li>通过 <code>buildChunkGraph</code> 的三个阶段，让所有的 <code>module、chunk、chunkGroup</code> 之间都建立了联系，形成了 <code>chunk Graph</code>。</li>
+<li>最后触发钩子 <code>afterChunks</code> 标志这 <code>chunk</code> 生成结束。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Korey 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/378.html" rel="prev" title="webpack 4 源码主流程分析（七）：构建 module（下）">
+                  <i class="fa fa-chevron-left"></i> webpack 4 源码主流程分析（七）：构建 module（下）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/380.html" rel="next" title="webpack 4 源码主流程分析（九）：优化 chunk">
+                  webpack 4 源码主流程分析（九）：优化 chunk <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  © 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Korey zhao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">507k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:41</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+
+
+  
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script>
+
+<script src="/bundle.js"></script><script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  ;
+L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":125,"height":150,"position":"left","hOffset":30,"vOffset":-5},"mobile":{"show":false,"scale":0.05},"react":{"opacityDefault":1,"opacityOnHover":0.2},"log":false});</script></body></html>

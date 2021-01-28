@@ -1,23 +1,562 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#3eaf7c">
+<meta name="generator" content="Hexo 5.2.0">
 
-{% block title %}{{ page.title }} | {{ title }}{% endblock %}
 
-{% block page_class %}page-post-detail{% endblock %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon.png" color="#3eaf7c">
 
-{% block content %}
+<link rel="stylesheet" href="/css/main.css">
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="资源写入文件回到 seal。执行： 1this.summarizeDependencies();  得到 this.fileDependencies, this.contextDependencies, this.missingDependencies 后，触发了一系列处理资源，优化资源的钩子之后，回到 Compiler.js 的 compile 里的 compilation.seal 回调。 执">
+<meta property="og:type" content="article">
+<meta property="og:title" content="webpack 4 源码主流程分析（十一）：文件的生成">
+<meta property="og:url" content="https://blog.flqin.com/382.html">
+<meta property="og:site_name" content="前端轻语">
+<meta property="og:description" content="资源写入文件回到 seal。执行： 1this.summarizeDependencies();  得到 this.fileDependencies, this.contextDependencies, this.missingDependencies 后，触发了一系列处理资源，优化资源的钩子之后，回到 Compiler.js 的 compile 里的 compilation.seal 回调。 执">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-12-16T23:54:20.000Z">
+<meta property="article:modified_time" content="2019-12-16T23:54:20.000Z">
+<meta property="article:author" content="Korey">
+<meta property="article:tag" content="前端,前端开发,css,html,js,css3,前端开发博客,fe,技术文档">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.flqin.com/382.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>webpack 4 源码主流程分析（十一）：文件的生成 | 前端轻语</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c8dec20f0d0449c8ece3c0dbab4e8f31";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
   </div>
 
-{% endblock %}
+  <div class="site-meta">
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">前端轻语</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">korey的前端笔记</p>
+  </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+
+  </li>
+        <li class="menu-item menu-item-map">
+
+    <a href="/map/" rel="section"><i class="fa fa-sitemap fa-fw"></i>map</a>
+
+  </li>
+        <li class="menu-item menu-item-link">
+
+    <a href="/link/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>link</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B5%84%E6%BA%90%E5%86%99%E5%85%A5%E6%96%87%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">资源写入文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E7%9B%AE%E6%A0%87%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">1.1.</span> <span class="nav-text">创建目标文件夹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E7%9B%AE%E6%A0%87%E6%96%87%E4%BB%B6%E5%B9%B6%E5%86%99%E5%85%A5"><span class="nav-number">1.2.</span> <span class="nav-text">创建目标文件并写入</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE-stats-%E5%B9%B6%E6%89%93%E5%8D%B0%E6%9E%84%E5%BB%BA%E4%BF%A1%E6%81%AF"><span class="nav-number">2.</span> <span class="nav-text">设置 stats 并打印构建信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">本章小结</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Korey" src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Korey</p>
+  <div class="site-description" itemprop="description">热衷于记录、分享前端开发技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="GitHub → https://github.com/zhaoky"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtleXUuemhhb0Bmb3htYWlsLmNvbQ==" title="E-Mail → mailto:keyu.zhao@foxmail.com"><i class="far fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci81N2M5MWIzYjE2NWFiZDAwNjhkYjg5YzI=" title="掘金 → https://juejin.im/user/57c91b3b165abd0068db89c2"><i class="fas fa-link fa-fw"></i>掘金</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cDovL3d3dy56aGlodS5jb20vcGVvcGxlL2ZlX2tvcmV5" title="知乎 → http://www.zhihu.com/people/fe_korey"><i class="fas fa-link fa-fw"></i>知乎</span>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/382.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          webpack 4 源码主流程分析（十一）：文件的生成
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-12-16 23:54:20" itemprop="dateCreated datePublished" datetime="2019-12-16T23:54:20+00:00">2019-12-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Build/" itemprop="url" rel="index"><span itemprop="name">FE Build</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="资源写入文件"><a href="#资源写入文件" class="headerlink" title="资源写入文件"></a>资源写入文件</h2><p>回到 <code>seal</code>。执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.summarizeDependencies();</span><br></pre></td></tr></tbody></table></figure>
+
+<p>得到 <code>this.fileDependencies, this.contextDependencies, this.missingDependencies</code> 后，触发了一系列处理资源，优化资源的钩子之后，回到 <code>Compiler.js</code> 的 <code>compile</code> 里的 <code>compilation.seal</code> 回调。</p>
+<p>执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.hooks.afterCompile.callAsync(compilation, <span class="function">(<span class="params">err</span>) =&gt;</span> {</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">  <span class="keyword">return</span> callback(<span class="literal">null</span>, compilation);</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p>该钩子会触发插件 <code>CachePlugin</code> 相关的事件，给 <code>compiler</code> 的属性 <code>_lastCompilationFileDependencies，_lastCompilationContextDependencies</code> 分别赋值 <code>fileDependencies，contextDependencies</code>。</p>
+<h3 id="创建目标文件夹"><a href="#创建目标文件夹" class="headerlink" title="创建目标文件夹"></a>创建目标文件夹</h3><p>然后执行回调即 <code>onCompiled</code>，方法里执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.emitAssets(compilation, <span class="function">(<span class="params">err</span>) =&gt;</span> {</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p>进入 <code>this.emitAssets</code>，<code>emitAssets</code> 负责的是构建资源输出的过程。在方法里触发了 <code>Compiler.hooks</code>:<code>emit</code>，在回调里执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//...</span></span><br><span class="line">outputPath = compilation.getPath(<span class="built_in">this</span>.outputPath); <span class="comment">// 获取资源输出的路径</span></span><br><span class="line"><span class="built_in">this</span>.outputFileSystem.mkdirp(outputPath, emitFiles); <span class="comment">// 递归创建输出目录并输出资源</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>outputPath</code> 为配置里的 <code>output.path</code>，然后调用 <code>mkdirp</code> 创建文件夹。</p>
+<h3 id="创建目标文件并写入"><a href="#创建目标文件并写入" class="headerlink" title="创建目标文件并写入"></a>创建目标文件并写入</h3><p>创建目标文件夹后，执行回调 <code>emitFiles</code>，在回调里通过 <code>asyncLib.forEachLimit</code> 并行执行对每个 <code>file</code> 资源文件进行路径拼接后，将每个 <code>source</code> 源码转换为 <code>buffer</code> 后（性能提升），写入真实路径的 <code>file</code>：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">asyncLib.forEachLimit(</span><br><span class="line">  compilation.getAssets(),</span><br><span class="line">  <span class="number">15</span>,</span><br><span class="line">  ({ <span class="attr">name</span>: file, source }, callback) =&gt; {</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">    <span class="keyword">const</span> writeOut = <span class="function">(<span class="params">err</span>) =&gt;</span> {</span><br><span class="line">      <span class="comment">//...</span></span><br><span class="line">      <span class="keyword">const</span> targetPath = <span class="built_in">this</span>.outputFileSystem.join(outputPath, targetFile); <span class="comment">// 路径拼接，得到真实路径</span></span><br><span class="line">      <span class="keyword">if</span> (<span class="built_in">this</span>.options.output.futureEmitAssets) {</span><br><span class="line">        <span class="comment">//...判断重写入 及 gc释放内存（this.assets相关重写SizeOnlySource）</span></span><br><span class="line">      } <span class="keyword">else</span> {</span><br><span class="line">        <span class="comment">//...</span></span><br><span class="line">        <span class="keyword">let</span> content = source.source(); <span class="comment">//source为 CachedSource 实例，content为得到的资源</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!Buffer.isBuffer(content)) {</span><br><span class="line">          content = Buffer.from(content, <span class="string">'utf8'</span>); <span class="comment">//buffer转换，在node中提升性能</span></span><br><span class="line">        }</span><br><span class="line">        <span class="comment">//...写入文件</span></span><br><span class="line">        <span class="built_in">this</span>.outputFileSystem.writeFile(targetPath, content, <span class="function">(<span class="params">err</span>) =&gt;</span> {</span><br><span class="line">          <span class="comment">//...</span></span><br><span class="line">          <span class="built_in">this</span>.hooks.assetEmitted.callAsync(file, content, callback);</span><br><span class="line">        });</span><br><span class="line">      }</span><br><span class="line">    };</span><br><span class="line">    <span class="comment">// 若目标文件路径包含/或\，先创建文件夹再写入</span></span><br><span class="line">    <span class="keyword">if</span> (targetFile.match(<span class="regexp">/\/|\\/</span>)) {</span><br><span class="line">      <span class="keyword">const</span> dir = path.dirname(targetFile);</span><br><span class="line">      <span class="built_in">this</span>.outputFileSystem.mkdirp(<span class="built_in">this</span>.outputFileSystem.join(outputPath, dir), writeOut);</span><br><span class="line">    } <span class="keyword">else</span> {</span><br><span class="line">      writeOut();</span><br><span class="line">    }</span><br><span class="line">  },</span><br><span class="line">  <span class="comment">// 遍历完成的回调函数</span></span><br><span class="line">  (err) =&gt; {</span><br><span class="line">    <span class="comment">//...回调</span></span><br><span class="line">  }</span><br><span class="line">);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>其中：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> content = source.source();</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>source</code> 为 <code>CachedSource</code> 实例，<code>source.source</code> 做了缓存判断，执行 <code>this._source.source</code>， <code>this._source</code> 为 <code>ConcatSource</code> 实例，该方法会遍历 <code>children</code>，如果子项不是字符串，则执行其 <code>source</code> 方法。</p>
+<p>对于 <code>ReplaceSource</code> 实例来说，会执行其 <code>_replaceString</code> 方法，该方法里会循环处理替换在之前 <code>资源的构建 -&gt; 生成 chunk 资源 -&gt; chunkTemplate -&gt; 生成主体 chunk 代码 -&gt; 生成每个 module 代码</code> <code>push</code> 进去的 <code>replacements</code>，得到替换后的字符串，合并返回 <code>resultStr</code>。</p>
+<h2 id="设置-stats-并打印构建信息"><a href="#设置-stats-并打印构建信息" class="headerlink" title="设置 stats 并打印构建信息"></a>设置 stats 并打印构建信息</h2><p>所有文件都创建写入完成后，执行回调：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.hooks.afterEmit.callAsync(compilation, <span class="function">(<span class="params">err</span>) =&gt;</span> {</span><br><span class="line">  <span class="keyword">if</span> (err) <span class="keyword">return</span> callback(err);</span><br><span class="line">  <span class="keyword">return</span> callback();</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p>在回调里触发 <code>Compiler.afterEmit</code>:<code>hooks</code>，在回调里执行 <code>callback</code> 即 <code>onCompiled</code> 里的 <code>this.emitAssets</code> 的回调，即执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//...</span></span><br><span class="line"><span class="built_in">this</span>.emitRecords(<span class="function">(<span class="params">err</span>) =&gt;</span> {</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">  <span class="keyword">const</span> stats = <span class="keyword">new</span> Stats(compilation);</span><br><span class="line">  stats.startTime = startTime;</span><br><span class="line">  stats.endTime = <span class="built_in">Date</span>.now();</span><br><span class="line">  <span class="built_in">this</span>.hooks.done.callAsync(stats, <span class="function">(<span class="params">err</span>) =&gt;</span> {</span><br><span class="line">    <span class="keyword">if</span> (err) <span class="keyword">return</span> finalCallback(err);</span><br><span class="line">    <span class="keyword">return</span> finalCallback(<span class="literal">null</span>, stats);</span><br><span class="line">  });</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p>执行 <code>this.emitRecords</code>，然后在其回调里设置相关 <code>stats</code>，然后在 <code>Compiler.done</code>:<code>hooks</code> 的回调里执行 <code>finalCallback</code>，即执行文件 <code>webpack-cli/bin/cli.js</code> 里的 <code>compiler.run</code> 的回调，即 <code>compilerCallback</code>。</p>
+<p>方法里清除缓存之后，执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> statsString = stats.toString(outputOptions);</span><br><span class="line"><span class="keyword">const</span> delimiter = outputOptions.buildDelimiter ? <span class="string">`<span class="subst">${outputOptions.buildDelimiter}</span>\n`</span> : <span class="string">''</span>;</span><br><span class="line"><span class="keyword">if</span> (statsString) stdout.write(<span class="string">`<span class="subst">${statsString}</span>\n<span class="subst">${delimiter}</span>`</span>);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>在 <code>cli</code> 里打印出构建相关的信息。至此，构建全部结束，下一章分析打包后的文件！</p>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><ol>
+<li>创建目标文件夹及文件并将资源写入；</li>
+<li>写入的时候，会循环处理 <code>source</code> 中的 <code>ReplaceSource</code> 实例中的 <code>replacements</code>，将其替换为真实字符串；</li>
+<li>设置 <code>stats</code> 并打印构建信息。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Korey 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/381.html" rel="prev" title="webpack 4 源码主流程分析（十）：资源的构建">
+                  <i class="fa fa-chevron-left"></i> webpack 4 源码主流程分析（十）：资源的构建
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/383.html" rel="next" title="webpack 4 源码主流程分析（十二）：打包后文件解析">
+                  webpack 4 源码主流程分析（十二）：打包后文件解析 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  © 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Korey zhao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">507k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:41</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+
+
+  
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script>
+
+<script src="/bundle.js"></script><script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  ;
+L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":125,"height":150,"position":"left","hOffset":30,"vOffset":-5},"mobile":{"show":false,"scale":0.05},"react":{"opacityDefault":1,"opacityOnHover":0.2},"log":false});</script></body></html>

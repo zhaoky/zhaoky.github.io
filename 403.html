@@ -1,23 +1,582 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#3eaf7c">
+<meta name="generator" content="Hexo 5.2.0">
 
-{% block title %}{{ page.title }} | {{ title }}{% endblock %}
 
-{% block page_class %}page-post-detail{% endblock %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon.png" color="#3eaf7c">
 
-{% block content %}
+<link rel="stylesheet" href="/css/main.css">
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="原文链接 https://juejin.im/post/5d8cc378f265da5ba0776f36  前言前端页面性能是一个非常核心的用户体验指标。本文介绍阿里 UC 岳鹰全景监控平台 如何设计一个通用、低侵入性、自动上报的页面性能监控方案。主要采用的是 Navigation Timing API 以及 sendBeacon 等方法。  为什么要监控页面性能">
+<meta property="og:type" content="article">
+<meta property="og:title" content="（转载）10分钟彻底搞懂前端页面性能监控">
+<meta property="og:url" content="https://blog.flqin.com/403.html">
+<meta property="og:site_name" content="前端轻语">
+<meta property="og:description" content="原文链接 https://juejin.im/post/5d8cc378f265da5ba0776f36  前言前端页面性能是一个非常核心的用户体验指标。本文介绍阿里 UC 岳鹰全景监控平台 如何设计一个通用、低侵入性、自动上报的页面性能监控方案。主要采用的是 Navigation Timing API 以及 sendBeacon 等方法。  为什么要监控页面性能">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.flqin.com/p403-01.png">
+<meta property="og:image" content="http://cdn.flqin.com/p403-02.png">
+<meta property="og:image" content="http://cdn.flqin.com/p403-03.png">
+<meta property="og:image" content="http://cdn.flqin.com/p403-04.png">
+<meta property="og:image" content="http://cdn.flqin.com/p403-05.png">
+<meta property="og:image" content="http://cdn.flqin.com/p403-06.png">
+<meta property="article:published_time" content="2020-06-22T17:16:22.000Z">
+<meta property="article:modified_time" content="2020-06-22T17:16:22.000Z">
+<meta property="article:author" content="Korey">
+<meta property="article:tag" content="前端,前端开发,css,html,js,css3,前端开发博客,fe,技术文档">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.flqin.com/p403-01.png">
+
+
+<link rel="canonical" href="https://blog.flqin.com/403.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>（转载）10分钟彻底搞懂前端页面性能监控 | 前端轻语</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c8dec20f0d0449c8ece3c0dbab4e8f31";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
   </div>
 
-{% endblock %}
+  <div class="site-meta">
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">前端轻语</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">korey的前端笔记</p>
+  </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+
+  </li>
+        <li class="menu-item menu-item-map">
+
+    <a href="/map/" rel="section"><i class="fa fa-sitemap fa-fw"></i>map</a>
+
+  </li>
+        <li class="menu-item menu-item-link">
+
+    <a href="/link/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>link</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%9B%91%E6%8E%A7%E9%A1%B5%E9%9D%A2%E6%80%A7%E8%83%BD"><span class="nav-number">2.</span> <span class="nav-text">为什么要监控页面性能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%90%86%E8%A7%A3-Navigation-Timing-API-%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87"><span class="nav-number">3.</span> <span class="nav-text">理解 Navigation Timing API 的性能指标</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E6%A0%87%E8%A7%A3%E8%AF%BB"><span class="nav-number">3.1.</span> <span class="nav-text">指标解读</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%87%E9%9B%86%E9%A1%B5%E9%9D%A2%E6%80%A7%E8%83%BD%E7%9A%84%E5%85%B3%E9%94%AE%E6%8C%87%E6%A0%87"><span class="nav-number">4.</span> <span class="nav-text">采集页面性能的关键指标</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A1%AE%E5%AE%9A%E7%BB%9F%E8%AE%A1%E8%B5%B7%E5%A7%8B%E7%82%B9-%EF%BC%88navigationStart-vs-fetchStart-%EF%BC%89"><span class="nav-number">4.1.</span> <span class="nav-text">确定统计起始点 （navigationStart vs fetchStart ）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A6%96%E5%AD%97%E8%8A%82"><span class="nav-number">4.2.</span> <span class="nav-text">首字节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%99%BD%E5%B1%8F%E6%97%B6%E9%97%B4"><span class="nav-number">4.3.</span> <span class="nav-text">白屏时间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A6%96%E5%B1%8F%E6%97%B6%E9%97%B4"><span class="nav-number">4.4.</span> <span class="nav-text">首屏时间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SPA-%E7%9B%9B%E8%A1%8C%E4%B9%8B%E9%99%85"><span class="nav-number">4.5.</span> <span class="nav-text">SPA 盛行之际</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E7%82%B9"><span class="nav-number">4.6.</span> <span class="nav-text">注意点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E4%B8%8A%E6%8A%A5%E6%96%B9%E5%BC%8F"><span class="nav-number">5.</span> <span class="nav-text">数据上报方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%9A%84-img-%E6%A0%87%E7%AD%BE-get-%E8%AF%B7%E6%B1%82"><span class="nav-number">5.1.</span> <span class="nav-text">使用的 img 标签 get 请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#navigator-sendBeacon"><span class="nav-number">5.2.</span> <span class="nav-text">navigator.sendBeacon</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Korey" src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Korey</p>
+  <div class="site-description" itemprop="description">热衷于记录、分享前端开发技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="GitHub → https://github.com/zhaoky"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtleXUuemhhb0Bmb3htYWlsLmNvbQ==" title="E-Mail → mailto:keyu.zhao@foxmail.com"><i class="far fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci81N2M5MWIzYjE2NWFiZDAwNjhkYjg5YzI=" title="掘金 → https://juejin.im/user/57c91b3b165abd0068db89c2"><i class="fas fa-link fa-fw"></i>掘金</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cDovL3d3dy56aGlodS5jb20vcGVvcGxlL2ZlX2tvcmV5" title="知乎 → http://www.zhihu.com/people/fe_korey"><i class="fas fa-link fa-fw"></i>知乎</span>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/403.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          （转载）10分钟彻底搞懂前端页面性能监控
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-06-22 17:16:22" itemprop="dateCreated datePublished" datetime="2020-06-22T17:16:22+00:00">2020-06-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Build/" itemprop="url" rel="index"><span itemprop="name">FE Build</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.8k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>原文链接 <code>https://juejin.im/post/5d8cc378f265da5ba0776f36</code></p>
+</blockquote>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前端页面性能是一个非常核心的用户体验指标。本文介绍阿里 UC 岳鹰全景监控平台 如何设计一个通用、低侵入性、自动上报的页面性能监控方案。主要采用的是 <code>Navigation Timing API</code> 以及 <code>sendBeacon</code> 等方法。</p>
+<p><img data-src="http://cdn.flqin.com/p403-01.png" alt="导读"></p>
+<h2 id="为什么要监控页面性能"><a href="#为什么要监控页面性能" class="headerlink" title="为什么要监控页面性能"></a>为什么要监控页面性能</h2><p>一个页面性能差的话会大大影响用户体验。用户打开页面等待的太久，可能会直接关掉页面，甚至就不再使用了，这种情况在移动端更加明显，移动端用户对页面响应延迟容忍度很低。</p>
+<p>虽然页面性能很重要，但是在实际使用中，页面性能差的情况并不少见。首先，在产品的迭代演进过程中，页面性能可能会被忽略，性能随着版本迭代而有所衰减；其次，性能优化是一项复杂而挑战的事情，需要明确的优化方向和具体的优化手段才能快速落地取效。</p>
+<p>所以我们需要一个性能监控系统，持续监控和预警页面性能的状况，并且在发现瓶颈的时候指导优化工作。</p>
+<h2 id="理解-Navigation-Timing-API-的性能指标"><a href="#理解-Navigation-Timing-API-的性能指标" class="headerlink" title="理解 Navigation Timing API 的性能指标"></a>理解 Navigation Timing API 的性能指标</h2><p>为了帮助开发者更好地衡量和改进前端页面性能，W3C 性能小组引入了 <code>Navigation Timing API</code>，实现了自动、精准的页面性能打点；开发者可以通过 <code>window.performance</code> 属性获取。</p>
+<ul>
+<li><p><code>performance.timing</code> 接口（定义了从 <code>navigationStart</code> 至 <code>loadEventEnd</code> 的 21 个只读属性）</p>
+</li>
+<li><p><code>performance.navigation</code>（定义了当前文档的导航信息，比如是重载还是向前向后等）</p>
+</li>
+</ul>
+<p>下图是 W3C 第一版的 Navigation Timing 的处理模型。从当前浏览器窗口卸载旧页面开始，到新页面加载完成，整个过程一共被切分为 9 个小块：<code>提示卸载旧文档、重定向/卸载、应用缓存、DNS 解析、TCP 握手、HTTP 请求处理、HTTP 响应处理、DOM 处理、文档装载完成</code>。每个小块的首尾、中间做事件分界，取 Unix 时间戳，两两事件之间计算时间差，从而获取中间过程的耗时（精确到毫秒级别）。</p>
+<p><img data-src="http://cdn.flqin.com/p403-02.png" alt="Level 1"></p>
+<p>上图是 Level 1 的规范，2012 年底进入候选建议阶段，至今仍在日常使用中；但是在 W3C 的议程上，它已经功成身退，让位给了精度更高，功能更强大，层次更分明的 Level 2（处理模型如下图）。比如独立划分出来的 Resource Timing，使得我们可以获取具体资源的详细耗时信息。</p>
+<p><img data-src="http://cdn.flqin.com/p403-03.png" alt="Level 2"></p>
+<h3 id="指标解读"><a href="#指标解读" class="headerlink" title="指标解读"></a>指标解读</h3><p><img data-src="http://cdn.flqin.com/p403-04.png" alt="指标解读"></p>
+<h2 id="采集页面性能的关键指标"><a href="#采集页面性能的关键指标" class="headerlink" title="采集页面性能的关键指标"></a>采集页面性能的关键指标</h2><p>使用上面的指标，我们可以计算许多重要的指标，如首字节的时间，页面加载时间，dns 查找以及连接是否安全。我们把 Navigation Timing API 提供的指标做下归类，按照从上到下的时间流，右边的时刻标记了每个指标从哪里开始计算到哪里截止，比如，跳转时间 <code>redirect</code> 由 <code>redirectEnd - redirectStart</code> 计算得到，其他的类推。</p>
+<p><img data-src="http://cdn.flqin.com/p403-05.png" alt="关键指标"></p>
+<h3 id="确定统计起始点-（navigationStart-vs-fetchStart-）"><a href="#确定统计起始点-（navigationStart-vs-fetchStart-）" class="headerlink" title="确定统计起始点 （navigationStart vs fetchStart ）"></a>确定统计起始点 （navigationStart vs fetchStart ）</h3><p>页面性能统计的起始点时间，应该是用户输入网址回车后开始等待的时间。一个是通过 <code>navigationStart</code> 获取，相当于在 URL 输入栏回车或者页面按 F5 刷新的时间点；另外一个是通过 <code>fetchStart</code>，相当于浏览器准备好使用 HTTP 请求获取文档的时间。</p>
+<p>从开发者实际分析使用的场景，浏览器重定向、卸载页面的耗时对页面加载分析并无太大作用；通常建议使用 <code>fetchStart</code> 作为统计起始点。</p>
+<h3 id="首字节"><a href="#首字节" class="headerlink" title="首字节"></a>首字节</h3><p>主文档返回第一个字节的时间，是页面加载性能比较重要的指标。对用户来说一般无感知，对于开发者来说，则代表访问网络后端的整体响应耗时。</p>
+<h3 id="白屏时间"><a href="#白屏时间" class="headerlink" title="白屏时间"></a>白屏时间</h3><p>用户看到页面展示出现一个元素的时间。很多人认为白屏时间是页面返回的首字节时间，但这样其实并不精确，因为头部资源还没加载完毕，页面也是白屏。</p>
+<p>相对来说具备「白屏时间」统计意义的指标，可以取 <code>domLoading - fetchStart</code>，此时页面开始解析 DOM 树，页面渲染的第一个元素也会很快出现。</p>
+<p>从 W3C Navigation Timing Level 2 的方案设计，可以直接采用 <code>domInteractive - fetchStart</code>，此时页面资源加载完成，即将进入渲染环节。</p>
+<h3 id="首屏时间"><a href="#首屏时间" class="headerlink" title="首屏时间"></a>首屏时间</h3><p>首屏时间是指页面第一屏所有资源完整展示的时间。这是一个对用户来说非常直接的体验指标，但是对于前端却是一个非常难以统计衡量的指标。</p>
+<p>具备一定意义上的指标可以使用，<code>domContentLoadedEventEnd - fetchStart</code>，甚至使用 <code>loadEventStart - fetchStart</code>，此时页面 DOM 树已经解析完成并且显示内容。<br>以下给出统计页面性能指标的方法。</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> times = {};</span><br><span class="line"><span class="keyword">let</span> t = <span class="built_in">window</span>.performance.timing;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 优先使用 navigation v2 https://www.w3.org/TR/navigation-timing-2/</span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">typeof</span> win.PerformanceNavigationTiming === <span class="string">'function'</span>) {</span><br><span class="line">  <span class="keyword">try</span> {</span><br><span class="line">    <span class="keyword">var</span> nt2Timing = performance.getEntriesByType(<span class="string">'navigation'</span>)[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">if</span> (nt2Timing) {</span><br><span class="line">      t = nt2Timing;</span><br><span class="line">    }</span><br><span class="line">  } <span class="keyword">catch</span> (err) {}</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment">//重定向时间</span></span><br><span class="line">times.redirectTime = t.redirectEnd - t.redirectStart;</span><br><span class="line"></span><br><span class="line"><span class="comment">//dns 查询耗时</span></span><br><span class="line">times.dnsTime = t.domainLookupEnd - t.domainLookupStart;</span><br><span class="line"></span><br><span class="line"><span class="comment">//TTFB 读取页面第一个字节的时间</span></span><br><span class="line">times.ttfbTime = t.responseStart - t.navigationStart;</span><br><span class="line"></span><br><span class="line"><span class="comment">//DNS 缓存时间</span></span><br><span class="line">times.appcacheTime = t.domainLookupStart - t.fetchStart;</span><br><span class="line"></span><br><span class="line"><span class="comment">//卸载页面的时间</span></span><br><span class="line">times.unloadTime = t.unloadEventEnd - t.unloadEventStart;</span><br><span class="line"></span><br><span class="line"><span class="comment">//tcp 连接耗时</span></span><br><span class="line">times.tcpTime = t.connectEnd - t.connectStart;</span><br><span class="line"></span><br><span class="line"><span class="comment">//request 请求耗时</span></span><br><span class="line">times.reqTime = t.responseEnd - t.responseStart;</span><br><span class="line"></span><br><span class="line"><span class="comment">//解析 dom 树耗时</span></span><br><span class="line">times.analysisTime = t.domComplete - t.domInteractive;</span><br><span class="line"></span><br><span class="line"><span class="comment">//白屏时间</span></span><br><span class="line">times.blankTime = (t.domInteractive || t.domLoading) - t.fetchStart;</span><br><span class="line"></span><br><span class="line"><span class="comment">//domReadyTime</span></span><br><span class="line">times.domReadyTime = t.domContentLoadedEventEnd - t.fetchStart;</span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="SPA-盛行之际"><a href="#SPA-盛行之际" class="headerlink" title="SPA 盛行之际"></a>SPA 盛行之际</h3><p><code>Navigation Timing API</code> 可以监控大部分前端页面的性能。但随着 SPA 模式的盛行，类似 vue，reactjs 等框架的普及，页面内容渲染的时机被改变了，W3C 标准无法完全满足原来的监控意义。</p>
+<p>幸运的是，目前 W3C 关于首屏统计已经进入了提议阶段，以 Chrome 为首的浏览器正在打造更能代表用户使用体验的 FP、FCP、FMP 指标，并且逐步开放 API。</p>
+<p><img data-src="http://cdn.flqin.com/p403-06.png" alt="新的指标"></p>
+<h3 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h3><p>通过 <code>window.performance.timing</code> 所获的的页面渲染所相关的数据，在 SPA 应用中改变了 url 但不刷新页面的情况下是不会更新的。因此仅仅通过该 api 是无法获得每一个子路由所对应的页面渲染的时间。如果需要上报切换路由情况下每一个子页面重新 render 的时间，需要自定义上报。</p>
+<h2 id="数据上报方式"><a href="#数据上报方式" class="headerlink" title="数据上报方式"></a>数据上报方式</h2><p>测量好时间后，就需要将数据发送给服务端。页面性能统计数据对丢失率要求比较低，且性能统计应该在尽量不影响主流程的逻辑和页面性能的前提下进行。</p>
+<h3 id="使用的-img-标签-get-请求"><a href="#使用的-img-标签-get-请求" class="headerlink" title="使用的 img 标签 get 请求"></a>使用的 img 标签 get 请求</h3><ul>
+<li>不存在 AJAX 跨域问题，可做跨源的请求</li>
+<li>很古老的标签，没有浏览器兼容性问题</li>
+</ul>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> i = <span class="keyword">new</span> Image();</span><br><span class="line">i.onload = i.onerror = i.onabort = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>{</span><br><span class="line">  i = i.onload = i.onerror = i.onabort = <span class="literal">null</span>;</span><br><span class="line">};</span><br><span class="line">i.src = url;</span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="navigator-sendBeacon"><a href="#navigator-sendBeacon" class="headerlink" title="navigator.sendBeacon"></a>navigator.sendBeacon</h3><p>大部分现代浏览器都支持 <code>navigator.sendBeacon</code> 方法。这个方法可以用来发送一些统计和诊断的小量数据，特别适合上报统计的场景。</p>
+<ul>
+<li>数据可靠，浏览器关闭请求也照样能发</li>
+<li>异步执行，不会影响下一页面的加载</li>
+<li>API 使用简单</li>
+</ul>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">window</span>.addEventListener(<span class="string">'unload'</span>, logData, <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">logData</span>(<span class="params"></span>) </span>{</span><br><span class="line">  navigator.sendBeacon(<span class="string">'/log'</span>, analyticsData);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>最终方案<br>当浏览器支持 <code>sendBeacon</code> 方法，优先使用该方法，使用 <code>img</code> 方式降级上报。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Korey 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/402.html" rel="prev" title="（转载）全面分析总结JS内存模型">
+                  <i class="fa fa-chevron-left"></i> （转载）全面分析总结JS内存模型
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/404.html" rel="next" title="（转载）鉴权方案实现小结">
+                  （转载）鉴权方案实现小结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  © 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Korey zhao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">507k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:41</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+
+
+  
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script>
+
+<script src="/bundle.js"></script><script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  ;
+L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":125,"height":150,"position":"left","hOffset":30,"vOffset":-5},"mobile":{"show":false,"scale":0.05},"react":{"opacityDefault":1,"opacityOnHover":0.2},"log":false});</script></body></html>

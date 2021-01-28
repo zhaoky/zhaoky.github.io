@@ -1,23 +1,586 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#3eaf7c">
+<meta name="generator" content="Hexo 5.2.0">
 
-{% block title %}{{ page.title }} | {{ title }}{% endblock %}
 
-{% block page_class %}page-post-detail{% endblock %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon.png" color="#3eaf7c">
 
-{% block content %}
+<link rel="stylesheet" href="/css/main.css">
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="compiler.runcompiler.run是整个编译过程启动的入口，执行： 1234567891011this.hooks.beforeRun.callAsync(this, (err) => &amp;#123;  //...  this.hooks.run.callAsync(this, (err) => &amp;#123;    //...    // recordsInputPath是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="webpack 4 源码主流程分析（四）：reslove 前的准备">
+<meta property="og:url" content="https://blog.flqin.com/375.html">
+<meta property="og:site_name" content="前端轻语">
+<meta property="og:description" content="compiler.runcompiler.run是整个编译过程启动的入口，执行： 1234567891011this.hooks.beforeRun.callAsync(this, (err) => &amp;#123;  //...  this.hooks.run.callAsync(this, (err) => &amp;#123;    //...    // recordsInputPath是">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-12-10T23:40:51.000Z">
+<meta property="article:modified_time" content="2019-12-10T23:40:51.000Z">
+<meta property="article:author" content="Korey">
+<meta property="article:tag" content="前端,前端开发,css,html,js,css3,前端开发博客,fe,技术文档">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.flqin.com/375.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>webpack 4 源码主流程分析（四）：reslove 前的准备 | 前端轻语</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c8dec20f0d0449c8ece3c0dbab4e8f31";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
   </div>
 
-{% endblock %}
+  <div class="site-meta">
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">前端轻语</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">korey的前端笔记</p>
+  </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+
+  </li>
+        <li class="menu-item menu-item-map">
+
+    <a href="/map/" rel="section"><i class="fa fa-sitemap fa-fw"></i>map</a>
+
+  </li>
+        <li class="menu-item menu-item-link">
+
+    <a href="/link/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>link</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#compiler-run"><span class="nav-number">1.</span> <span class="nav-text">compiler.run</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#compiler-compile"><span class="nav-number">2.</span> <span class="nav-text">compiler.compile</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96-compilation-%E6%89%80%E9%9C%80-params"><span class="nav-number">2.1.</span> <span class="nav-text">获取 compilation 所需 params</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8B%E5%8C%96-NormalModuleFactory"><span class="nav-number">2.2.</span> <span class="nav-text">实例化 NormalModuleFactory</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8B%E5%8C%96-RuleSet"><span class="nav-number">2.2.1.</span> <span class="nav-text">实例化 RuleSet</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C-normalModuleFactory-hooks-factory"><span class="nav-number">2.2.2.</span> <span class="nav-text">注册 normalModuleFactory.hooks:factory</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C-normalModuleFactory-hooks-resolver"><span class="nav-number">2.2.3.</span> <span class="nav-text">注册 normalModuleFactory.hooks:resolver</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8B%E5%8C%96-compilation"><span class="nav-number">2.3.</span> <span class="nav-text">实例化 compilation</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E5%A7%8B%E6%9E%84%E5%BB%BA"><span class="nav-number">3.</span> <span class="nav-text">开始构建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#compilation-addEntry"><span class="nav-number">3.1.</span> <span class="nav-text">compilation.addEntry</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%A7%8B%E5%88%9B%E5%BB%BA-module"><span class="nav-number">3.2.</span> <span class="nav-text">开始创建 module</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E9%98%9F%E5%88%97%E6%8E%A7%E5%88%B6%EF%BC%9Asemaphore-acquire"><span class="nav-number">3.2.1.</span> <span class="nav-text">编译队列控制：semaphore.acquire</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#moduleFactory-create"><span class="nav-number">3.2.2.</span> <span class="nav-text">moduleFactory.create</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">本章小结</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Korey" src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Korey</p>
+  <div class="site-description" itemprop="description">热衷于记录、分享前端开发技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="GitHub → https://github.com/zhaoky"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtleXUuemhhb0Bmb3htYWlsLmNvbQ==" title="E-Mail → mailto:keyu.zhao@foxmail.com"><i class="far fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci81N2M5MWIzYjE2NWFiZDAwNjhkYjg5YzI=" title="掘金 → https://juejin.im/user/57c91b3b165abd0068db89c2"><i class="fas fa-link fa-fw"></i>掘金</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cDovL3d3dy56aGlodS5jb20vcGVvcGxlL2ZlX2tvcmV5" title="知乎 → http://www.zhihu.com/people/fe_korey"><i class="fas fa-link fa-fw"></i>知乎</span>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/375.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          webpack 4 源码主流程分析（四）：reslove 前的准备
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-12-10 23:40:51" itemprop="dateCreated datePublished" datetime="2019-12-10T23:40:51+00:00">2019-12-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Build/" itemprop="url" rel="index"><span itemprop="name">FE Build</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="compiler-run"><a href="#compiler-run" class="headerlink" title="compiler.run"></a>compiler.run</h2><p><code>compiler.run</code>是整个编译过程启动的入口，执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.hooks.beforeRun.callAsync(<span class="built_in">this</span>, <span class="function">(<span class="params">err</span>) =&gt;</span> {</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">  <span class="built_in">this</span>.hooks.run.callAsync(<span class="built_in">this</span>, <span class="function">(<span class="params">err</span>) =&gt;</span> {</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">    <span class="comment">// recordsInputPath是webpack配置中指定的读取上一组records的文件路径</span></span><br><span class="line">    <span class="built_in">this</span>.readRecords(<span class="function">(<span class="params">err</span>) =&gt;</span> {</span><br><span class="line">      <span class="comment">//...</span></span><br><span class="line">      <span class="built_in">this</span>.compile(onCompiled);</span><br><span class="line">    });</span><br><span class="line">  });</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p>在方法中先触发 <code>compiler.hooks</code>: <code>beforeRun</code>，执行之前注册的 <code>NodeEnvironmentPlugin</code>（该插件此时判断 <code>inputFileSystem</code> 是否被配置，如未配置则执行 <code>purge</code> 清理方法），然后在回调里触发 <code>compiler.hooks</code>: <code>run</code>，然后回调里 <code>this.readRecords</code> 是用于读取之前的 <code>records</code> 的方法，再在它的回调里执行 <code>this.compile(onCompiled)</code>。</p>
+<p><code>onCompiled</code> 在 <code>compile</code> 过程后调用，主要用于输出构建资源。</p>
+<h2 id="compiler-compile"><a href="#compiler-compile" class="headerlink" title="compiler.compile"></a>compiler.compile</h2><p><code>compile</code> 是真正进行编译的过程，最终会把所有原始资源编译为目标资源。实例化了一个 <code>compilation</code>，并将 <code>compilation</code> 传给 <code>make</code> 钩子上的方法，注册在这些钩子上的方法会调用 <code>compilation</code> 上的 <code>addEntry</code>，执行构建。</p>
+<h3 id="获取-compilation-所需-params"><a href="#获取-compilation-所需-params" class="headerlink" title="获取 compilation 所需 params"></a>获取 compilation 所需 params</h3><p><code>this.compile</code> 先执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> params = <span class="built_in">this</span>.newCompilationParams();</span><br></pre></td></tr></tbody></table></figure>
+
+<p>即：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">newCompilationParams</span>(<span class="params"></span>)</span> {</span><br><span class="line">    <span class="keyword">const</span> params = {</span><br><span class="line">        normalModuleFactory: <span class="built_in">this</span>.createNormalModuleFactory(),</span><br><span class="line">        contextModuleFactory: <span class="built_in">this</span>.createContextModuleFactory(),</span><br><span class="line">        compilationDependencies: <span class="keyword">new</span> <span class="built_in">Set</span>()</span><br><span class="line">    };</span><br><span class="line">    <span class="keyword">return</span> params;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>该方法先实例化了 <code>NormalModuleFactory</code> 类和 <code>ContextModuleFactory</code> 类，两个类均扩展于 <code>tapable</code>。<code>ContextModuleFactory</code> 类除了兼容老版本之外的代码，没有什么特别需要注意的。接下来具体说明 <code>NormalModuleFactory</code>。</p>
+<h3 id="实例化-NormalModuleFactory"><a href="#实例化-NormalModuleFactory" class="headerlink" title="实例化 NormalModuleFactory"></a>实例化 NormalModuleFactory</h3><p><code>NormalModuleFactory</code> 类用于创建一个 <code>normalModule</code> 实例。</p>
+<h4 id="实例化-RuleSet"><a href="#实例化-RuleSet" class="headerlink" title="实例化 RuleSet"></a>实例化 RuleSet</h4><p>在实例化 <code>NormalModuleFactory</code> 执行 <code>constructor</code> 的过程中，执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.ruleSet = <span class="keyword">new</span> RuleSet(options.defaultRules.concat(options.rules));</span><br></pre></td></tr></tbody></table></figure>
+
+<ul>
+<li><code>options.defaultRules</code> 是在之前文件 <code>WebpackOptionsDefaulter.js</code> 中被初始化，然后与项目配置的 <code>module.rules</code> 合并；</li>
+<li>每个<span class="exturl" data-url="aHR0cHM6Ly93ZWJwYWNrLmRvY3NjaGluYS5vcmcvY29uZmlndXJhdGlvbi9tb2R1bGUvI3J1bGU=">规则<i class="fa fa-external-link-alt"></i></span>可以分为三部分 - 条件 <code>condition</code> (如 <code>test, include, exclude</code>)，结果 <code>result</code> (如应用的 <code>loader，parse</code> 选项) 和嵌套规则 <code>nested rule</code>（如 <code>rules</code>）；</li>
+<li><span class="exturl" data-url="aHR0cHM6Ly93ZWJwYWNrLmRvY3NjaGluYS5vcmcvY29uZmlndXJhdGlvbi9tb2R1bGUvIyVFNiU5RCVBMSVFNCVCQiVCNg==">条件<i class="fa fa-external-link-alt"></i></span>可接受 正则表达式，字符串，函数等。</li>
+<li><code>new RuleSet</code> 实例化过程中，会对每一项 <code>rule</code> 进行进行处理，递归调用静态方法 <code>normalizeCondition</code> 处理 <code>condition</code> 相关，最终每一个 <code>condition</code> 都处理为一个 <code>newRule.resource</code> 函数；递归调用 <code>normalizeUse</code> 处理 <code>result</code> 相关，最终每一个 <code>result</code> 都处理为一个 <code>use</code> 数组，数组的每一项包含 <code>loader</code> 和 <code>options</code>；</li>
+<li>调用 <code>ruleSet</code> 的实例 <code>exec</code> 时，传入目标路径和相关信息后，在内部 <code>_run</code> 里，进行递归过滤匹配出对应的 <code>loader</code>，最终得到 <code>result</code> 数组，数组每一项包含 <code>type，value（loader 和 options）</code> 等；</li>
+</ul>
+<h4 id="注册-normalModuleFactory-hooks-factory"><a href="#注册-normalModuleFactory-hooks-factory" class="headerlink" title="注册 normalModuleFactory.hooks:factory"></a>注册 <code>normalModuleFactory.hooks</code>:<code>factory</code></h4><figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.hooks.factory.tap(<span class="string">'NormalModuleFactory'</span>, <span class="function">() =&gt;</span> <span class="function">(<span class="params">result, callback</span>) =&gt;</span> {</span><br><span class="line">  <span class="keyword">let</span> resolver = <span class="built_in">this</span>.hooks.resolver.call(<span class="literal">null</span>);</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">  resolver(result, <span class="function">(<span class="params">err, data</span>) =&gt;</span> {</span><br><span class="line">      <span class="comment">//...</span></span><br><span class="line">    });</span><br><span class="line">  });</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p>此时注册了 <code>normalModuleFactory.hooks</code>:<code>factory</code>，当后面触发该 <code>hooks</code> 时，该回调返回一个函数。函数内的运行须先触发 <code>normalModuleFactory.hooks</code>:<code>resolver</code>，然后执行其回调结果。</p>
+<h4 id="注册-normalModuleFactory-hooks-resolver"><a href="#注册-normalModuleFactory-hooks-resolver" class="headerlink" title="注册 normalModuleFactory.hooks:resolver"></a>注册 <code>normalModuleFactory.hooks</code>:<code>resolver</code></h4><figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.hooks.resolver.tap(<span class="string">'NormalModuleFactory'</span>, <span class="function">() =&gt;</span> <span class="function">(<span class="params">data, callback</span>) =&gt;</span> {</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p>此时注册了 <code>normalModuleFactory.hooks</code>:<code>resolver</code>，跟<code>normalModuleFactory.hooks</code>:<code>factory</code> 相同，当后面触发该 <code>hooks</code> 时，该回调返回一个函数。</p>
+<p>在这两个类实例化完成后，分别触发 <code>compiler.hooks</code>: <code>normalModuleFactory</code> ，<code>contextModuleFactory</code>。</p>
+<h3 id="实例化-compilation"><a href="#实例化-compilation" class="headerlink" title="实例化 compilation"></a>实例化 compilation</h3><p><code>this.compile</code> 继续执行,先后触发 <code>compiler.hooks</code>: <code>beforeCompile</code>，<code>compile</code>, 这两个钩子都会传入上文 <code>params</code> 作为参数，可用于修改 <code>normalModuleFactory，contextModuleFactory</code> 等。然后在回调中执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> compilation = <span class="built_in">this</span>.newCompilation(params);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>该方法实例化了一个 <code>Compilation</code>，也是扩展于 <code>tapable</code>。<strong>一个 <code>compilation</code> 对象表现了当前的模块资源、编译生成资源、变化的文件、以及被跟踪依赖的状态信息，代表了一次资源的构建</strong>。</p>
+<p>在实例化的过程中，除了初始化一些自身资源属性，并实例化了 <code>MainTemplate</code>, <code>ChunkTemplate</code>, <code>HotUpdateChunkTemplate</code>, <code>RuntimeTemplate</code>, <code>ModuleTemplate</code>。用于提供不同的编译模板。</p>
+<p>回到 <code>compiler.js</code>，在添加了一些属性后，触发<code>compiler.hooks</code> : <code>thisCompilation</code>, <code>compilation</code>。回忆在 <code>编译前的准备 - 注册plugins阶段 - WebpackOptionsApply.js</code> 的文件里注册了大量该 <code>hooks</code> 的事件，在此时拿到 <code>compilation</code> 对象后，开始执行这一系列事件。</p>
+<ul>
+<li><code>compiler.hooks</code>:<code>thisCompilation</code> 会在 <code>compilation</code> 对象的 <code>hooks</code> 里注册一些新的事件；</li>
+<li><code>compiler.hooks</code>:<code>compilation</code> 会在 <code>compilation</code>、<code>normalModuleFactory</code> 对象的 <code>hooks</code> 里注册一些新的事件，同时还会往 <code>compilation.dependencyFactories</code>（工厂类），<code>compilation.dependencyTemplates</code>（模板类） 增加依赖模块。</li>
+</ul>
+<blockquote>
+<p>为什么这里需要 <code>thisCompilation，compilation</code> 两个钩子？原因是跟子编译器有关。在 <code>Compiler</code> 的 <code>createChildCompiler</code> 方法里创建子编译器，其中 <code>thisCompilation</code> 钩子不会被复制，而 <code>compilation</code> 会被复制。<br>子编译器拥有完整的 <code>module</code> 和 <code>chunk</code> 生成，通过子编译器可以独立于父编译器执行一个核心构建流程，额外生成一些需要的 <code>module</code> 和 <code>chunk</code>。</p>
+</blockquote>
+<h2 id="开始构建"><a href="#开始构建" class="headerlink" title="开始构建"></a>开始构建</h2><p><code>this.compile</code> 继续执行，触发 <code>compiler.hooks</code> : <code>make</code> ,执行之前在 <code>SingleEntryPlugin | MultiEntryPlugin</code> 注册的的 <code>make</code> 事件，执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compilation.addEntry(context, dep, name, callback); <span class="comment">//其中 dep 为 SingleEntryDependency 实例</span></span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="compilation-addEntry"><a href="#compilation-addEntry" class="headerlink" title="compilation.addEntry"></a>compilation.addEntry</h3><p>来到 <code>Compilation.js</code> 文件，<code>addEntry</code> 触发了 <code>compilation.hooks</code>:<code>addEntry</code> 后，定义了入口对象 <code>_preparedEntrypoints</code>，然后直接执行了 <code>this._addModuleChain</code>。</p>
+<p>在该方法里，执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//...</span></span><br><span class="line"><span class="keyword">const</span> Dep = <span class="comment">/** <span class="doctag">@type <span class="type">{DepConstructor}</span> </span>*/</span> (dependency.constructor);</span><br><span class="line"><span class="keyword">const</span> moduleFactory = <span class="built_in">this</span>.dependencyFactories.get(Dep);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>因 <code>dependency = SingleEntryPlugin.createDependency(entry, name)</code> 即 <code>new SingleEntryDependency(entry)</code>，则 <code>Dep</code> 则为 <code>SingleEntryDependency</code> 类，而在之前 <code>compiler.hooks:compilation</code> 的注册事件中添加了依赖： <code>compilation.dependencyFactories.set(SingleEntryDependency, normalModuleFactory)</code>，所以 <code>moduleFactory</code> 为 <code>normalModuleFactory</code>。</p>
+<h3 id="开始创建-module"><a href="#开始创建-module" class="headerlink" title="开始创建 module"></a>开始创建 module</h3><h4 id="编译队列控制：semaphore-acquire"><a href="#编译队列控制：semaphore-acquire" class="headerlink" title="编译队列控制：semaphore.acquire"></a>编译队列控制：semaphore.acquire</h4><p>执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">this</span>.semaphore.acquire(<span class="function">() =&gt;</span> {</span><br><span class="line">  moduleFactory.create(</span><br><span class="line">    {</span><br><span class="line">      <span class="comment">//...</span></span><br><span class="line">    },</span><br><span class="line">    (err, <span class="built_in">module</span>) =&gt; {</span><br><span class="line">      <span class="comment">//...</span></span><br><span class="line">    }</span><br><span class="line">  );</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>this.semaphore</code> 这个类是一个编译队列控制，原理很简单，对执行进行了并发控制，默认并发数为 <code>100</code>，超过后存入 <code>semaphore.waiters</code>，根据情况再调用 <code>semaphore.release</code> 去执行存入的事件 <code>semaphore.waiters</code>。</p>
+<h4 id="moduleFactory-create"><a href="#moduleFactory-create" class="headerlink" title="moduleFactory.create"></a>moduleFactory.create</h4><p><code>this.semaphore.acquire</code> 里执行了 <code>moduleFactory.create</code>。（<strong>注：递归解析依赖的重复也从此处开始</strong>）</p>
+<h2 id="本章小结"><a href="#本章小结" class="headerlink" title="本章小结"></a>本章小结</h2><ol>
+<li>从编译过程启动的入口 <code>compiler.run</code> 开始，触发了一系列的生命周期钩子后，执行 <code>compiler.compile</code>。</li>
+<li>获取 <code>compilation</code> 所需 <code>params</code>，实例化 <code>NormalModuleFactory</code> 类（插件会去注册其钩子） 及 <code>ContextModuleFactory</code> 类，在实例化 <code>NormalModuleFactory</code> 的过程中，会实例化 <code>RuleSet</code> 及注册钩子 <code>factory</code> 和 <code>resolver</code>。</li>
+<li>实例化 <code>Compilation</code>，传入 <code>params</code> 参数，触发之前在注册 <code>plugin</code> 阶段所注册的 <code>NormalModuleFactory</code> 下的 <code>hooks</code>。</li>
+<li>触发 <code>make</code> 钩子执行 <code>compilation.addEntry-&gt;_addModuleChain</code>，通过编译队列控制 <code>semaphore.acquire</code> 执行 <code>moduleFactory.create</code> 开始创建 <code>module</code>，而递归解析依赖的重复点亦从 <code>create</code> 开始。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Korey 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/374.html" rel="prev" title="webpack 4 源码主流程分析（三）：编译前的准备">
+                  <i class="fa fa-chevron-left"></i> webpack 4 源码主流程分析（三）：编译前的准备
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/376.html" rel="next" title="webpack 4 源码主流程分析（五）：reslove 流程">
+                  webpack 4 源码主流程分析（五）：reslove 流程 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  © 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Korey zhao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">507k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:41</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+
+
+  
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script>
+
+<script src="/bundle.js"></script><script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  ;
+L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":125,"height":150,"position":"left","hOffset":30,"vOffset":-5},"mobile":{"show":false,"scale":0.05},"react":{"opacityDefault":1,"opacityOnHover":0.2},"log":false});</script></body></html>

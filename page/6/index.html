@@ -1,0 +1,1414 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#3eaf7c">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon.png" color="#3eaf7c">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="热衷于记录、分享前端开发技术">
+<meta property="og:type" content="website">
+<meta property="og:title" content="前端轻语">
+<meta property="og:url" content="https://blog.flqin.com/page/6/index.html">
+<meta property="og:site_name" content="前端轻语">
+<meta property="og:description" content="热衷于记录、分享前端开发技术">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Korey">
+<meta property="article:tag" content="前端,前端开发,css,html,js,css3,前端开发博客,fe,技术文档">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.flqin.com/page/6/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>前端轻语 - korey的前端笔记</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c8dec20f0d0449c8ece3c0dbab4e8f31";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">前端轻语</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">korey的前端笔记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+
+  </li>
+        <li class="menu-item menu-item-map">
+
+    <a href="/map/" rel="section"><i class="fa fa-sitemap fa-fw"></i>map</a>
+
+  </li>
+        <li class="menu-item menu-item-link">
+
+    <a href="/link/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>link</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Korey" src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Korey</p>
+  <div class="site-description" itemprop="description">热衷于记录、分享前端开发技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="GitHub → https://github.com/zhaoky"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtleXUuemhhb0Bmb3htYWlsLmNvbQ==" title="E-Mail → mailto:keyu.zhao@foxmail.com"><i class="far fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci81N2M5MWIzYjE2NWFiZDAwNjhkYjg5YzI=" title="掘金 → https://juejin.im/user/57c91b3b165abd0068db89c2"><i class="fas fa-link fa-fw"></i>掘金</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cDovL3d3dy56aGlodS5jb20vcGVvcGxlL2ZlX2tvcmV5" title="知乎 → http://www.zhihu.com/people/fe_korey"><i class="fas fa-link fa-fw"></i>知乎</span>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner index posts-expand">
+      
+
+      
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/360.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/360.html" class="post-title-link" itemprop="url">（转载）点击穿透</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-22 16:33:50" itemprop="dateCreated datePublished" datetime="2019-07-22T16:33:50+00:00">2019-07-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Field/" itemprop="url" rel="index"><span itemprop="name">FE Field</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.7k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>点击穿透这种现象算是移动 <code>web</code> 开发比较经典的问题，也常用来做面试题。本文目标是结合移动 <code>web</code> 开发的相关事件，介绍一下点击穿透现象形成的原因以及避免这种现象的解决方法。</p>
+<h2 id="点击穿透现象"><a href="#点击穿透现象" class="headerlink" title="点击穿透现象"></a>点击穿透现象</h2><p>现象描述：</p>
+<p>页面中存在上下两个层，上层元素具有表单，链接或者绑定相应事件，上层元素点击或触摸，导致上层 <code>DOM</code> 改变，下层中同样位置的元素触发点击事件。这种现象就是<code>点击穿透（Ghost Clicks）</code>。其实我觉得用“幽冥点击”称呼它更加带感。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/360.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/357.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/357.html" class="post-title-link" itemprop="url">观察者模式和发布订阅模式的区别</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-10 10:03:10" itemprop="dateCreated datePublished" datetime="2019-07-10T10:03:10+00:00">2019-07-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/Computer-Basics/" itemprop="url" rel="index"><span itemprop="name">Computer Basics</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="观察者模式（Observer）"><a href="#观察者模式（Observer）" class="headerlink" title="观察者模式（Observer）"></a>观察者模式（Observer）</h2><p>观察者模式指的是一个对象（<code>Subject</code>）维持一系列依赖于它的对象（<code>Observer</code>），当有关状态发生变更时 <code>Subject</code> 对象则通知一系列 <code>Observer</code> 对象进行更新。</p>
+<p>在观察者模式中，<code>Subject</code> 对象拥有添加、删除和通知一系列 <code>Observer</code> 的方法等等，而 <code>Observer</code> 对象拥有更新方法等等。</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//观察者模式</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Subject</span> </span>{</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> {</span><br><span class="line">    <span class="built_in">this</span>.list = [];</span><br><span class="line">  }</span><br><span class="line">  <span class="function"><span class="title">add</span>(<span class="params">ob</span>)</span> {</span><br><span class="line">    <span class="built_in">this</span>.list.push(ob);</span><br><span class="line">  }</span><br><span class="line">  <span class="function"><span class="title">remove</span>(<span class="params">ob</span>)</span> {</span><br><span class="line">    <span class="built_in">this</span>.list.splice(<span class="built_in">this</span>.list.indexOf(<span class="built_in">this</span>.list.find(<span class="function">(<span class="params">item</span>) =&gt;</span> ob.id === item.id)), <span class="number">1</span>);</span><br><span class="line">  }</span><br><span class="line">  <span class="function"><span class="title">notfiy</span>(<span class="params"></span>)</span> {</span><br><span class="line">    <span class="built_in">this</span>.list.forEach(<span class="function">(<span class="params">i</span>) =&gt;</span> {</span><br><span class="line">      i.update(i.id);</span><br><span class="line">    });</span><br><span class="line">  }</span><br><span class="line">}</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Observer</span> </span>{</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params">id</span>)</span> {</span><br><span class="line">    <span class="built_in">this</span>.id = id;</span><br><span class="line">  }</span><br><span class="line">  <span class="function"><span class="title">update</span>(<span class="params">id</span>)</span> {</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`我是<span class="subst">${id}</span>,我被通知了！`</span>);</span><br><span class="line">  }</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> people1 = <span class="keyword">new</span> Observer(<span class="number">123</span>);</span><br><span class="line"><span class="keyword">let</span> people2 = <span class="keyword">new</span> Observer(<span class="number">9527</span>);</span><br><span class="line"><span class="keyword">let</span> people3 = <span class="keyword">new</span> Observer(<span class="number">89757</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> sub = <span class="keyword">new</span> Subject();</span><br><span class="line"></span><br><span class="line">sub.add(people1);</span><br><span class="line">sub.add(people2);</span><br><span class="line">sub.add(people3);</span><br><span class="line"></span><br><span class="line">sub.notfiy();</span><br><span class="line"></span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> {</span><br><span class="line">  sub.remove(people2);</span><br><span class="line">  sub.notfiy();</span><br><span class="line">}, <span class="number">200</span>);</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="发布订阅模式（Publisher-amp-amp-Subscriber）"><a href="#发布订阅模式（Publisher-amp-amp-Subscriber）" class="headerlink" title="发布订阅模式（Publisher &amp;&amp; Subscriber）"></a>发布订阅模式（Publisher &amp;&amp; Subscriber）</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/357.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/358.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/358.html" class="post-title-link" itemprop="url">promise 实现</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-10 10:03:10" itemprop="dateCreated datePublished" datetime="2019-07-10T10:03:10+00:00">2019-07-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Basics/" itemprop="url" rel="index"><span itemprop="name">FE Basics</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><span class="exturl" data-url="aHR0cHM6Ly9wcm9taXNlc2FwbHVzLmNvbS8=">规范<i class="fa fa-external-link-alt"></i></span> | <span class="exturl" data-url="aHR0cDovL3d3dy5pdHVyaW5nLmNvbS5jbi9hcnRpY2xlLzY2NTY2">中文解析<i class="fa fa-external-link-alt"></i></span></p>
+<p>相关术语及概念见上述链接，以下为 <code>promise</code> 实现:</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> isFunc = <span class="function">(<span class="params">obj</span>) =&gt;</span> <span class="built_in">Object</span>.prototype.toString.call(obj) === <span class="string">'[object Function]'</span>;</span><br><span class="line"><span class="keyword">const</span> isObj = <span class="function">(<span class="params">obj</span>) =&gt;</span> <span class="built_in">Object</span>.prototype.toString.call(obj) === <span class="string">'[object Object]'</span>;</span><br><span class="line"><span class="comment">// 等待态 规范 2.1.1</span></span><br><span class="line"><span class="keyword">const</span> PENDING = <span class="string">'pending'</span>;</span><br><span class="line"><span class="comment">// 执行态 规范 2.1.2</span></span><br><span class="line"><span class="keyword">const</span> FULFILLED = <span class="string">'fulfilled'</span>;</span><br><span class="line"><span class="comment">// 拒绝态 规范 2.1.3</span></span><br><span class="line"><span class="keyword">const</span> REJECTED = <span class="string">'rejected'</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyPromise</span> </span>{</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params">fn</span>)</span> {</span><br><span class="line">    <span class="built_in">this</span>.status = PENDING;</span><br><span class="line">    <span class="built_in">this</span>.value = <span class="literal">undefined</span>;</span><br><span class="line">    <span class="built_in">this</span>.filfulledQueues = [];</span><br><span class="line">    <span class="built_in">this</span>.rejectedQueues = [];</span><br><span class="line">    <span class="keyword">try</span> {</span><br><span class="line">      fn(<span class="built_in">this</span>._resolve.bind(<span class="built_in">this</span>), <span class="built_in">this</span>._reject.bind(<span class="built_in">this</span>));</span><br><span class="line">    } <span class="keyword">catch</span> (err) {</span><br><span class="line">      <span class="built_in">this</span>._reject(err);</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">  <span class="comment">//传入 promise 的第一个参数 resolve</span></span><br><span class="line">  <span class="function"><span class="title">_resolve</span>(<span class="params">val</span>)</span> {</span><br><span class="line">    <span class="keyword">if</span> (val <span class="keyword">instanceof</span> MyPromise) {</span><br><span class="line">      val.then(<span class="built_in">this</span>._resolve, <span class="built_in">this</span>._reject);</span><br><span class="line">    } <span class="keyword">else</span> <span class="keyword">if</span> (isObj(val) || isFunc(val)) {</span><br><span class="line">      <span class="keyword">try</span> {</span><br><span class="line">        <span class="keyword">if</span> (isFunc(val.then)) {</span><br><span class="line">          val.then(<span class="built_in">this</span>._resolve, <span class="built_in">this</span>._reject);</span><br><span class="line">        }</span><br><span class="line">      } <span class="keyword">catch</span> (e) {</span><br><span class="line">        <span class="built_in">this</span>._reject(e);</span><br><span class="line">      }</span><br><span class="line">    }</span><br><span class="line">    <span class="built_in">this</span>._execCallback(FULFILLED, <span class="built_in">this</span>.filfulledQueues, val);</span><br><span class="line">  }</span><br><span class="line">  <span class="comment">//传入 promise 的第二个参数 reject</span></span><br><span class="line">  <span class="function"><span class="title">_reject</span>(<span class="params">val</span>)</span> {</span><br><span class="line">    <span class="built_in">this</span>._execCallback(REJECTED, <span class="built_in">this</span>.rejectedQueues, val);</span><br><span class="line">  }</span><br><span class="line">  <span class="function"><span class="title">_execCallback</span>(<span class="params">status, list, val</span>)</span> {</span><br><span class="line">    <span class="comment">//规范 2.2.4 onFulfilled 和 onRejected 只有在执行环境堆栈仅包含平台代码时才可被调用，且被作为函数调用（即没有 this 值）</span></span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> {</span><br><span class="line">      <span class="keyword">if</span> (<span class="built_in">this</span>.status !== PENDING) {</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      }</span><br><span class="line">      <span class="built_in">this</span>.status = status;</span><br><span class="line">      <span class="built_in">this</span>.value = val;</span><br><span class="line">      <span class="keyword">let</span> cb;</span><br><span class="line">      <span class="comment">//规范 2.2.6</span></span><br><span class="line">      <span class="keyword">while</span> ((cb = list.shift())) {</span><br><span class="line">        cb(val);</span><br><span class="line">      }</span><br><span class="line">    });</span><br><span class="line">  }</span><br><span class="line">  <span class="comment">//规范 2.3 Promise 解决过程 [[Resolve]](promise, x)</span></span><br><span class="line">  <span class="function"><span class="title">_resolvePromise</span>(<span class="params">newPromise, x, resolve, reject</span>)</span> {</span><br><span class="line">    <span class="keyword">if</span> (newPromise === x) {</span><br><span class="line">      <span class="comment">//规范 2.3.1</span></span><br><span class="line">      <span class="keyword">return</span> reject(<span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">'循环引用'</span>));</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">if</span> (x <span class="keyword">instanceof</span> MyPromise) {</span><br><span class="line">      <span class="comment">//规范 2.3.2</span></span><br><span class="line">      x.then(resolve, reject);</span><br><span class="line">    } <span class="keyword">else</span> <span class="keyword">if</span> (isObj(x) || isFunc(x)) {</span><br><span class="line">      <span class="comment">//规范 2.3.3</span></span><br><span class="line">      <span class="keyword">try</span> {</span><br><span class="line">        <span class="comment">//规范 2.3.3.3</span></span><br><span class="line">        <span class="keyword">if</span> (isFunc(x.then)) {</span><br><span class="line">          x.then(resolve, reject);</span><br><span class="line">        } <span class="keyword">else</span> {</span><br><span class="line">          <span class="comment">//规范 2.3.3.4</span></span><br><span class="line">          resolve(x);</span><br><span class="line">        }</span><br><span class="line">      } <span class="keyword">catch</span> (e) {</span><br><span class="line">        <span class="comment">//规范 2.3.3.3.4</span></span><br><span class="line">        reject(e);</span><br><span class="line">      }</span><br><span class="line">    } <span class="keyword">else</span> {</span><br><span class="line">      <span class="comment">//规范 2.3.4</span></span><br><span class="line">      resolve(x);</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">  <span class="comment">//规范 2.2</span></span><br><span class="line">  <span class="function"><span class="title">then</span>(<span class="params">onFulfilled, onRejected</span>)</span> {</span><br><span class="line">    <span class="keyword">let</span> newPromise;</span><br><span class="line">    <span class="comment">//规范 2.2.1，2.2.7.3</span></span><br><span class="line">    onFulfilled = isFunc(onFulfilled) ? onFulfilled : <span class="function">(<span class="params">val</span>) =&gt;</span> val;</span><br><span class="line">    <span class="comment">//规范 2.2.1，2.2.7.4</span></span><br><span class="line">    onRejected = isFunc(onRejected)</span><br><span class="line">      ? onRejected</span><br><span class="line">      : <span class="function">(<span class="params">err</span>) =&gt;</span> {</span><br><span class="line">          <span class="keyword">throw</span> err;</span><br><span class="line">        };</span><br><span class="line">    <span class="comment">//规范 2.2.7 then 方法必须返回一个 promise 对象：promise2 = promise1.then(onFulfilled, onRejected);</span></span><br><span class="line">    <span class="keyword">return</span> (newPromise = <span class="keyword">new</span> MyPromise(<span class="function">(<span class="params">onFulfilledNext, onRejectedNext</span>) =&gt;</span> {</span><br><span class="line">      <span class="comment">// onFulfilledNext, onRejectedNext 即该 then 的下一个 then 里传的 resolve 和 reject</span></span><br><span class="line">      <span class="keyword">if</span> (<span class="built_in">this</span>.status === FULFILLED || <span class="built_in">this</span>.status === REJECTED) {</span><br><span class="line">        <span class="comment">//规范 2.2.4 onFulfilled 和 onRejected 只有在执行环境堆栈仅包含平台代码时才可被调用</span></span><br><span class="line">        <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> {</span><br><span class="line">          <span class="comment">// 规范 2.2.7.1 不论 promise1 被 reject 还是被 resolve 时 promise2 都会被 resolve（走_resolvePromise方法），只有出现异常时才会被 rejected。</span></span><br><span class="line">          <span class="keyword">try</span> {</span><br><span class="line">            <span class="comment">//规范 2.2.2，2.2.3，2.2.5</span></span><br><span class="line">            <span class="keyword">const</span> x = <span class="built_in">this</span>.status === FULFILLED ? onFulfilled(<span class="built_in">this</span>.value) : onRejected(<span class="built_in">this</span>.value);</span><br><span class="line">            <span class="built_in">this</span>._resolvePromise(newPromise, x, onFulfilledNext, onRejectedNext);</span><br><span class="line">          } <span class="keyword">catch</span> (e) {</span><br><span class="line">            <span class="comment">//规范 2.2.7.2  这里如果x为捕获的err（即 onRejected 不是函数 2.2.7.4）也会进入</span></span><br><span class="line">            onRejectedNext(e);</span><br><span class="line">          }</span><br><span class="line">        });</span><br><span class="line">      } <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">this</span>.status === PENDING) {</span><br><span class="line">        <span class="comment">//规范 2.2.6.1</span></span><br><span class="line">        <span class="built_in">this</span>.filfulledQueues.push(<span class="function">() =&gt;</span> {</span><br><span class="line">          <span class="keyword">try</span> {</span><br><span class="line">            <span class="comment">//规范 2.2.2，2.2.5</span></span><br><span class="line">            <span class="keyword">const</span> x = onFulfilled(<span class="built_in">this</span>.value);</span><br><span class="line">            <span class="built_in">this</span>._resolvePromise(newPromise, x, onFulfilledNext, onRejectedNext);</span><br><span class="line">          } <span class="keyword">catch</span> (e) {</span><br><span class="line">            <span class="comment">//规范 2.2.7.2</span></span><br><span class="line">            onRejectedNext(e);</span><br><span class="line">          }</span><br><span class="line">        });</span><br><span class="line">        <span class="comment">//规范 2.2.6.2</span></span><br><span class="line">        <span class="built_in">this</span>.rejectedQueues.push(<span class="function">() =&gt;</span> {</span><br><span class="line">          <span class="keyword">try</span> {</span><br><span class="line">            <span class="comment">//规范 2.2.3，2.2.5</span></span><br><span class="line">            <span class="keyword">const</span> x = onRejected(<span class="built_in">this</span>.value);</span><br><span class="line">            <span class="built_in">this</span>._resolvePromise(newPromise, x, onFulfilledNext, onRejectedNext);</span><br><span class="line">          } <span class="keyword">catch</span> (e) {</span><br><span class="line">            <span class="comment">//规范 2.2.7.2</span></span><br><span class="line">            onRejectedNext(e);</span><br><span class="line">          }</span><br><span class="line">        });</span><br><span class="line">      }</span><br><span class="line">    }));</span><br><span class="line">  }</span><br><span class="line">  <span class="comment">//catch 方法</span></span><br><span class="line">  <span class="keyword">catch</span>(onRejected) {</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.then(<span class="literal">null</span>, onRejected);</span><br><span class="line">  }</span><br><span class="line">  <span class="comment">//finally 方法</span></span><br><span class="line">  <span class="function"><span class="title">finally</span>(<span class="params">cb</span>)</span> {</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.then(</span><br><span class="line">      (val) =&gt; {</span><br><span class="line">        MyPromise.resolve(cb()).then(<span class="function">() =&gt;</span> val);</span><br><span class="line">      },</span><br><span class="line">      (err) =&gt; {</span><br><span class="line">        MyPromise.resolve(cb()).then(<span class="function">() =&gt;</span> {</span><br><span class="line">          <span class="keyword">throw</span> err;</span><br><span class="line">        });</span><br><span class="line">      }</span><br><span class="line">    );</span><br><span class="line">  }</span><br><span class="line">  <span class="comment">//resolve 方法</span></span><br><span class="line">  <span class="keyword">static</span> <span class="function"><span class="title">resolve</span>(<span class="params">params</span>)</span> {</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> MyPromise(<span class="function">(<span class="params">resolve</span>) =&gt;</span> {</span><br><span class="line">      resolve(params);</span><br><span class="line">    });</span><br><span class="line">  }</span><br><span class="line">  <span class="comment">//reject 方法</span></span><br><span class="line">  <span class="keyword">static</span> <span class="function"><span class="title">reject</span>(<span class="params">err</span>)</span> {</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> MyPromise(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> {</span><br><span class="line">      reject(err);</span><br><span class="line">    });</span><br><span class="line">  }</span><br><span class="line">  <span class="comment">//all 方法</span></span><br><span class="line">  <span class="keyword">static</span> <span class="function"><span class="title">all</span>(<span class="params">params</span>)</span> {</span><br><span class="line">    <span class="keyword">let</span> count = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">let</span> valueList = [];</span><br><span class="line">    <span class="keyword">const</span> promises = <span class="built_in">Array</span>.from(params);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> MyPromise(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> {</span><br><span class="line">      promises.forEach(<span class="function">(<span class="params">item, index</span>) =&gt;</span> {</span><br><span class="line">        <span class="keyword">if</span> (!item <span class="keyword">instanceof</span> MyPromise) {</span><br><span class="line">          item = MyPromise.resolve(item);</span><br><span class="line">        }</span><br><span class="line">        item.then(<span class="function">(<span class="params">r</span>) =&gt;</span> {</span><br><span class="line">          valueList[index] = r;</span><br><span class="line">          <span class="keyword">if</span> (promises.length === ++count) {</span><br><span class="line">            resolve(valueList);</span><br><span class="line">          }</span><br><span class="line">        }, reject);</span><br><span class="line">      });</span><br><span class="line">    });</span><br><span class="line">  }</span><br><span class="line">  <span class="comment">//race 方法</span></span><br><span class="line">  <span class="keyword">static</span> <span class="function"><span class="title">race</span>(<span class="params">params</span>)</span> {</span><br><span class="line">    <span class="keyword">const</span> promises = <span class="built_in">Array</span>.from(params);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> MyPromise(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> {</span><br><span class="line">      promises.forEach(<span class="function">(<span class="params">item</span>) =&gt;</span> {</span><br><span class="line">        <span class="keyword">if</span> (!item <span class="keyword">instanceof</span> MyPromise) {</span><br><span class="line">          item = MyPromise.resolve(item);</span><br><span class="line">        }</span><br><span class="line">        item.then(resolve, reject);</span><br><span class="line">      });</span><br><span class="line">    });</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>注：实践中要确保 <code>onFulfilled</code> 和 <code>onRejected</code> 方法异步执行，且应该在 <code>then</code> 方法被调用的那一轮事件循环之后的新执行栈中执行。 本实现代码采用 <code>setTimeout</code>（宏任务）来实现异步任务，而 <code>chrome</code> 里的 <code>promise</code> 实现则是采用微任务（<code>%EnqueueMicrotask</code>）的方式，故略有不同。</p>
+<p><code>chrome</code> 的 <code>promise</code> 实现参考源码版本小于 <code>5.6.100</code> 的 <span class="exturl" data-url="aHR0cHM6Ly9jaHJvbWl1bS5nb29nbGVzb3VyY2UuY29tL3Y4L3Y4LysvcmVmcy90YWdzLzUuNi4xMC9zcmMvanMvcHJvbWlzZS5qcw==">src/js/promise.js<i class="fa fa-external-link-alt"></i></span> 文件，其中 <code>PromiseEnqueue</code> 方法里的 <code>C</code> 函数 <code>%EnqueueMicrotask</code> 将 <code>PromiseHandle</code> 加入到 <code>JS运行时</code> 的微任务队列中。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/358.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/359.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/359.html" class="post-title-link" itemprop="url">事件循环(Event Loop)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-10 10:03:10" itemprop="dateCreated datePublished" datetime="2019-07-10T10:03:10+00:00">2019-07-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/Computer-Basics/" itemprop="url" rel="index"><span itemprop="name">Computer Basics</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>11k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>10 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><h3 id="任务队列"><a href="#任务队列" class="headerlink" title="任务队列"></a>任务队列</h3><p>事件循环是通过 <code>任务队列</code> 的机制来进行协调的。一个 <code>Event Loop</code> 中，可以有一个或者多个任务队列 <code>(task queue)</code>，一个任务队列便是一系列有序任务(<code>task</code>)的集合；每个任务都有一个任务源(<code>task source</code>)，源自同一个任务源的 <code>task</code> 必须放到同一个任务队列，从不同源来的则被添加到不同队列。</p>
+<p><code>JavaScript</code> 单线程中的任务分为 <code>同步任务</code> 和 <code>异步任务</code>。同步任务会在 <code>调用栈\执行栈</code> 中按照顺序排队等待主线程执行，异步任务则会在异步有了结果后将注册的回调函数添加到 <code>任务队列(消息队列)</code> 中等待主线程空闲的时候，也就是栈内被清空的时候，被读取到栈中等待主线程执行。<code>任务队列</code> 是 <code>先进先出</code> 的数据结构。</p>
+<p>异步任务队列可分为 <code>task(macrotask)</code> 宏任务 和 <code>microtask(job)</code> 微任务 两类，不同的 <code>API</code> 注册的异步任务会依次进入自身对应的队列中，然后等待 <code>Event Loop</code> 将它们依次压入执行栈中执行，宏任务队列可以有多个，微任务队列只有一个。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/359.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/356.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/356.html" class="post-title-link" itemprop="url">（转载）nginx配置location总结及rewrite规则写法</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-09 17:05:40" itemprop="dateCreated datePublished" datetime="2019-07-09T17:05:40+00:00">2019-07-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/Computer-Basics/" itemprop="url" rel="index"><span itemprop="name">Computer Basics</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>15k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>13 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="nginx-介绍"><a href="#nginx-介绍" class="headerlink" title="nginx 介绍"></a>nginx 介绍</h2><p><code>nginx</code> 是一个高性能的 <code>web</code> 服务器，常用作反向代理服务器。<code>nginx</code> 作为反向代理服务器，就是把 <code>http</code> 请求转发到另一个或者一些服务器上。 通过把本地一个 <code>url</code> 前缀映射到要跨域访问的 <code>web</code> 服务器上，就可以实现跨域访问。 对于浏览器来说，访问的就是同源服务器上的一个 <code>url</code>。而 <code>nginx</code> 通过检测 <code>url</code> 前缀，把 <code>http</code> 请求转发到后面真实的物理服务器。并通过 <code>rewrite</code> 命令把前缀再去掉。这样真实的服务器就可以正确处理请求，并且并不知道这个请求是来自代理服务器的。 简单说，<code>nginx</code> 服务器欺骗了浏览器，让它认为这是同源调用，从而解决了浏览器的跨域问题。又通过重写 <code>url</code>，欺骗了真实的服务器，让它以为这个 <code>http</code> 请求是直接来自与用户浏览器的。 这样，为了解决跨域问题，只需要动一下 <code>nginx</code> 配置文件即可。简单、强大、高效!</p>
+<h2 id="nginx-conf-配置文件"><a href="#nginx-conf-配置文件" class="headerlink" title="nginx.conf 配置文件"></a>nginx.conf 配置文件</h2><p><code>Nginx</code> 配置文件主要分成四部分：<code>main（全局设置）</code>、<code>server（主机设置）</code>、<code>upstream（上游服务器设置，主要为反向代理、负载均衡相关配置）</code>和 <code>location（URL 匹配特定位置后的设置）</code>，每部分包含若干个指令。</p>
+<p><code>main</code> 部分设置的指令将影响其它所有部分的设置；<code>server</code>部分的指令主要用于指定虚拟主机域名、IP 和端口；<code>upstream</code> 的指令用于设置一系列的后端服务器，设置反向代理及后端服务器的负载均衡；<code>location</code> 部分用于匹配网页位置（比如，根目录“/”,“/images”,等等）。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/356.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/355.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/355.html" class="post-title-link" itemprop="url">深浅拷贝总结</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-05 17:53:13" itemprop="dateCreated datePublished" datetime="2019-07-05T17:53:13+00:00">2019-07-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Basics/" itemprop="url" rel="index"><span itemprop="name">FE Basics</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="深浅拷贝的区分"><a href="#深浅拷贝的区分" class="headerlink" title="深浅拷贝的区分"></a>深浅拷贝的区分</h2><p>深浅拷贝，只针对复杂数据类型来说的。</p>
+<h3 id="浅拷贝-ShallowCopy"><a href="#浅拷贝-ShallowCopy" class="headerlink" title="浅拷贝 (ShallowCopy)"></a>浅拷贝 (ShallowCopy)</h3><p>是一个对象的逐位副本。创建一个新对象，该对象具有原始对象中的精确副本。如果对象的任何字段是对其他对象的引用，则只复制引用地址，即只复制内存地址，而不复制对象本身，新旧对象还是共享同一块堆内存。改变其中一个对象，另一个也会受影响。如果有修改，会失去原始数据。</p>
+<h3 id="深拷贝-DeepCopy"><a href="#深拷贝-DeepCopy" class="headerlink" title="深拷贝 (DeepCopy)"></a>深拷贝 (DeepCopy)</h3>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/355.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/353.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/353.html" class="post-title-link" itemprop="url">CSS Grid布局</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-04 15:09:42" itemprop="dateCreated datePublished" datetime="2019-07-04T15:09:42+00:00">2019-07-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Basics/" itemprop="url" rel="index"><span itemprop="name">FE Basics</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="什么是-grid"><a href="#什么是-grid" class="headerlink" title="什么是 grid"></a>什么是 grid</h2><p>网格布局（<code>Grid</code>）是最强大的 <code>CSS</code> 布局方案。它将网页划分成一个个网格，可以任意组合不同的网格，做出各种各样的布局。浏览器支持程度<span class="exturl" data-url="aHR0cHM6Ly93d3cuY2FuaXVzZS5jb20vI3NlYXJjaD1ncmlk">查阅<i class="fa fa-external-link-alt"></i></span>。</p>
+<p>设为网格布局以后，容器子元素的 <code>float</code>、<code>display: inline-block</code>、<code>display: table-cell</code>、<code>vertical-align</code> 和 <code>column-*</code>等设置都将失效。</p>
+<figure class="highlight css"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.box</span> {</span><br><span class="line">  <span class="attribute">display</span>: grid;</span><br><span class="line">  <span class="attribute">display</span>: inline-grid; <span class="comment">/* 行内元素 */</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="容器的属性"><a href="#容器的属性" class="headerlink" title="容器的属性"></a>容器的属性</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/353.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/352.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/352.html" class="post-title-link" itemprop="url">（转载）chrome provisional headers are shown 是什么意思</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-04 11:06:22" itemprop="dateCreated datePublished" datetime="2019-07-04T11:06:22+00:00">2019-07-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/Computer-Basics/" itemprop="url" rel="index"><span itemprop="name">Computer Basics</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>转载来源 <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vcG9zdC81YzAwOTgwNzUxODgyNTE4ODA1YWRkODM=">provisional headers are shown 知多少<i class="fa fa-external-link-alt"></i></span></p>
+</blockquote>
+<p>启发的一篇文章(<span class="exturl" data-url="aHR0cHM6Ly9zdGFja292ZXJmbG93LmNvbS9xdWVzdGlvbnMvMjExNzczODcvY2F1dGlvbi1wcm92aXNpb25hbC1oZWFkZXJzLWFyZS1zaG93bi1pbi1jaHJvbWUtZGVidWdnZXI=">详情点击<i class="fa fa-external-link-alt"></i></span>)。</p>
+<p>摘抄部分如下：</p>
+<blockquote>
+<p>The resource could be being blocked by an extension (AdBlock in my case).The message is there because the request to retrieve that resource was never made, so the headers being shown are not the real thing. As explained in the issue you referenced, the real headers are updated when the server responds, but there is no response if the request was blocked.</p>
+</blockquote>
+<p>资源可能被一些扩展程序拦截 。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/352.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/351.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/351.html" class="post-title-link" itemprop="url">JS遍历对象的方式</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-04 09:50:28" itemprop="dateCreated datePublished" datetime="2019-07-04T09:50:28+00:00">2019-07-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Basics/" itemprop="url" rel="index"><span itemprop="name">FE Basics</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>558</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="for-in-循环"><a href="#for-in-循环" class="headerlink" title="for..in 循环"></a>for..in 循环</h2><ul>
+<li>返回的是所有 <code>可枚举</code> 的属性，包括 <code>实例</code> 和 <code>原型</code> 上的属性。</li>
+<li>如果只需要获取对象的实例属性，可以联合使用 <code>hasOwnProperty()</code> 进行过滤（过滤后等价 <code>Object.keys()</code>）。</li>
+<li>不建议用来遍历 <code>数组</code> <span class="exturl" data-url="aHR0cHM6Ly9zdGFja292ZXJmbG93LmNvbS9xdWVzdGlvbnMvNTAwNTA0L3doeS1pcy11c2luZy1mb3ItaW4td2l0aC1hcnJheS1pdGVyYXRpb24tYS1iYWQtaWRlYQ==">查阅<i class="fa fa-external-link-alt"></i></span></li>
+<li>注意 <code>for</code> 中的闭包问题</li>
+</ul>
+<h2 id="Object-keys"><a href="#Object-keys" class="headerlink" title="Object.keys()"></a>Object.keys()</h2><ul>
+<li>返回的<code>实例</code>里<code>可枚举</code>的<code>属性</code>的<code>数组</code>，不包括 <code>原型</code>。</li>
+<li><code>Object.values()</code> 返回<code>实例</code>里<code>可枚举</code>的<code>属性值</code>的<code>数组</code>，不包括<code>原型</code>。</li>
+<li><code>Object.entries()</code> 返回<code>实例</code>里<code>可枚举</code>的<code>键值对</code>的<code>数组</code>，不包括<code>原型</code>。</li>
+</ul>
+<h2 id="Object-getOwnPropertyNames"><a href="#Object-getOwnPropertyNames" class="headerlink" title="Object.getOwnPropertyNames()"></a>Object.getOwnPropertyNames()</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/351.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/350.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/350.html" class="post-title-link" itemprop="url">babel7.4配置总结</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-03 14:43:41" itemprop="dateCreated datePublished" datetime="2019-07-03T14:43:41+00:00">2019-07-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Build/" itemprop="url" rel="index"><span itemprop="name">FE Build</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="本文适用版本"><a href="#本文适用版本" class="headerlink" title="本文适用版本"></a>本文适用版本</h2><figure class="highlight"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">"@babel/core": "^7.4.4",</span><br><span class="line">"@babel/plugin-transform-runtime": "^7.4.4",</span><br><span class="line">"@babel/preset-env": "^7.4.5",</span><br><span class="line">"@babel/runtime": "^7.4.5",</span><br><span class="line">"@babel/runtime-corejs2": "^7.4.5",</span><br><span class="line">"@babel/runtime-corejs3": "^7.4.5",</span><br><span class="line">"babel-loader": "^8.0.6",</span><br><span class="line">"core-js": "^3.1.4",</span><br><span class="line">"regenerator-runtime": "^0.13.2",</span><br><span class="line">"webpack": "^4.17.1",</span><br><span class="line">"webpack-cli": "^3.1.0"</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="什么是-babel"><a href="#什么是-babel" class="headerlink" title="什么是 babel"></a>什么是 babel</h2><p><code>babel</code> 把 <code>JavaScript</code> 中 <code>es2015/2016/2017/2046</code> 的新语法转化为 <code>es5</code>，让低端运行环境(如浏览器和 <code>node</code>)能够认识并执行。</p>
+<h2 id="运行方式"><a href="#运行方式" class="headerlink" title="运行方式"></a>运行方式</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/350.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">…</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">…</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  © 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Korey zhao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">507k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:41</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+
+
+  
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script>
+
+<script src="/bundle.js"></script><script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  ;
+L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":125,"height":150,"position":"left","hOffset":30,"vOffset":-5},"mobile":{"show":false,"scale":0.05},"react":{"opacityDefault":1,"opacityOnHover":0.2},"log":false});</script></body></html>

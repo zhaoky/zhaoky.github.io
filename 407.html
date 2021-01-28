@@ -1,23 +1,625 @@
-{% extends '_layout.swig' %}
-{% import '_macro/post.swig' as post_template %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#3eaf7c">
+<meta name="generator" content="Hexo 5.2.0">
 
-{% block title %}{{ page.title }} | {{ title }}{% endblock %}
 
-{% block page_class %}page-post-detail{% endblock %}
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/apple-touch-icon.png" color="#3eaf7c">
 
-{% block content %}
+<link rel="stylesheet" href="/css/main.css">
 
-  <div id="posts" class="posts-expand">
-    {{ post_template.render(page) }}
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="微信支付微信内 H5 支付（公众号支付）走统一引入 JSSDK 的新方式实现支付逻辑。  JSSDK 文档 地址 网页授权(获取 access_token 和 openid) 文档 地址 统一下单 文档 地址 微信内 H5 调起支付 文档 地址  明确两种 access_token">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端微信H5支付，支付宝内及第三方H5支付，各平台分享总结">
+<meta property="og:url" content="https://blog.flqin.com/407.html">
+<meta property="og:site_name" content="前端轻语">
+<meta property="og:description" content="微信支付微信内 H5 支付（公众号支付）走统一引入 JSSDK 的新方式实现支付逻辑。  JSSDK 文档 地址 网页授权(获取 access_token 和 openid) 文档 地址 统一下单 文档 地址 微信内 H5 调起支付 文档 地址  明确两种 access_token">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-09-09T21:54:41.000Z">
+<meta property="article:modified_time" content="2020-09-09T21:54:41.000Z">
+<meta property="article:author" content="Korey">
+<meta property="article:tag" content="前端,前端开发,css,html,js,css3,前端开发博客,fe,技术文档">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.flqin.com/407.html">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>前端微信H5支付，支付宝内及第三方H5支付，各平台分享总结 | 前端轻语</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c8dec20f0d0449c8ece3c0dbab4e8f31";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
   </div>
 
-{% endblock %}
+  <div class="site-meta">
 
-{% block sidebar %}
-  {{ sidebar_template.render(true) }}
-{% endblock %}
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">前端轻语</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">korey的前端笔记</p>
+  </div>
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+
+  </li>
+        <li class="menu-item menu-item-map">
+
+    <a href="/map/" rel="section"><i class="fa fa-sitemap fa-fw"></i>map</a>
+
+  </li>
+        <li class="menu-item menu-item-link">
+
+    <a href="/link/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>link</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80" placeholder="搜索..." spellcheck="false" type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AE%E4%BF%A1%E6%94%AF%E4%BB%98"><span class="nav-number">1.</span> <span class="nav-text">微信支付</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AE%E4%BF%A1%E5%86%85-H5-%E6%94%AF%E4%BB%98%EF%BC%88%E5%85%AC%E4%BC%97%E5%8F%B7%E6%94%AF%E4%BB%98%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">微信内 H5 支付（公众号支付）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%98%8E%E7%A1%AE%E4%B8%A4%E7%A7%8D-access-token"><span class="nav-number">1.1.1.</span> <span class="nav-text">明确两种 access_token</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B4%E4%B8%AA%E6%B5%81%E7%A8%8B"><span class="nav-number">1.1.2.</span> <span class="nav-text">整个流程</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%AF%E4%BB%98%E5%AE%9D%E6%94%AF%E4%BB%98"><span class="nav-number">2.</span> <span class="nav-text">支付宝支付</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%AF%E4%BB%98%E5%AE%9D%E5%86%85-H5-%E6%94%AF%E4%BB%98"><span class="nav-number">2.1.</span> <span class="nav-text">支付宝内 H5 支付</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%96%B9%E6%B5%8F%E8%A7%88%E5%99%A8%E4%B8%AD-%E6%94%AF%E4%BB%98%E5%AE%9D%E6%94%AF%E4%BB%98"><span class="nav-number">2.2.</span> <span class="nav-text">第三方浏览器中 支付宝支付</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%85%B1%E6%9F%A5%E8%AF%A2%E7%BB%93%E6%9E%9C-queryPayment"><span class="nav-number">2.3.</span> <span class="nav-text">公共查询结果 queryPayment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%AF%E4%BB%98%E6%80%BB%E7%BB%93"><span class="nav-number">2.4.</span> <span class="nav-text">支付总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E4%BA%AB"><span class="nav-number">3.</span> <span class="nav-text">分享</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AE%E4%BF%A1-gt-%E5%BE%AE%E4%BF%A1%EF%BC%88%E5%BE%AE%E4%BF%A1%E8%81%94%E7%B3%BB%E4%BA%BA%EF%BC%8C%E5%BE%AE%E4%BF%A1%E6%9C%8B%E5%8F%8B%E5%9C%88%EF%BC%8CQQ-%E8%81%94%E7%B3%BB%E4%BA%BA%EF%BC%8CQQ-%E7%A9%BA%E9%97%B4%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">微信- &gt; 微信（微信联系人，微信朋友圈，QQ 联系人，QQ 空间）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#QQ-TIM-gt-QQ%EF%BC%88QQ-%E8%81%94%E7%B3%BB%E4%BA%BA%EF%BC%8CQQ-%E7%A9%BA%E9%97%B4%EF%BC%8C%E5%BE%AE%E4%BF%A1%E8%81%94%E7%B3%BB%E4%BA%BA%EF%BC%8C%E5%BE%AE%E4%BF%A1%E6%9C%8B%E5%8F%8B%E5%9C%88%EF%BC%89"><span class="nav-number">3.2.</span> <span class="nav-text">QQ(TIM) -&gt; QQ（QQ 联系人，QQ 空间，微信联系人，微信朋友圈）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%AF%E4%BB%98%E5%AE%9D-gt-%E6%94%AF%E4%BB%98%E5%AE%9D%EF%BC%88%E6%9C%8B%E5%8F%8B%E5%8A%A8%E6%80%81%EF%BC%8C%E8%81%94%E7%B3%BB%E4%BA%BA%EF%BC%89"><span class="nav-number">3.3.</span> <span class="nav-text">支付宝 -&gt; 支付宝（朋友动态，联系人）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AE%E5%8D%9A%EF%BC%8C%E5%A4%B4%E6%9D%A1%EF%BC%8C%E7%9F%A5%E4%B9%8E%E7%AD%89%E5%85%B6%E4%BB%96%E5%B9%B3%E5%8F%B0%E6%B5%8F%E8%A7%88%E5%99%A8-gt-%E5%BE%AE%E4%BF%A1%EF%BC%8CQQ"><span class="nav-number">3.4.</span> <span class="nav-text">微博，头条，知乎等其他平台浏览器 -&gt; 微信，QQ</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Korey" src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Korey</p>
+  <div class="site-description" itemprop="description">热衷于记录、分享前端开发技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="GitHub → https://github.com/zhaoky"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtleXUuemhhb0Bmb3htYWlsLmNvbQ==" title="E-Mail → mailto:keyu.zhao@foxmail.com"><i class="far fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9qdWVqaW4uaW0vdXNlci81N2M5MWIzYjE2NWFiZDAwNjhkYjg5YzI=" title="掘金 → https://juejin.im/user/57c91b3b165abd0068db89c2"><i class="fas fa-link fa-fw"></i>掘金</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cDovL3d3dy56aGlodS5jb20vcGVvcGxlL2ZlX2tvcmV5" title="知乎 → http://www.zhihu.com/people/fe_korey"><i class="fas fa-link fa-fw"></i>知乎</span>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9reQ==" title="Follow me on GitHub" aria-label="Follow me on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope="" itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.flqin.com/407.html">
+
+    <span hidden="" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Korey">
+      <meta itemprop="description" content="热衷于记录、分享前端开发技术">
+    </span>
+
+    <span hidden="" itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="前端轻语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          前端微信H5支付，支付宝内及第三方H5支付，各平台分享总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-09-09 21:54:41" itemprop="dateCreated datePublished" datetime="2020-09-09T21:54:41+00:00">2020-09-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+          <a href="/categories/FE-Field/" itemprop="url" rel="index"><span itemprop="name">FE Field</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>8.7k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 ≈</span>
+      <span>8 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="微信支付"><a href="#微信支付" class="headerlink" title="微信支付"></a>微信支付</h2><h3 id="微信内-H5-支付（公众号支付）"><a href="#微信内-H5-支付（公众号支付）" class="headerlink" title="微信内 H5 支付（公众号支付）"></a>微信内 H5 支付（公众号支付）</h3><p>走统一引入 <code>JSSDK</code> 的新方式实现支付逻辑。</p>
+<ul>
+<li><code>JSSDK</code> 文档 <span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXJzLndlaXhpbi5xcS5jb20vZG9jL29mZmlhY2NvdW50L09BX1dlYl9BcHBzL0pTLVNESy5odG1s">地址<i class="fa fa-external-link-alt"></i></span></li>
+<li>网页授权(获取 <code>access_token</code> 和 <code>openid</code>) 文档 <span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXJzLndlaXhpbi5xcS5jb20vZG9jL29mZmlhY2NvdW50L09BX1dlYl9BcHBzL1dlY2hhdF93ZWJwYWdlX2F1dGhvcml6YXRpb24uaHRtbA==">地址<i class="fa fa-external-link-alt"></i></span></li>
+<li>统一下单 文档 <span class="exturl" data-url="aHR0cHM6Ly9wYXkud2VpeGluLnFxLmNvbS93aWtpL2RvYy9hcGkvanNhcGkucGhwP2NoYXB0ZXI9OV8x">地址<i class="fa fa-external-link-alt"></i></span></li>
+<li>微信内 <code>H5</code> 调起支付 文档 <span class="exturl" data-url="aHR0cHM6Ly9wYXkud2VpeGluLnFxLmNvbS93aWtpL2RvYy9hcGkvanNhcGkucGhwP2NoYXB0ZXI9N183JmluZGV4PTY=">地址<i class="fa fa-external-link-alt"></i></span></li>
+</ul>
+<h4 id="明确两种-access-token"><a href="#明确两种-access-token" class="headerlink" title="明确两种 access_token"></a>明确两种 access_token</h4><ul>
+<li>网页授权 <code>access_token</code>：基于 <code>Oauth 2.0</code>，需要 <code>code</code> 换取，用于维持登录状态。</li>
+<li>普通 <code>access_token</code>：后台可直接生成，换取 <code>jsapi_ticket</code> 进而加密生成 <code>signature</code> 作为 <code>wx.config</code> 参数。</li>
+</ul>
+<h4 id="整个流程"><a href="#整个流程" class="headerlink" title="整个流程"></a>整个流程</h4><p>支付统一下单接口需要 <code>openid</code>，所以必须要授权获取。因为此处只需要 <code>openid</code>，所以 <code>snsapi_base</code> 为 <code>scope</code> 走静默授权。(为了方便起见，此处每次进入都获取 <code>code</code> 走静默授权。)</p>
+<ol>
+<li><p>进入页面判断链接上是否有 <code>code</code>，没有则请求接口得到 <code>url</code> 并重定向：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">{</span><br><span class="line">  url: <span class="string">'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx1232123123&amp;redirect_uri=带参数(包括锚点)的编码后的重定向的回调地址&amp;response_type=code&amp;scope=snsapi_base&amp;connect_redirect=1&amp;state=xxxx#wechat_redirect'</span>;</span><br><span class="line">}</span><br><span class="line"><span class="comment">// connect_redirect=1 表示只只触发一次请求</span></span><br></pre></td></tr></tbody></table></figure>
+</li>
+<li><p>微信内部多次重定向之后，最后带上 <code>code</code> 和 <code>state</code> 301 重定向回设置的回调地址：</p>
+<figure class="highlight html"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">301: https://www.flqin.com/test.html?id=135price=1322&amp;code=ASDJIAJD13D823D&amp;state=13212313#/</span><br></pre></td></tr></tbody></table></figure>
+</li>
+<li><p>前端判断到链接有 <code>code</code>，将 <code>code</code> 及一些其他页面需要的参数一起传给后端，后端拿到 <code>code</code> 换取网页授权 <code>access_token</code> 和 <code>openid</code>，此处后端可将 <code>access_token/refresh_token</code> 存入 <code>cookie</code> 或者通过其他方式 <code>jwt</code> 维持登录状态，就无需重复获取 <code>code</code>。</p>
+</li>
+<li><p><code>openid</code> 为统一下单 <code>jsapi</code> 接口必传参数，用于得到 <code>prepay_id</code> 参数值，即为 <code>package</code> 参数。最后接口统一返回 <code>wx.confg</code> 和 <code>wx.chooseWXPay</code> 所需参数，前端调用 <code>JSSDK</code> 即可。</p>
+</li>
+<li><p><code>wx.chooseWXPay</code> 的成功、完成回调仅代表支付完成，</p>
+</li>
+</ol>
+<p>代码演示：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="title">queryWxCode</span>(<span class="params"></span>)</span> {</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">  <span class="keyword">if</span> (!code) {</span><br><span class="line">    <span class="keyword">const</span> { data } = <span class="keyword">await</span> api.wxToPay({<span class="attr">url</span>:<span class="string">'当前页面完整链接'</span>}).catch(<span class="function">(<span class="params">e</span>) =&gt;</span> e); <span class="comment">//获取重定向链接（微信授权地址）</span></span><br><span class="line">    data &amp;&amp; (<span class="built_in">window</span>.location.href = data);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  }</span><br><span class="line">  <span class="keyword">return</span> api.wxPay({code,<span class="attr">url</span>:<span class="string">'当前页面包含参数的url'</span>});  <span class="comment">//获得wx.config、wx.choosepay全部参数</span></span><br><span class="line">},</span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="title">registerWx</span>(<span class="params"></span>)</span> {</span><br><span class="line">  <span class="keyword">const</span> { data } = <span class="keyword">await</span> <span class="built_in">this</span>.queryWxCode().catch(<span class="function">(<span class="params">e</span>) =&gt;</span> {});</span><br><span class="line">  <span class="built_in">this</span>.wxSdkInfo = data;</span><br><span class="line">  wx.config({</span><br><span class="line">    debug: <span class="literal">false</span>, <span class="comment">// 开启调试模式</span></span><br><span class="line">    appId: data.appId, <span class="comment">// 必填，公众号的唯一标识</span></span><br><span class="line">    timestamp: data.timeStamp, <span class="comment">// 必填，生成签名的时间戳</span></span><br><span class="line">    nonceStr: data.nonceStr, <span class="comment">// 必填，生成签名的随机串</span></span><br><span class="line">    signature: data.signature, <span class="comment">// 必填，签名 通过普通access_token生成，无需授权</span></span><br><span class="line">    jsApiList: [<span class="string">'chooseWXPay'</span>, <span class="string">'hideMenuItems'</span>] <span class="comment">// 必填，需要使用的JS接口列表</span></span><br><span class="line">  });</span><br><span class="line">  wx.ready(<span class="function">() =&gt;</span> {</span><br><span class="line">    <span class="built_in">this</span>.hideWxMenus();</span><br><span class="line">    <span class="built_in">this</span>.createWxpay();</span><br><span class="line">  });</span><br><span class="line">},</span><br><span class="line"><span class="function"><span class="title">hideWxMenus</span>(<span class="params"></span>)</span> {</span><br><span class="line">  <span class="comment">// 禁用支付分享, 防止订单未生成而进入该页面导致的报错</span></span><br><span class="line">  <span class="keyword">const</span> menuList = [<span class="string">'menuItem:share:appMessage'</span>, <span class="string">'menuItem:share:timeline'</span>, <span class="string">'menuItem:copyUrl'</span>];</span><br><span class="line">  wx.hideMenuItems({</span><br><span class="line">    menuList <span class="comment">// 要隐藏的菜单项，只能隐藏“传播类”和“保护类”按钮，所有menu项见附录3</span></span><br><span class="line">  });</span><br><span class="line">},</span><br><span class="line"><span class="function"><span class="title">createWxpay</span>(<span class="params"></span>)</span> {</span><br><span class="line">  <span class="keyword">const</span> data = <span class="built_in">this</span>.wxSdkInfo;</span><br><span class="line">  wx.chooseWXPay({</span><br><span class="line">    timestamp: data.timeStamp, <span class="comment">// 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符</span></span><br><span class="line">    nonceStr: data.nonceStr, <span class="comment">// 支付签名随机串，不长于 32 位</span></span><br><span class="line">    package: <span class="string">`prepay_id=<span class="subst">${data.prepayId}</span>`</span>, <span class="comment">// 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*） 该参数需要openid</span></span><br><span class="line">    signType: data.signType, <span class="comment">// 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'</span></span><br><span class="line">    paySign: data.paySign, <span class="comment">// 支付签名 参与签名的参数为：appId、timeStamp、nonceStr、package、signType</span></span><br><span class="line">    success: <span class="built_in">this</span>.queryPayment, <span class="comment">//公共查询结果接口</span></span><br><span class="line">    fail: <span class="built_in">this</span>.showFail, <span class="comment">//失败处理</span></span><br><span class="line">    cancel: <span class="built_in">this</span>.showRefail, <span class="comment">//取消处理</span></span><br><span class="line">    <span class="function"><span class="title">complete</span>(<span class="params">{ errMsg }</span>)</span> {</span><br><span class="line">      <span class="keyword">const</span> SUCCESS = <span class="regexp">/:ok/gi</span>.test(errMsg);</span><br><span class="line">      <span class="keyword">const</span> CANCEL = <span class="regexp">/:cancel/gi</span>.test(errMsg);</span><br><span class="line">      <span class="keyword">if</span> (SUCCESS) <span class="built_in">this</span>.queryPayment();</span><br><span class="line">      <span class="keyword">else</span> <span class="keyword">if</span> (CANCEL) <span class="built_in">this</span>.showRefail();</span><br><span class="line">      <span class="keyword">else</span> <span class="built_in">this</span>.showFail();</span><br><span class="line">    }</span><br><span class="line">  });</span><br><span class="line">},</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="支付宝支付"><a href="#支付宝支付" class="headerlink" title="支付宝支付"></a>支付宝支付</h2><h3 id="支付宝内-H5-支付"><a href="#支付宝内-H5-支付" class="headerlink" title="支付宝内 H5 支付"></a>支付宝内 H5 支付</h3><p>必须接入支付宝 <code>JSAPI</code>。</p>
+<ul>
+<li><code>H5</code> 开发文档 <span class="exturl" data-url="aHR0cHM6Ly9teWpzYXBpLmFsaXBheS5jb20vanNhcGkvaW5kZXguaHRtbA==">地址<i class="fa fa-external-link-alt"></i></span></li>
+<li><code>Alipay JSSDK</code> <span class="exturl" data-url="aHR0cHM6Ly9teWpzYXBpLmFsaXBheS5jb20vYWxpcGF5anNhcGkv">地址<i class="fa fa-external-link-alt"></i></span></li>
+<li>支付文档 <span class="exturl" data-url="aHR0cHM6Ly9teWpzYXBpLmFsaXBheS5jb20vanNhcGkvbmF0aXZlL3RyYWRlLXBheS5odG1s">地址<i class="fa fa-external-link-alt"></i></span></li>
+</ul>
+<p>注意点：</p>
+<ul>
+<li>不涉及读取用户优惠券之类的都走普通无单号支付，即无需授权。</li>
+<li>授权过程与微信大致一致。</li>
+</ul>
+<p>代码演示：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="title">registerAlipay</span>(<span class="params"></span>)</span> {</span><br><span class="line">  <span class="keyword">const</span> alipayInit = <span class="keyword">async</span> () =&gt; {</span><br><span class="line">    <span class="keyword">await</span> <span class="built_in">this</span>.queryAliOrder().catch(<span class="function">(<span class="params">e</span>) =&gt;</span> e);</span><br><span class="line">    <span class="built_in">this</span>.createAlipay();</span><br><span class="line">  };</span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">window</span>.AlipayJSBridge) alipayInit();</span><br><span class="line">  <span class="keyword">else</span> <span class="built_in">document</span>.addEventListener(<span class="string">'AlipayJSBridgeReady'</span>, alipayInit, <span class="literal">false</span>);</span><br><span class="line">},</span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="title">queryAliOrder</span>(<span class="params"></span>)</span> {</span><br><span class="line">  <span class="comment">// 无单号支付</span></span><br><span class="line">  <span class="keyword">const</span> {<span class="attr">data</span>: orderStr } = <span class="keyword">await</span> api.aliPayH5({<span class="attr">orderId</span>:<span class="number">1</span>}).catch(<span class="function">(<span class="params">e</span>) =&gt;</span> e);<span class="comment">//请求接口获取 orderStr</span></span><br><span class="line">},</span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="title">queryAliCode</span>(<span class="params"></span>)</span> {</span><br><span class="line">  <span class="comment">// 有单号支付tradeNo(后台开通当面付)，同微信授权流程</span></span><br><span class="line">  <span class="keyword">const</span> { href, search } = <span class="built_in">window</span>.location;</span><br><span class="line">  <span class="keyword">const</span> query = search &amp;&amp; search.replace(<span class="regexp">/[?\/]/g</span>, <span class="string">''</span>);</span><br><span class="line">  <span class="keyword">const</span> { <span class="attr">auth_code</span>: code } = qs.parse(query);</span><br><span class="line">  <span class="keyword">if</span> (!code) {</span><br><span class="line">    <span class="keyword">const</span> { data } = <span class="keyword">await</span> api.aliToPay(href).catch(<span class="function">(<span class="params">e</span>) =&gt;</span> e); <span class="comment">//请求接口获取支付宝授权地址</span></span><br><span class="line">    data &amp;&amp; (<span class="built_in">window</span>.location.href = data);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  }</span><br><span class="line">  <span class="keyword">const</span> {<span class="attr">data</span>: tradeNO }  = <span class="keyword">await</span> api.aliPayH5({<span class="attr">orderId</span>:<span class="number">1</span>,code}).catch(<span class="function">(<span class="params">e</span>) =&gt;</span> e); <span class="comment">//请求接口获取 tradeNO</span></span><br><span class="line">},</span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="title">createAlipay</span>(<span class="params"></span>)</span> {</span><br><span class="line">  AlipayJSBridge.call(<span class="string">'tradePay'</span>, { <span class="string">'orderStr/tradeNO'</span> }, <span class="function">(<span class="params">{ resultCode }</span>) =&gt;</span> {</span><br><span class="line">    <span class="keyword">const</span> SUCCESS_CODES = [<span class="string">'9000'</span>, <span class="string">'8000'</span>, <span class="string">'6004'</span>];</span><br><span class="line">    <span class="keyword">const</span> UNKNOW_CODES = [<span class="string">'7001'</span>, <span class="string">'6001'</span>, <span class="string">'6002'</span>];</span><br><span class="line">    <span class="keyword">if</span> (~SUCCESS_CODES.indexOf(resultCode)) _this.queryPayment(); <span class="comment">//支付查询</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (~UNKNOW_CODES.indexOf(resultCode)) _this.showRefail();</span><br><span class="line">    <span class="keyword">else</span> _this.showFail();</span><br><span class="line">  });</span><br><span class="line">},</span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="第三方浏览器中-支付宝支付"><a href="#第三方浏览器中-支付宝支付" class="headerlink" title="第三方浏览器中 支付宝支付"></a>第三方浏览器中 支付宝支付</h3><ul>
+<li>支付文档 <span class="exturl" data-url="aHR0cHM6Ly9vcGVuZG9jcy5hbGlwYXkuY29tL29wZW4vMjAzLzEwNTI4NQ==">地址<i class="fa fa-external-link-alt"></i></span></li>
+<li>参数说明 <span class="exturl" data-url="aHR0cHM6Ly9vcGVuZG9jcy5hbGlwYXkuY29tL29wZW4vMjAzLzEwNzA5MA==">地址<i class="fa fa-external-link-alt"></i></span></li>
+</ul>
+<p>无需授权，直接将 <code>url</code> 和订单号传给后端，后端返回一个 <code>form</code> 表单添加到页面即可唤起支付宝 <code>APP</code>，支付完成后，根据后端配置支付宝会自动回跳到支付结果页并携带一堆参数。此时需要查询公共结果接口来确定支付是否成功。</p>
+<p>注意点：</p>
+<ul>
+<li>通过链接上是否有参数 <code>alipay.trade.wap.pay.return</code> 来判断是否是支付回调回来的页面。</li>
+</ul>
+<p>代码演示：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">registerH5</span>(<span class="params"></span>)</span> {</span><br><span class="line">  <span class="keyword">const</span> { origin, pathname, search } = <span class="built_in">window</span>.location;</span><br><span class="line">  <span class="keyword">const</span> { method } = qs.parse(search.replace(<span class="regexp">/[?\/]/g</span>, <span class="string">''</span>));</span><br><span class="line">  <span class="keyword">if</span> (method === <span class="string">'alipay.trade.wap.pay.return'</span>) {</span><br><span class="line">    <span class="built_in">this</span>.queryPayment(); <span class="comment">//执行公共查询结果接口</span></span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  }</span><br><span class="line">  <span class="keyword">const</span> { <span class="attr">data</span>: form } = <span class="keyword">await</span> api.aliPayH5(orderId,url).catch(<span class="function">(<span class="params">e</span>) =&gt;</span> e); <span class="comment">//请求接口返回form表单</span></span><br><span class="line">  <span class="keyword">if</span> (!form) <span class="keyword">return</span>;</span><br><span class="line">  <span class="keyword">const</span> div = <span class="built_in">document</span>.createElement(<span class="string">'div'</span>);</span><br><span class="line">  div.innerHTML = form;</span><br><span class="line">  <span class="built_in">document</span>.body.appendChild(div);</span><br><span class="line">  <span class="built_in">document</span>.forms[<span class="number">0</span>].submit();</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="公共查询结果-queryPayment"><a href="#公共查询结果-queryPayment" class="headerlink" title="公共查询结果 queryPayment"></a>公共查询结果 queryPayment</h3><p>需要轮询支付结果。</p>
+<p>代码演示：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="title">queryPayment</span>(<span class="params"></span>)</span> {</span><br><span class="line">  <span class="keyword">const</span> TIMES_REACH = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">const</span> TIMES_MAX = <span class="number">5</span>;</span><br><span class="line">  <span class="keyword">const</span> SUCCESS_CODE = <span class="string">'1'</span>; <span class="comment">// 0待支付,需要继续查询 1支付成功  -1异常</span></span><br><span class="line">  <span class="keyword">const</span> WAITING_CODE = <span class="string">'0'</span>;</span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">this</span>.qTimes === TIMES_REACH) { <span class="comment">//qTimes为最大查询次数</span></span><br><span class="line">    <span class="built_in">this</span>.qTimes = TIMES_MAX;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  }</span><br><span class="line">  <span class="keyword">const</span> { data } = <span class="keyword">await</span> api.payStatus(orderId).catch(<span class="function">(<span class="params">e</span>) =&gt;</span> e); <span class="comment">// 查询支付结果</span></span><br><span class="line">  <span class="keyword">if</span> (data == SUCCESS_CODE) { <span class="comment">//成功状态</span></span><br><span class="line">    <span class="built_in">this</span>.showSuccess();</span><br><span class="line">    <span class="built_in">this</span>.qTimes = TIMES_MAX;</span><br><span class="line">  } <span class="keyword">else</span> <span class="keyword">if</span> (data == WAITING_CODE) { <span class="comment">//等待状态</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'查询支付结果中...'</span>);</span><br><span class="line">    <span class="built_in">clearTimeout</span>(<span class="built_in">this</span>.timer);</span><br><span class="line">    <span class="built_in">this</span>.timer = <span class="built_in">setTimeout</span>(<span class="keyword">async</span> () =&gt; {</span><br><span class="line">      <span class="keyword">await</span> <span class="built_in">this</span>.queryPayment(); <span class="comment">//递归轮询</span></span><br><span class="line">      <span class="built_in">this</span>.qTimes -= <span class="number">1</span>;</span><br><span class="line">    }, <span class="number">1000</span>);</span><br><span class="line">  } <span class="keyword">else</span> {</span><br><span class="line">    <span class="built_in">this</span>.showFail();</span><br><span class="line">  }</span><br><span class="line">},</span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="支付总结"><a href="#支付总结" class="headerlink" title="支付总结"></a>支付总结</h3><ul>
+<li>微信支付宝均需要配置合法域名，可精确到文件夹路径。</li>
+<li>开发可用微信开发工具，结合 alert 调试，直接把代码发到已配置好域名的测试环境测试最佳。</li>
+<li>注意参数的大小写及传递的内容，支付主要复杂度都集中在后端，前端需要配合后端传参。</li>
+</ul>
+<h2 id="分享"><a href="#分享" class="headerlink" title="分享"></a>分享</h2><h3 id="微信-gt-微信（微信联系人，微信朋友圈，QQ-联系人，QQ-空间）"><a href="#微信-gt-微信（微信联系人，微信朋友圈，QQ-联系人，QQ-空间）" class="headerlink" title="微信- > 微信（微信联系人，微信朋友圈，QQ 联系人，QQ 空间）"></a>微信- &gt; 微信（微信联系人，微信朋友圈，QQ 联系人，QQ 空间）</h3><p>必须引入 <code>JSSDK</code>，否则分享出来无法设置分享描述及分享图片。</p>
+<ul>
+<li><code>JSSDK</code> 文档：<span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXJzLndlaXhpbi5xcS5jb20vZG9jL29mZmlhY2NvdW50L09BX1dlYl9BcHBzL0pTLVNESy5odG1s">地址<i class="fa fa-external-link-alt"></i></span></li>
+<li>获取普通 <code>access_token</code> 文档：<span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXJzLndlaXhpbi5xcS5jb20vZG9jL29mZmlhY2NvdW50L0Jhc2ljX0luZm9ybWF0aW9uL0dldF9hY2Nlc3NfdG9rZW4uaHRtbA==">地址<i class="fa fa-external-link-alt"></i></span></li>
+</ul>
+<p>需要给后端传入带有参数的当前页面 <code>url</code>（无需编码），让后端返回 <code>wx.config</code> 所需参数即可：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> { data } = <span class="keyword">await</span> api.getWxConfig({ <span class="attr">url</span>: <span class="string">'当前页面包含参数的url'</span> }); <span class="comment">//接口返回 appId，timeStamp，nonceStr，signature.</span></span><br><span class="line">wx.config({</span><br><span class="line">  debug: <span class="literal">true</span>,</span><br><span class="line">  appId: data.appId, <span class="comment">// 必填，公众号的唯一标识</span></span><br><span class="line">  timestamp: data.timeStamp, <span class="comment">// 必填，生成签名的时间戳</span></span><br><span class="line">  nonceStr: data.nonceStr, <span class="comment">// 必填，生成签名的随机串</span></span><br><span class="line">  signature: data.signature, <span class="comment">// 必填，签名</span></span><br><span class="line">  jsApiList: [<span class="string">'onMenuShareTimeline'</span>, <span class="string">'onMenuShareAppMessage'</span>, <span class="string">'onMenuShareQQ'</span>, <span class="string">'onMenuShareQZone'</span>], <span class="comment">// 必填，需要使用的JS接口列表</span></span><br><span class="line">});</span><br><span class="line">wx.ready(<span class="function">() =&gt;</span> {</span><br><span class="line">  <span class="keyword">const</span> shareList = [<span class="string">'onMenuShareTimeline'</span>, <span class="string">'onMenuShareAppMessage'</span>, <span class="string">'onMenuShareQQ'</span>, <span class="string">'onMenuShareQZone'</span>];</span><br><span class="line">  shareList.forEach(<span class="function">(<span class="params">item</span>) =&gt;</span> {</span><br><span class="line">    wx[item]({</span><br><span class="line">      title: <span class="built_in">this</span>.shareInfo.title, <span class="comment">// 分享标题</span></span><br><span class="line">      desc: <span class="built_in">this</span>.shareInfo.description, <span class="comment">// 分享描述</span></span><br><span class="line">      link: <span class="built_in">window</span>.location.href,</span><br><span class="line">      imgUrl: <span class="built_in">this</span>.shareInfo.image, <span class="comment">// 分享图标</span></span><br><span class="line">      success: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>{</span><br><span class="line">        <span class="comment">// 设置成功</span></span><br><span class="line">      },</span><br><span class="line">    });</span><br><span class="line">  });</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p>注意点：</p>
+<ul>
+<li>首先需要在微信后台设置接口安全域名：<code>www.xxxx.com</code>，无需到具体路径及参数。</li>
+<li>前端仅需传给后台当前页面带参数的 <code>url</code> 即可，甚至接口可以自己取请求页面带参数的 <code>url</code>，前端无需传。</li>
+<li>注意 <code>timeStamp</code> 的大小写。</li>
+<li>注意 <code>jsApiList</code> 选择即将废弃的分享接口，新分享接口反而不好用。</li>
+<li>分享无需授权，因：参数 <code>nonceStr &lt;- jsapi_ticket &lt;- access_token &lt;- appid,secret</code>。此 <code>access_token</code> 为普通 <code>access_token</code>，<code>appid</code> 和 <code>secret</code> 均在微信后台获取。区别于支付等网页授权 <code>access_token</code>。</li>
+</ul>
+<h3 id="QQ-TIM-gt-QQ（QQ-联系人，QQ-空间，微信联系人，微信朋友圈）"><a href="#QQ-TIM-gt-QQ（QQ-联系人，QQ-空间，微信联系人，微信朋友圈）" class="headerlink" title="QQ(TIM) -> QQ（QQ 联系人，QQ 空间，微信联系人，微信朋友圈）"></a>QQ(TIM) -&gt; QQ（QQ 联系人，QQ 空间，微信联系人，微信朋友圈）</h3><p>需要引入 <code>api</code>：</p>
+<figure class="highlight html"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"//open.mobile.qq.com/sdk/qqapi.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>js</code> 执行：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> share = {</span><br><span class="line">  title: <span class="string">'分享标题，最大45字节'</span>,</span><br><span class="line">  desc: <span class="string">'分享内容，最大60字节'</span>,</span><br><span class="line">  image_url: <span class="string">'图片URL，最小需要200 * 200'</span>,</span><br><span class="line">  share_url: <span class="string">'分享链接与页面URL同'</span>,</span><br><span class="line">};</span><br><span class="line">mqq.data.setShareInfo(share, callback);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>另 <code>mqq.ui.showShareMenu();</code> 可直接唤起 <code>QQ</code> 分享面板。</p>
+<h3 id="支付宝-gt-支付宝（朋友动态，联系人）"><a href="#支付宝-gt-支付宝（朋友动态，联系人）" class="headerlink" title="支付宝 -> 支付宝（朋友动态，联系人）"></a>支付宝 -&gt; 支付宝（朋友动态，联系人）</h3><p>直接按如下设置 <code>meta</code> 即可：</p>
+<figure class="highlight html"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"Alipay:title"</span> <span class="attr">content</span>=<span class="string">"分享标题"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"Alipay:imgUrl"</span> <span class="attr">content</span>=<span class="string">"分享图片url"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"Alipay:desc"</span> <span class="attr">content</span>=<span class="string">"分享描述"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"Alipay:link"</span> <span class="attr">content</span>=<span class="string">"分享链接"</span> /&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="微博，头条，知乎等其他平台浏览器-gt-微信，QQ"><a href="#微博，头条，知乎等其他平台浏览器-gt-微信，QQ" class="headerlink" title="微博，头条，知乎等其他平台浏览器 -> 微信，QQ"></a>微博，头条，知乎等其他平台浏览器 -&gt; 微信，QQ</h3><blockquote>
+<p>微博可注册轻应用使用 JS-SDK 完成分享设置。收益不大就没做了。<br>知乎实测 IOS 可以取写死的描述及动态标题，图片无法设置，安卓只能设置标题。</p>
+</blockquote>
+<p>对于其他平台分享，统一兜底处理方式：</p>
+<p>分享标题及描述设置 <code>head</code> 元素：</p>
+<figure class="highlight html"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span>分享标题<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"description"</span> <span class="attr">content</span>=<span class="string">"分享描述"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>分享图及描述设置(一般默认取页面第一张大于 <code>300px</code> 图及第一段描述)：</p>
+<figure class="highlight html"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">"display: none;"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>分享描述<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"图片地址url"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>使用 <code>ogp</code>：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;meta property=<span class="string">"og:type"</span> content=<span class="string">"website"</span>&gt;</span><br><span class="line">    &lt;meta property=<span class="string">"og:title"</span> content=<span class="string">"分享标题"</span>&gt;</span><br><span class="line">    &lt;meta property=<span class="string">"og:description"</span> content=<span class="string">"分享描述"</span>&gt;</span><br><span class="line">    &lt;meta property=<span class="string">"og:img"</span> content=<span class="string">"完整的分享图片链接"</span>&gt;</span><br><span class="line">    &lt;meta property=<span class="string">"og:url"</span> content=<span class="string">"完整的分享页面地址"</span>&gt;</span><br><span class="line">&lt;/head&gt;</span><br></pre></td></tr></tbody></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div></div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Korey 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/406.html" rel="prev" title="（转载）JavaScript设计模式">
+                  <i class="fa fa-chevron-left"></i> （转载）JavaScript设计模式
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/408.html" rel="next" title="《Javascript 密码花园》 笔记">
+                  《Javascript 密码花园》 笔记 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  © 2015 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Korey zhao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">507k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:41</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js"></script>
+
+
+  
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script>
+
+<script src="/bundle.js"></script><script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  ;
+L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"superSample":2,"width":125,"height":150,"position":"left","hOffset":30,"vOffset":-5},"mobile":{"show":false,"scale":0.05},"react":{"opacityDefault":1,"opacityOnHover":0.2},"log":false});</script></body></html>
