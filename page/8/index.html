@@ -615,7 +615,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/259.html" class="post-title-link" itemprop="url">（转载）JavaScript 垃圾回收</a>
+          <a href="/259.html" class="post-title-link" itemprop="url">（转载）V8引擎的垃圾内存回收机制</a>
         </h2>
 
         <div class="post-meta-container">
@@ -646,14 +646,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>3.9k</span>
+      <span>2.4k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 ≈</span>
-      <span>4 分钟</span>
+      <span>2 分钟</span>
     </span>
 </div>
 
@@ -664,14 +664,12 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>根据 <code>Wiki</code> 的定义，垃圾回收是一种自动的内存管理机制。当计算机上的动态内存不再需要时，就应该予以释放，以让出内存。直白点讲，就是程序是运行在内存里的，当声明一个变量、定义一个函数时都会占用内存。内存的容量是有限的，如果变量、函数等只有产生没有消亡的过程，那迟早内存有被完全占用的时候。这个时候，不仅自己的程序无法正常运行，连其他程序也会受到影响。好比生物只有出生没有死亡，地球总有被撑爆的一天。所以，在计算机中，我们需要垃圾回收。需要注意的是，定义中的“自动”的意思是语言可以帮助我们回收内存垃圾，但并不代表我们不用关心内存管理，如果操作失当，<code>JavaScript</code> 中依旧会出现内存溢出的情况。</p>
-<p>垃圾回收基于两个原理：</p>
-<ul>
-<li>考虑某个变量或对象在未来的程序运行中将不会被访问</li>
-<li>向这些对象要求归还内存</li>
-</ul>
-<p>而这两个原理中，最主要的也是最艰难的部分就是找到“所分配的内存确实已经不再需要了”。</p>
-<h2 id="垃圾回收方法"><a href="#垃圾回收方法" class="headerlink" title="垃圾回收方法"></a>垃圾回收方法</h2>
+          <blockquote>
+<p>原文链接 <code>https://juejin.cn/post/6875714523332870157#heading-9</code></p>
+</blockquote>
+<h2 id="垃圾回收的起因"><a href="#垃圾回收的起因" class="headerlink" title="垃圾回收的起因"></a>垃圾回收的起因</h2><p>在其他的后端语言中，如 Java/Go, 对于内存的使用没有什么限制，但是 JS 不一样，V8 只能使用系统的一部分内存。</p>
+<p>我们都知道，所有的对象类型的数据再 JS 中都是通过堆进行空间分配的，当我们构造一个对象进项赋值操作的时候，其实相应的内存已经分配到了堆上，我们可以不断地这样创建对象，让 V8 为它分配空间，直到堆的大小达到上限。</p>
+<h3 id="v8-内存限制"><a href="#v8-内存限制" class="headerlink" title="v8 内存限制"></a>v8 内存限制</h3>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/259.html#more" rel="contents">
@@ -1347,13 +1345,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">507k</span>
+    <span title="站点总字数">506k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">7:41</span>
+    <span title="站点阅读时长">7:40</span>
   </span>
 </div>
 
