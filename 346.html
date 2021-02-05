@@ -25,7 +25,7 @@
 
   <meta name="description" content="因 wordpress 后台臃肿反应慢，外加上本人作为前端代码狗，基于 nodejs 的 hexo 对我非常友好。所以花了 2 天时间终于把 blog 从 wordpress 迁移至 hexo， 通过直接在 md 里面来写博客，简直爽到飞起。特此记录一下我在迁移搭建中做了哪些操作，以便后面遗忘。  博客效果:  blog github.io">
 <meta property="og:type" content="article">
-<meta property="og:title" content="blog从wordpress迁移至hexo+next，并通过travis自动部署到ftp及github">
+<meta property="og:title" content="blog从wordpress迁移至hexo+next，并通过husky+Actions自动部署到ftp及github">
 <meta property="og:url" content="https://blog.flqin.com/346.html">
 <meta property="og:site_name" content="前端轻语">
 <meta property="og:description" content="因 wordpress 后台臃肿反应慢，外加上本人作为前端代码狗，基于 nodejs 的 hexo 对我非常友好。所以花了 2 天时间终于把 blog 从 wordpress 迁移至 hexo， 通过直接在 md 里面来写博客，简直爽到飞起。特此记录一下我在迁移搭建中做了哪些操作，以便后面遗忘。  博客效果:  blog github.io">
@@ -50,7 +50,7 @@
   };
 </script>
 
-  <title>blog从wordpress迁移至hexo+next，并通过travis自动部署到ftp及github | 前端轻语</title>
+  <title>blog从wordpress迁移至hexo+next，并通过husky+Actions自动部署到ftp及github | 前端轻语</title>
   
 
 
@@ -151,7 +151,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">97</span></a>
 
   </li>
         <li class="menu-item menu-item-map">
@@ -219,7 +219,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E9%9D%99%E6%80%81%E7%BD%91%E7%AB%99"><span class="nav-number">2.</span> <span class="nav-text">生成静态网站</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E-wordpress-%E8%BF%81%E7%A7%BB"><span class="nav-number">3.</span> <span class="nav-text">从 wordpress 迁移</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hexo-%E4%BC%98%E5%8C%96"><span class="nav-number">4.</span> <span class="nav-text">hexo 优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E5%A2%9E%E5%BC%BA"><span class="nav-number">4.1.</span> <span class="nav-text">项目增强</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BB%E9%A2%98%E7%9B%B8%E5%85%B3"><span class="nav-number">4.2.</span> <span class="nav-text">主题相关</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%BB%E9%A2%98%E4%BC%98%E5%8C%96%EF%BC%88%E4%BB%A5%E4%B8%8B%E9%85%8D%E7%BD%AE%E5%9D%87%E5%9C%A8%E4%B8%BB%E9%A2%98config%EF%BC%89"><span class="nav-number">4.2.1.</span> <span class="nav-text">主题优化（以下配置均在主题config）</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SEO-%E4%BC%98%E5%8C%96"><span class="nav-number">4.3.</span> <span class="nav-text">SEO 优化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#travis-ci-%E6%8C%81%E7%BB%AD%E9%83%A8%E7%BD%B2%E5%88%B0-ftp-%E5%92%8C-gitlab-io"><span class="nav-number">5.</span> <span class="nav-text">travis-ci 持续部署到 ftp 和 gitlab.io</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ftp-%E9%83%A8%E7%BD%B2%E7%9B%B8%E5%85%B3%E8%AE%BE%E7%BD%AE"><span class="nav-number">5.1.</span> <span class="nav-text">ftp 部署相关设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#git-%E9%83%A8%E7%BD%B2%E7%9B%B8%E5%85%B3%E8%AE%BE%E7%BD%AE"><span class="nav-number">5.2.</span> <span class="nav-text">git 部署相关设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0-travis-%E5%91%BD%E4%BB%A4%E5%A6%82%E4%BD%95%E5%8A%A0%E5%AF%86"><span class="nav-number">5.3.</span> <span class="nav-text">本地 travis 命令如何加密</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ssh-config-%E6%80%8E%E4%B9%88%E9%85%8D%E7%BD%AE"><span class="nav-number">5.4.</span> <span class="nav-text">ssh/config 怎么配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%88%91%E7%9A%84-travis-yml-%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="nav-number">5.5.</span> <span class="nav-text">我的.travis.yml 的配置</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E9%9D%99%E6%80%81%E7%BD%91%E7%AB%99"><span class="nav-number">2.</span> <span class="nav-text">生成静态网站</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E-wordpress-%E8%BF%81%E7%A7%BB"><span class="nav-number">3.</span> <span class="nav-text">从 wordpress 迁移</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hexo-%E4%BC%98%E5%8C%96"><span class="nav-number">4.</span> <span class="nav-text">hexo 优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E5%A2%9E%E5%BC%BA"><span class="nav-number">4.1.</span> <span class="nav-text">项目增强</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BB%E9%A2%98%E7%9B%B8%E5%85%B3"><span class="nav-number">4.2.</span> <span class="nav-text">主题相关</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%BB%E9%A2%98%E4%BC%98%E5%8C%96%EF%BC%88%E4%BB%A5%E4%B8%8B%E9%85%8D%E7%BD%AE%E5%9D%87%E5%9C%A8%E4%B8%BB%E9%A2%98config%EF%BC%89"><span class="nav-number">4.2.1.</span> <span class="nav-text">主题优化（以下配置均在主题config）</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SEO-%E4%BC%98%E5%8C%96"><span class="nav-number">4.3.</span> <span class="nav-text">SEO 优化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#husky-Actions-%E6%8C%81%E7%BB%AD%E9%83%A8%E7%BD%B2%E5%88%B0-ftp-%E5%92%8C-gitlab-io"><span class="nav-number">5.</span> <span class="nav-text">husky+Actions 持续部署到 ftp 和 gitlab.io</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2%E5%88%B0-ftp"><span class="nav-number">5.1.</span> <span class="nav-text">部署到 ftp</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2%E5%88%B0-github-io"><span class="nav-number">5.2.</span> <span class="nav-text">部署到 github.io</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#action-%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">5.3.</span> <span class="nav-text">action 的配置文件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A5%E4%B8%8B%E4%B8%BA%E5%8E%9F-Travis-%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="nav-number">6.</span> <span class="nav-text">以下为原 Travis 的配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#git-%E9%83%A8%E7%BD%B2%E7%9B%B8%E5%85%B3%E8%AE%BE%E7%BD%AE"><span class="nav-number">6.1.</span> <span class="nav-text">git 部署相关设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0-travis-%E5%91%BD%E4%BB%A4%E5%A6%82%E4%BD%95%E5%8A%A0%E5%AF%86"><span class="nav-number">6.2.</span> <span class="nav-text">本地 travis 命令如何加密</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ssh-config-%E6%80%8E%E4%B9%88%E9%85%8D%E7%BD%AE"><span class="nav-number">6.3.</span> <span class="nav-text">ssh/config 怎么配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%88%91%E7%9A%84-travis-yml-%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="nav-number">6.4.</span> <span class="nav-text">我的.travis.yml 的配置</span></a></li></ol></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -234,7 +234,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-count">97</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -312,7 +312,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          blog从wordpress迁移至hexo+next，并通过travis自动部署到ftp及github
+          blog从wordpress迁移至hexo+next，并通过husky+Actions自动部署到ftp及github
         </h1>
 
         <div class="post-meta-container">
@@ -343,7 +343,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>4.1k</span>
+      <span>4.7k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -442,9 +442,9 @@
 <li>拷贝<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3RoZW1lLW5leHQvaGV4by1zeW1ib2xzLWNvdW50LXRpbWU=">字数统计插件<i class="fa fa-external-link-alt"></i></span>并设置（需同时设置两个<code>_onfig</code>,并在项目 yarn add 该插件）：<code>symbols_count_time</code></li>
 </ul>
 <h4 id="SEO-优化"><a href="#SEO-优化" class="headerlink" title="SEO 优化"></a>SEO 优化</h4><ul>
-<li><p>百度站长平台：<span class="exturl" data-url="aHR0cHM6Ly96aXl1YW4uYmFpZHUuY29tLw==">https://ziyuan.baidu.com/<i class="fa fa-external-link-alt"></i></span></p>
+<li><p><span class="exturl" data-url="aHR0cHM6Ly96aXl1YW4uYmFpZHUuY29tLw==">百度站长平台<i class="fa fa-external-link-alt"></i></span></p>
 </li>
-<li><p>谷歌站长平台：<span class="exturl" data-url="aHR0cHM6Ly9zZWFyY2guZ29vZ2xlLmNvbS9zZWFyY2gtY29uc29sZQ==">https://search.google.com/search-console/<i class="fa fa-external-link-alt"></i></span></p>
+<li><p><span class="exturl" data-url="aHR0cHM6Ly9zZWFyY2guZ29vZ2xlLmNvbS9zZWFyY2gtY29uc29sZQ==">谷歌站长平台<i class="fa fa-external-link-alt"></i></span></p>
 </li>
 <li><p>通过在搜索引擎输入:<code>site: blog.flqin.com</code>测试是否被收录</p>
 </li>
@@ -456,23 +456,30 @@
 <p>并设置<code>项目config</code>:<code>url</code>,<code>permalink</code>,<code>sitemap</code>,<code>baidusitemap</code>,<code>baidu_url_submit</code>,<code>deploy</code></p>
 </li>
 </ul>
-<h3 id="travis-ci-持续部署到-ftp-和-gitlab-io"><a href="#travis-ci-持续部署到-ftp-和-gitlab-io" class="headerlink" title="travis-ci 持续部署到 ftp 和 gitlab.io"></a>travis-ci 持续部署到 ftp 和 gitlab.io</h3><p>添加部署相关插件：</p>
-<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yarn add hexo-deployer-git -D</span><br><span class="line">yarn add hexo-deployer-ftpsync -D</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="husky-Actions-持续部署到-ftp-和-gitlab-io"><a href="#husky-Actions-持续部署到-ftp-和-gitlab-io" class="headerlink" title="husky+Actions 持续部署到 ftp 和 gitlab.io"></a>husky+Actions 持续部署到 ftp 和 gitlab.io</h3><h4 id="部署到-ftp"><a href="#部署到-ftp" class="headerlink" title="部署到 ftp"></a>部署到 ftp</h4><p>安装 <code>husky</code>：</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i husky -D</span><br></pre></td></tr></tbody></table></figure>
 
-<p>部署之前，先生成要部署的静态文件</p>
-<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br></pre></td></tr></tbody></table></figure>
+<p>package.json 添加：</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"husky"</span>: {</span><br><span class="line">  <span class="string">"hooks"</span>: {</span><br><span class="line">    <span class="string">"pre-push"</span>: <span class="string">"blog"</span></span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>其中 blog 是本地 shell 命令，主要功能是将 hexo 构建后的代码传到 ftp。</p>
+<blockquote>
+<p>为什么不用 <code>hexo-deployer-ftpsync</code> 直接上传？因为使用 github actions 的服务器构建上传到国内会出现墙的问题。只能手动本地上传。</p>
+</blockquote>
+<h4 id="部署到-github-io"><a href="#部署到-github-io" class="headerlink" title="部署到 github.io"></a>部署到 github.io</h4><p>添加部署相关插件：</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add hexo-deployer-git -D</span><br></pre></td></tr></tbody></table></figure>
 
 <p>部署的<code>项目config</code>配置(详细配置<span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlvL3poLWNuL2RvY3MvZGVwbG95bWVudA==">查阅<i class="fa fa-external-link-alt"></i></span>)</p>
-<figure class="highlight yml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">git@github.com:zhaoky/zhaoky.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">master</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">type:</span> <span class="string">ftpsync</span></span><br><span class="line">  <span class="attr">host:</span> <span class="string">ftpHost</span></span><br><span class="line">  <span class="attr">user:</span> <span class="string">ftpUser</span></span><br><span class="line">  <span class="attr">pass:</span> <span class="string">ftpPass</span></span><br><span class="line">  <span class="attr">remote:</span> <span class="string">ftpRemote</span></span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight yml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">git@github.com:zhaoky/zhaoky.github.io.git</span></span><br></pre></td></tr></tbody></table></figure>
 
-<p>部署命令</p>
-<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo d</span><br></pre></td></tr></tbody></table></figure>
+<p>ci 配置</p>
+<figure class="highlight yml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span></span><br><span class="line">       <span class="attr">uses:</span> <span class="string">sma11black/hexo-action@v1.0.4</span></span><br><span class="line">       <span class="attr">with:</span></span><br><span class="line">         <span class="attr">deploy_key:</span> <span class="string">${{</span> <span class="string">secrets.DEPLOY_KEY</span> <span class="string">}}</span></span><br><span class="line">         <span class="attr">user_name:</span> <span class="string">zhaoky</span></span><br><span class="line">         <span class="attr">user_email:</span> <span class="number">623212389</span><span class="string">@qq.com</span></span><br></pre></td></tr></tbody></table></figure>
 
-<h4 id="ftp-部署相关设置"><a href="#ftp-部署相关设置" class="headerlink" title="ftp 部署相关设置"></a>ftp 部署相关设置</h4><p>为了 ftp 的账号密码的安全性，所以在 config 中的配置用 travis 加密变量表示（如<code>ftpsync，ftpHost，ftpPass，ftpRemote</code>），然后在 travis 里的该项目配置该加密变量。这样在 travis 运行构建的时候就可以应用替换回真实的账号密码。</p>
-<blockquote>
-<p>但我实际操作的时候一直报<code>Error: read ETIMEDOUT at TCP.onStreamRead (internal/stream_base_commons.js:111:27)</code>的错误，查了下源码可能是<code>jsftp</code>包报的错，已经向<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2hleG9qcy9oZXhvL2lzc3Vlcy8zNTg1">hexo<i class="fa fa-external-link-alt"></i></span>和<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2hleG9qcy9oZXhvLWRlcGxveWVyLWZ0cHN5bmMvaXNzdWVzLzMz">hexo-deployer-ftpsync<i class="fa fa-external-link-alt"></i></span>提 issue,如果有解决方案请告知我，多谢指教！</p>
-</blockquote>
-<h4 id="git-部署相关设置"><a href="#git-部署相关设置" class="headerlink" title="git 部署相关设置"></a>git 部署相关设置</h4><p>github 部署采用 ssh 的通讯加密方式，首先在 github 上建一个命名为 zhaoky.github.io(zhaoky 替换成 github 名)的仓库，然后本地本地生成一对公私钥（运行<code>ssh-keygen -t rsa -C youremail@example.com</code>生成）,将.pub 公钥配置在 zhaoky.github.io 仓库的 <code>deploy key</code>，把私钥和 ssh-config 发到 travis 的构建服务器里。私钥为了保证安全性，本地通过 travis 命令加密，然后在 travis 构建时再解密，这样就能自动发布了。</p>
+<p>其中 DEPLOY_KEY 为私钥，而公钥则部署到 zhaoky.github.io 仓库的<code>deploy key</code>。</p>
+<h4 id="action-的配置文件"><a href="#action-的配置文件" class="headerlink" title="action 的配置文件"></a>action 的配置文件</h4><figure class="highlight yml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Action</span> <span class="string">CI</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">master</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">run:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">Run</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">uses:</span> <span class="string">actions/checkout@v2</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">nodejs</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/setup-node@v2-beta</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">node-version:</span> <span class="string">'12'</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">yarn</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Set</span> <span class="string">Env</span></span><br><span class="line">        <span class="attr">env:</span></span><br><span class="line">          <span class="attr">BAIDU_TOKEN:</span> <span class="string">${{</span> <span class="string">secrets.BAIDU_TOKEN</span> <span class="string">}}</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">sed</span> <span class="string">-i</span> <span class="string">"s/BAIDU_TOKEN/$BAIDU_TOKEN/g"</span> <span class="string">./_config.yml</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">sma11black/hexo-action@v1.0.4</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">deploy_key:</span> <span class="string">${{</span> <span class="string">secrets.DEPLOY_KEY</span> <span class="string">}}</span></span><br><span class="line">          <span class="attr">user_name:</span> <span class="string">zhaoky</span></span><br><span class="line">          <span class="attr">user_email:</span> <span class="number">623212389</span><span class="string">@qq.com</span></span><br></pre></td></tr></tbody></table></figure>
+
+<hr>
+<h3 id="以下为原-Travis-的配置"><a href="#以下为原-Travis-的配置" class="headerlink" title="以下为原 Travis 的配置"></a>以下为原 Travis 的配置</h3><h4 id="git-部署相关设置"><a href="#git-部署相关设置" class="headerlink" title="git 部署相关设置"></a>git 部署相关设置</h4><p>github 部署采用 ssh 的通讯加密方式，首先在 github 上建一个命名为 zhaoky.github.io(zhaoky 替换成 github 名)的仓库，然后本地本地生成一对公私钥（运行<code>ssh-keygen -t rsa -C youremail@example.com</code>生成）,将.pub 公钥配置在 zhaoky.github.io 仓库的 <code>deploy key</code>，把私钥和 ssh-config 发到 travis 的构建服务器里。私钥为了保证安全性，本地通过 travis 命令加密，然后在 travis 构建时再解密，这样就能自动发布了。</p>
 <h4 id="本地-travis-命令如何加密"><a href="#本地-travis-命令如何加密" class="headerlink" title="本地 travis 命令如何加密"></a>本地 travis 命令如何加密</h4><figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gem install travis</span><br><span class="line">travis login --com #如果仍在使用travis-ci.org，则需要使用--org</span><br><span class="line">travis encrypt-file id_rsa --add --pro #使用--add自动添加到travis.yml,--pro将生成的加密环境变量添加到travis项目后台管理中</span><br></pre></td></tr></tbody></table></figure>
 
 <p>这样就生成了一个加密后的.enc 的文件了</p>
@@ -560,13 +567,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">506k</span>
+    <span title="站点总字数">514k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">7:40</span>
+    <span title="站点阅读时长">7:47</span>
   </span>
 </div>
 

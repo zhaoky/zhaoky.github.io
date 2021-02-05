@@ -155,7 +155,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">96</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">97</span></a>
 
   </li>
         <li class="menu-item menu-item-map">
@@ -238,7 +238,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-count">97</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -369,7 +369,7 @@
 <p><code>JavaScript</code> 单线程中的任务分为 <code>同步任务</code> 和 <code>异步任务</code>。同步任务会在 <code>调用栈\执行栈</code> 中按照顺序排队等待主线程执行，异步任务则会在异步有了结果后将注册的回调函数添加到 <code>任务队列(消息队列)</code> 中等待主线程空闲的时候，也就是栈内被清空的时候，被读取到栈中等待主线程执行。<code>任务队列</code> 是 <code>先进先出</code> 的数据结构。</p>
 <p>异步任务队列可分为 <code>task(macrotask)</code> 宏任务 和 <code>microtask(job)</code> 微任务 两类，不同的 <code>API</code> 注册的异步任务会依次进入自身对应的队列中，然后等待 <code>Event Loop</code> 将它们依次压入执行栈中执行，宏任务队列可以有多个，微任务队列只有一个。</p>
 <ul>
-<li><code>microtask</code> 主要包含：<code>Promise.then</code>、<code>MutaionObserver</code>、<code>process.nextTick(Node.js 环境)</code>、<code>Object.observe(已废弃)</code><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2x1b2t1bmluZy9ibG9ncy9pc3N1ZXMvMQ==">查阅<i class="fa fa-external-link-alt"></i></span></li>
+<li><code>microtask</code> 主要包含：<code>Promise.then</code>、<code>MutationObserver</code>、<code>process.nextTick(Node.js 环境)</code>、<code>Object.observe(已废弃)</code><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2x1b2t1bmluZy9ibG9ncy9pc3N1ZXMvMQ==">查阅<i class="fa fa-external-link-alt"></i></span></li>
 <li><code>(macro)task</code> 主要包含：<code>script(整体代码)</code>、<code>setTimeout</code>、<code>setInterval</code>、<code>I/O</code>、<code>UI交互事件</code>、<code>postMessage</code>、<code>MessageChannel</code>、<code>setImmediate(Node.js 环境)</code></li>
 </ul>
 <h3 id="事件循环-Event-Loop"><a href="#事件循环-Event-Loop" class="headerlink" title="事件循环(Event Loop)"></a>事件循环(Event Loop)</h3><p><code>javascript</code> 从诞生之日起就是一门单线程的非阻塞的脚本语言。而非阻塞则是当代码需要进行一项异步任务（无法立刻返回结果，需要花一定时间才能返回的任务，如 <code>I/O</code> 事件）的时候，主线程会挂起（<code>pending</code>）这个任务，然后在异步任务返回结果的时候再根据一定规则去执行相应的回调。到底是如何实现非阻塞这一点呢？答案就是 <code>event loop（事件循环）</code>。</p>
@@ -569,13 +569,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">506k</span>
+    <span title="站点总字数">514k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">7:40</span>
+    <span title="站点阅读时长">7:47</span>
   </span>
 </div>
 
