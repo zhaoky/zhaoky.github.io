@@ -441,7 +441,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>278</span>
+      <span>585</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -459,28 +459,34 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="加载时优化"><a href="#加载时优化" class="headerlink" title="加载时优化"></a>加载时优化</h2><ul>
-<li>减少 HTTP 请求</li>
+          <h2 id="性能指标"><a href="#性能指标" class="headerlink" title="性能指标"></a>性能指标</h2><p>FP,FCP,FMP,ATF,TTI,DCL,Load performance.now()</p>
+<h2 id="加载时优化"><a href="#加载时优化" class="headerlink" title="加载时优化"></a>加载时优化</h2><ul>
+<li>减少 HTTP 请求，重定向</li>
 <li>使用 HTTP2</li>
 <li>使用 SSR</li>
 <li>CDN</li>
 <li>将 CSS 放在文件头部，JavaScript 文件放在底部，prefetch，preload</li>
 <li>iconfont</li>
 <li>设置缓存(三级)</li>
-<li>压缩文件（图片 webp，代码，gzip）</li>
-<li>资源加载（async，defer，预加载，懒加载，路由组件动态加载）</li>
-<li>webpack 优化相关</li>
+<li>Gzip</li>
+<li>图片 webp 嗅探</li>
+<li>资源加载（async，defer，预加载，懒加载，路由组件动态 Import）</li>
+<li>通过 webpack 优化：base64，资源压缩，Tree shaking，ES Module，资源动态 Import，动态 Polyfill，拆包 chunk，DLL（通用优先打包抽离，利用浏览器缓存）</li>
 <li>首屏 FP 加载优化（骨架屏）</li>
+<li>服务端渲染，客户端预渲染</li>
+<li>数据预取，包括接口数据，和加载详情页图片</li>
+<li>服务器合理设置缓存策略</li>
+<li>数据缓存</li>
 </ul>
-<h2 id="运行时优化"><a href="#运行时优化" class="headerlink" title="运行时优化"></a>运行时优化</h2><ul>
-<li>减少重绘重排（transforms，opacity）</li>
-<li>使用事件委托，节流，防抖</li>
-<li>变量保存属性</li>
-<li>避免页面卡顿 (16ms 内完成操作并渲染）requestAnimationFrame</li>
-<li>Web Workers</li>
-<li>降低 CSS 选择器的复杂性</li>
-</ul>
-
+<h2 id="运行时优化"><a href="#运行时优化" class="headerlink" title="运行时优化"></a>运行时优化</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/410.html#more" rel="contents">
+                阅读全文 »
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1511,7 +1517,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">7:47</span>
+    <span title="站点阅读时长">7:48</span>
   </span>
 </div>
 
