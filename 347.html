@@ -481,6 +481,9 @@
 <li><code>merge</code> 不能保持 <code>master</code> 分支干净，但是保持了所有的 <code>commit history</code></li>
 </ul>
 <p><strong>注意 分支 merge 到 master 后，只有一个 commit 即提交解决冲突的 commit。</strong></p>
+<blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC83NTQ5OTg3MQ==">git merge 和 git rebase 的区别<i class="fa fa-external-link-alt"></i></span></p>
+</blockquote>
 <h2 id="合并提交（commit）"><a href="#合并提交（commit）" class="headerlink" title="合并提交（commit）"></a>合并提交（commit）</h2><p>假如有 6 次提交 commit 从旧到新依次是:<code>master1, master2, master3, master4, master5, master6</code>，目标合并 <code>master3, master4, master5, master6</code>,最终效果为 <code>master1, master2, masterN</code></p>
 <h3 id="reset"><a href="#reset" class="headerlink" title="reset"></a>reset</h3><figure class="highlight sh"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git reset HEAD~4 //前4次提交</span><br><span class="line">git a</span><br><span class="line">git commit -m <span class="string">'masterN'</span></span><br></pre></td></tr></tbody></table></figure>
 

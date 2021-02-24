@@ -438,12 +438,12 @@
 <figure class="highlight html"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"width=device-width, user-scalable=no"</span> /&gt;</span></span><br></pre></td></tr></tbody></table></figure>
 
 <p><code>IE 10</code> 可以用 <code>CSS</code> 取消点击穿透的延迟：</p>
-<figure class="highlight css"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">html</span> {</span><br><span class="line">  <span class="attribute">-ms-touch-action</span>: manipulation;</span><br><span class="line">  <span class="attribute">touch-action</span>: manipulation;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight css"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">html</span> {</span><br><span class="line">  -ms-touch-action: manipulation;</span><br><span class="line">  touch-action: manipulation;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
 
 <p><code>IE 11+</code> 可以用 <code>touch-action: manipulation;</code> 属性来阻止元素的双击缩放。</p>
 </li>
 <li><p>CSS3 的方法<br>虽然主要讲的是事件，但是有必要介绍一个 CSS3 的属性 —— <code>pointer-events</code>。</p>
-<figure class="highlight"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pointer-events: auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all | inherit;</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight css"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">pointer-events</span>: auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all | inherit;</span><br></pre></td></tr></tbody></table></figure>
 
 <p><code>pointer-events</code> 属性有很多值，有用的主要是 <code>auto</code> 和 <code>none</code>，其他属性为 <code>SVG</code> 服务。</p>
 <p><span class="exturl" data-url="aHR0cHM6Ly9jYW5pdXNlLmNvbS8jc2VhcmNoPXBvaW50ZXItZXZlbnRz">查看浏览器支持情况<i class="fa fa-external-link-alt"></i></span> 可见移动端开发还是可以用的。</p>
