@@ -23,12 +23,12 @@
     var CONFIG = {"hostname":"blog.flqin.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
 
-  <meta name="description" content="性能指标FP,FCP,FMP,ATF,TTI,DCL,Load performance.now() 加载时优化 减少 HTTP 请求，重定向 使用 HTTP2 使用 SSR CDN 将 CSS 放在文件头部，JavaScript 文件放在底部，prefetch，preload iconfont 设置缓存(三级) Gzip 图片 webp 嗅探 资源加载（async，defer，预加载，懒加载，路由">
+  <meta name="description" content="性能指标FP (First Paint) 首次绘制FCP (First Contentful Paint) 首次内容绘制FMP（First Meaningful Paint）首次绘制页面主要内容LCP (Largest Contentful Paint) 最大内容渲染TTI (Time to Interactive) 可交互时间DCL (DomContentloaded)L（load)perfor">
 <meta property="og:type" content="article">
 <meta property="og:title" content="前端性能优化大纲">
 <meta property="og:url" content="https://blog.flqin.com/410.html">
 <meta property="og:site_name" content="前端轻语">
-<meta property="og:description" content="性能指标FP,FCP,FMP,ATF,TTI,DCL,Load performance.now() 加载时优化 减少 HTTP 请求，重定向 使用 HTTP2 使用 SSR CDN 将 CSS 放在文件头部，JavaScript 文件放在底部，prefetch，preload iconfont 设置缓存(三级) Gzip 图片 webp 嗅探 资源加载（async，defer，预加载，懒加载，路由">
+<meta property="og:description" content="性能指标FP (First Paint) 首次绘制FCP (First Contentful Paint) 首次内容绘制FMP（First Meaningful Paint）首次绘制页面主要内容LCP (Largest Contentful Paint) 最大内容渲染TTI (Time to Interactive) 可交互时间DCL (DomContentloaded)L（load)perfor">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-11-10T14:34:33.000Z">
 <meta property="article:modified_time" content="2020-11-10T14:34:33.000Z">
@@ -343,7 +343,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>585</span>
+      <span>665</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -361,38 +361,23 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h2 id="性能指标"><a href="#性能指标" class="headerlink" title="性能指标"></a>性能指标</h2><p>FP,FCP,FMP,ATF,TTI,DCL,Load performance.now()</p>
+        <h2 id="性能指标"><a href="#性能指标" class="headerlink" title="性能指标"></a>性能指标</h2><p>FP (First Paint) 首次绘制<br>FCP (First Contentful Paint) 首次内容绘制<br>FMP（First Meaningful Paint）首次绘制页面主要内容<br>LCP (Largest Contentful Paint) 最大内容渲染<br>TTI (Time to Interactive) 可交互时间<br>DCL (DomContentloaded)<br>L（load)<br>performance.now()</p>
 <h2 id="加载时优化"><a href="#加载时优化" class="headerlink" title="加载时优化"></a>加载时优化</h2><ul>
-<li>减少 HTTP 请求，重定向</li>
-<li>使用 HTTP2</li>
-<li>使用 SSR</li>
-<li>CDN</li>
-<li>将 CSS 放在文件头部，JavaScript 文件放在底部，prefetch，preload</li>
-<li>iconfont</li>
-<li>设置缓存(三级)</li>
-<li>Gzip</li>
-<li>图片 webp 嗅探</li>
-<li>资源加载（async，defer，预加载，懒加载，路由组件动态 Import）</li>
-<li>通过 webpack 优化：base64，资源压缩，Tree shaking，ES Module，资源动态 Import，动态 Polyfill，拆包 chunk，DLL（通用优先打包抽离，利用浏览器缓存）</li>
-<li>首屏 FP 加载优化（骨架屏）</li>
-<li>服务端渲染，客户端预渲染</li>
+<li>网络：DNS 优化，减少 HTTP 请求，减少重定向，使用 HTTP2，CDN，Gzip，设置缓存(三级)，</li>
+<li>加载：延迟（async），异步（defer），预加载（preload，prefetch），懒加载（IntersectionObserver），CSS 放头部，JS 放尾部，骨架屏，动态 Polyfill</li>
+<li>图片：预加载，懒加载，iconfont，webp 嗅探</li>
+<li>webpack：base64，压缩，Tree shaking，动态 Import，拆包 chunk，Dll<a href="https://blog.flqin.com/385.html">1</a></li>
+<li>服务端渲染（SSR），客户端预渲染（Prerendering）</li>
 <li>数据预取，包括接口数据，和加载详情页图片</li>
-<li>服务器合理设置缓存策略</li>
-<li>数据缓存</li>
 </ul>
 <h2 id="运行时优化"><a href="#运行时优化" class="headerlink" title="运行时优化"></a>运行时优化</h2><ul>
-<li>减少重绘重排</li>
-<li>使用事件委托，节流，防抖</li>
-<li>变量保存属性</li>
-<li>避免页面卡顿 (16ms 内完成操作并渲染）requestAnimationFrame</li>
+<li>减少回流重绘<a href="https://blog.flqin.com/336.html">2</a></li>
+<li>变量保存属性，使用事件委托，节流，防抖</li>
+<li>减少组件层级，首页不加载不可视组件</li>
 <li>Web Workers</li>
-<li>降低 CSS 选择器的复杂性</li>
-<li>首页不加载不可视组件</li>
-<li>减少组件层级</li>
-<li>优先使用 Flex 布局</li>
-<li>异步操作 RequestFrameAntmation，RequestIdleCallback，IntersectionObserver、MutationObserver，PostMessage。</li>
+<li>合并接口请求</li>
+<li>避免页面卡顿 (16ms 内完成操作并渲染）requestAnimationFrame，requestIdleCallback，IntersectionObserver，MutationObserver，ResizeObserver，PostMessage。</li>
 </ul>
-<p>从客户端层面，首屏减少和客户端交互，合并接口请求。</p>
 
     </div>
 
@@ -472,7 +457,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">514k</span>
+    <span title="站点总字数">515k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
