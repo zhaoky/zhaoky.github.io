@@ -381,7 +381,7 @@
 
 <p>在该方法里对 <code>stats</code> 设置后，<code>compiler.hooks</code>: <code>done</code> 的回调里执行 <code>this.handler</code>（实际与 <code>finalCallback</code> 功能一致） 即 <code>compilerCallback</code>，在 <code>cli</code> 里打印出构建相关的信息。到此，初始化构建完毕。</p>
 <h3 id="添加监听"><a href="#添加监听" class="headerlink" title="添加监听"></a>添加监听</h3><p>接着执行 <code>this.watch</code> 并传入 <code>fileDependencies, contextDependencies, missingDependencies</code>（<code>compilation.seal</code> 里 <code>this.summarizeDependencies</code> 生成） 这些需要监听的文件和目录。</p>
-<p><code>this.watch</code> 即执行 <code>this.compiler.watchFileSystem.watch</code> 即 <code>NodeWatchFileSystem</code> 的实例 <code>watch</code> 方法（ 文件 <code>webpack/lib/node/NodeWatchFileSystem.js</code>，<code>NodeEnvironmentPlugin</code> 里所设置），方法里先对参数进行了格式判断后，**实例化了 <code>Watchpack</code>**。<code>Watchpack</code> 继承了 <code>events</code> 模块的 <code>EventEmitter</code>，然后在 <code>this.watcher</code>（<code>Watchpack</code> 实例） 上注册了 <code>change，aggregated</code> 事件后，执行 <code>watchpack</code> 的实例方法 <code>watch</code>，该方法里执行：</p>
+<p><code>this.watch</code> 即执行 <code>this.compiler.watchFileSystem.watch</code> 即 <code>NodeWatchFileSystem</code> 的实例 <code>watch</code> 方法（ 文件 <code>webpack/lib/node/NodeWatchFileSystem.js</code>，<code>NodeEnvironmentPlugin</code> 里所设置），方法里先对参数进行了格式判断后，<strong>实例化了 Watchpack</strong>。<code>Watchpack</code> 继承了 <code>events</code> 模块的 <code>EventEmitter</code>，然后在 <code>this.watcher</code>（<code>Watchpack</code> 实例） 上注册了 <code>change，aggregated</code> 事件后，执行 <code>watchpack</code> 的实例方法 <code>watch</code>，该方法里执行：</p>
 <figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//watchpack.js</span></span><br><span class="line"><span class="comment">//...</span></span><br><span class="line"><span class="built_in">this</span>.fileWatchers = files.map(<span class="function"><span class="keyword">function</span> (<span class="params">file</span>) </span>{</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">this</span>._fileWatcher(file, watcherManager.watchFile(file, <span class="built_in">this</span>.watcherOptions, startTime));</span><br><span class="line">}, <span class="built_in">this</span>);</span><br><span class="line"><span class="built_in">this</span>.dirWatchers = directories.map(<span class="function"><span class="keyword">function</span> (<span class="params">dir</span>) </span>{</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">this</span>._dirWatcher(dir, watcherManager.watchDirectory(dir, <span class="built_in">this</span>.watcherOptions, startTime));</span><br><span class="line">}, <span class="built_in">this</span>);</span><br></pre></td></tr></tbody></table></figure>
 
 <p>这里<strong>循环</strong>对每一个 <code>file</code> 进行执行 <code>this._fileWatcher</code>。</p>
@@ -509,7 +509,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">515k</span>
+    <span title="站点总字数">514k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">

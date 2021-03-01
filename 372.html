@@ -392,9 +392,9 @@
 <p><span class="exturl" data-url="aHR0cHM6Ly9jb2RlLnZpc3VhbHN0dWRpby5jb20vZG9jcy9ub2RlanMvbm9kZWpzLWRlYnVnZ2luZw==">这些配置是怎么来的？<i class="fa fa-external-link-alt"></i></span></p>
 <h3 id="配置-npm-script"><a href="#配置-npm-script" class="headerlink" title="配置 npm script"></a>配置 npm script</h3><figure class="highlight"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">"scripts": {</span><br><span class="line">  "debug": "node --inspect-brk=5858 ./node_modules/.bin/webpack"</span><br><span class="line">},</span><br></pre></td></tr></tbody></table></figure>
 
-<h3 id="了解-webpack-的插件架构"><a href="#了解-webpack-的插件架构" class="headerlink" title="了解 webpack 的插件架构"></a>了解 webpack 的插件架构</h3><p><code>webpack</code> 从配置初始化到打包完成定义了一个生命周期，在这个生命周期中的每一个阶段定义一些不同的功能。<code>webpack</code> 的流程同样也是一个事件驱动的架构，利用插件系统 <code>tabpable</code>，通过 <code>发布订阅事件</code> 来实现所有内部的，外部扩展的功能。</p>
+<h3 id="了解-webpack-的插件架构"><a href="#了解-webpack-的插件架构" class="headerlink" title="了解 webpack 的插件架构"></a>了解 webpack 的插件架构</h3><p><code>webpack</code> 从配置初始化到打包完成定义了一个生命周期，在这个生命周期中的每一个阶段定义一些不同的功能。<code>webpack</code> 的流程同样也是一个事件驱动的架构，利用插件系统 <code>tapable</code>，通过 <code>发布订阅事件</code> 来实现所有内部的，外部扩展的功能。</p>
 <h3 id="了解-webpack-的核心模块"><a href="#了解-webpack-的核心模块" class="headerlink" title="了解 webpack 的核心模块"></a>了解 webpack 的核心模块</h3><p><code>webpack</code> 的构建是通过 <code>Compiler</code> 控制构建流程，<code>Compilation</code> 解析，<code>ModuleFactory</code> 生成模块，<code>Parser</code> 解析源码，<code>Template</code> 渲染代码，最后输出打包后的文件。</p>
-<h3 id="了解-tapable"><a href="#了解-tapable" class="headerlink" title="了解 tapable"></a>了解 tapable</h3><p><code>tabpable</code> 本质就是一个事件发布订阅机制，支持同步异步，使用<code>xxx.tap</code>之类的来<strong>事件订阅</strong>，使用<code>xxx.call</code>之类的来进行<strong>事件发布</strong>。<br>相关文档查阅：</p>
+<h3 id="了解-tapable"><a href="#了解-tapable" class="headerlink" title="了解 tapable"></a>了解 tapable</h3><p><code>tapable</code> 本质就是一个事件发布订阅机制，支持同步异步，使用<code>xxx.tap</code>之类的来<strong>事件订阅</strong>，使用<code>xxx.call</code>之类的来进行<strong>事件发布</strong>。<br>相关文档查阅：</p>
 <ul>
 <li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3dlYnBhY2svdGFwYWJsZQ==">git 仓库<i class="fa fa-external-link-alt"></i></span></li>
 <li><span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20vdHVnZW5odWEwNzA3L3AvMTEzMTc1NTcuaHRtbA==">用法解析<i class="fa fa-external-link-alt"></i></span></li>
@@ -505,7 +505,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">515k</span>
+    <span title="站点总字数">514k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">

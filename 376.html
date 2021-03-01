@@ -380,7 +380,7 @@
 <figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">resolveOptions = <span class="built_in">this</span>.hooks.resolveOptions.for(type).call(resolveOptions);</span><br><span class="line"><span class="keyword">const</span> resolver = Factory.createResolver(resolveOptions);</span><br></pre></td></tr></tbody></table></figure>
 
 <p>此时触发的 <code>ResolverFactory.hooks: resolveOptions for (type)</code> 即在 <code>编译前的准备 - 注册 resolverFactory.hooks 阶段</code> 所注册。</p>
-<p>在该钩子里通过 <code>cachedCleverMerge</code> 判断缓存及融合配置（如果是 <code>loaderResolver</code> 则为 **配置项: <code>options.resolveLoader</code>**，如果是 <code>normalResolver</code> 则为 **配置项: <code>options.resolve</code>**），并添加了属性 <code>fileSystem: compiler.inputFileSystem</code>，返回一个 <code>resolveOptions</code> 对象，作为<code>Factory.createResolver</code> 执行的参数。</p>
+<p>在该钩子里通过 <code>cachedCleverMerge</code> 判断缓存及融合配置（如果是 <code>loaderResolver</code> 则为 <strong>配置项: options.resolveLoader</strong>，如果是 <code>normalResolver</code> 则为 <strong>配置项: options.resolve</strong>），并添加了属性 <code>fileSystem: compiler.inputFileSystem</code>，返回一个 <code>resolveOptions</code> 对象，作为<code>Factory.createResolver</code> 执行的参数。</p>
 <p><code>Factory</code> 为 <code>require("enhanced-resolve").ResolverFactory</code>，所以此处进入到<code>enhanced-resolve</code> 包的阶段。</p>
 <h3 id="enhanced-resolve"><a href="#enhanced-resolve" class="headerlink" title="enhanced-resolve"></a>enhanced-resolve</h3><p><code>enhanced-resolve</code> 是 <code>webpack</code> 开发的一个用于解析路径的包。进入文件 <code>node_modules/enhanced-resolve/lib/ResolverFactory.js</code>，先融合处理了项目配置 <code>resolve</code> 与默认配置 <code>resolve/resolveLoader</code>，然后执行：</p>
 <figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!resolver) {</span><br><span class="line">  resolver = <span class="keyword">new</span> Resolver(useSyncFileSystemCalls ? <span class="keyword">new</span> SyncAsyncFileSystemDecorator(fileSystem) : fileSystem);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
@@ -518,7 +518,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">515k</span>
+    <span title="站点总字数">514k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
