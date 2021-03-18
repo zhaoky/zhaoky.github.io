@@ -711,7 +711,7 @@
 
   <url>
     <loc>https://blog.flqin.com/</loc>
-    <lastmod>2021-03-10</lastmod>
+    <lastmod>2021-03-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -721,35 +721,42 @@
   
   <url>
     <loc>https://blog.flqin.com/categories/FE-Basics/</loc>
-    <lastmod>2021-03-10</lastmod>
+    <lastmod>2021-03-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://blog.flqin.com/categories/FE-Field/</loc>
-    <lastmod>2021-03-10</lastmod>
+    <lastmod>2021-03-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://blog.flqin.com/categories/Computer-Basics/</loc>
-    <lastmod>2021-03-10</lastmod>
+    <loc>https://blog.flqin.com/categories/%E4%BD%A0%E4%BB%AC%E9%98%BF%E8%90%A8%E5%BE%B7/</loc>
+    <lastmod>2021-03-18</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.flqin.com/categories/FE-Misc/</loc>
+    <lastmod>2021-03-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://blog.flqin.com/categories/FE-Build/</loc>
-    <lastmod>2021-03-10</lastmod>
+    <lastmod>2021-03-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://blog.flqin.com/categories/FE-Frame/</loc>
-    <lastmod>2021-03-10</lastmod>
+    <lastmod>2021-03-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
