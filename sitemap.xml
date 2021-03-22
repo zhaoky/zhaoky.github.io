@@ -569,13 +569,6 @@
   </url>
   
   <url>
-    <loc>https://blog.flqin.com/235.html</loc>
-    
-    <lastmod>2018-05-15</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.flqin.com/230.html</loc>
     
     <lastmod>2018-05-15</lastmod>
@@ -614,13 +607,6 @@
     <loc>https://blog.flqin.com/218.html</loc>
     
     <lastmod>2017-05-10</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.flqin.com/213.html</loc>
-    
-    <lastmod>2017-05-06</lastmod>
     
   </url>
   
@@ -674,13 +660,6 @@
   </url>
   
   <url>
-    <loc>https://blog.flqin.com/178.html</loc>
-    
-    <lastmod>2016-03-02</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.flqin.com/167.html</loc>
     
     <lastmod>2016-03-01</lastmod>
@@ -711,7 +690,7 @@
 
   <url>
     <loc>https://blog.flqin.com/</loc>
-    <lastmod>2021-03-18</lastmod>
+    <lastmod>2021-03-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -720,36 +699,50 @@
 
   
   <url>
-    <loc>https://blog.flqin.com/categories/FE-Basics/</loc>
-    <lastmod>2021-03-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.flqin.com/categories/FE-Field/</loc>
-    <lastmod>2021-03-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://blog.flqin.com/categories/FE-Misc/</loc>
-    <lastmod>2021-03-18</lastmod>
+    <lastmod>2021-03-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.flqin.com/categories/FE-Css/</loc>
+    <lastmod>2021-03-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.flqin.com/categories/FE-Summary/</loc>
+    <lastmod>2021-03-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.flqin.com/categories/FE-Js/</loc>
+    <lastmod>2021-03-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://blog.flqin.com/categories/FE-Code/</loc>
+    <lastmod>2021-03-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://blog.flqin.com/categories/FE-Build/</loc>
-    <lastmod>2021-03-18</lastmod>
+    <lastmod>2021-03-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://blog.flqin.com/categories/FE-Frame/</loc>
-    <lastmod>2021-03-18</lastmod>
+    <lastmod>2021-03-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>

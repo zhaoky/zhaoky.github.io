@@ -159,12 +159,12 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">7</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">97</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">94</span></a>
 
   </li>
         <li class="menu-item menu-item-map">
@@ -247,14 +247,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-count">94</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -344,7 +344,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-          <a href="/categories/FE-Build/" itemprop="url" rel="index"><span itemprop="name">FE Build</span></a>
+          <a href="/categories/FE-Summary/" itemprop="url" rel="index"><span itemprop="name">FE Summary</span></a>
         </span>
     </span>
 
@@ -459,8 +459,8 @@
 <p>服务端的接收就是反过来的步骤。</p>
 <h3 id="七层因特网协议栈（ISO）"><a href="#七层因特网协议栈（ISO）" class="headerlink" title="七层因特网协议栈（ISO）"></a>七层因特网协议栈（ISO）</h3><ol>
 <li><strong>应用层(http,ftp,dns)</strong> 这一层为操作系统或网络应用程序提供访问网络服务的接口，如 DNS 解析成 IP 并发送 http 请求</li>
-<li><strong>表示层(SSL握手协议)</strong> 主要处理两个通信系统中交换信息的表示方式，包括数据格式交换，数据加密与解密，数据压缩与终端类型转换等</li>
-<li><strong>会话层(SSL记录协议)</strong> 这一层管理主机之间的会话进程，即负责建立、管理、终止进程之间的会话，如控制登陆和注销过程 (QoS)</li>
+<li><strong>表示层(SSL 握手协议)</strong> 主要处理两个通信系统中交换信息的表示方式，包括数据格式交换，数据加密与解密，数据压缩与终端类型转换等</li>
+<li><strong>会话层(SSL 记录协议)</strong> 这一层管理主机之间的会话进程，即负责建立、管理、终止进程之间的会话，如控制登陆和注销过程 (QoS)</li>
 <li><strong>传输层(tcp,udp)</strong> 建立 tcp/udp 连接，数据的单位称为数据段（segment）（四层交换机）</li>
 <li><strong>网络层(IP,ARP)</strong> IP 寻址，数据的单位称为数据包（packet）（路由器、三层交换机）</li>
 <li><strong>数据链路层(PPP)</strong> 将 bit 流封装成 frame 帧（网桥、二层交换机，以太网）</li>
@@ -945,7 +945,7 @@
 <h3 id="v8-引擎工作原理"><a href="#v8-引擎工作原理" class="headerlink" title="v8 引擎工作原理"></a>v8 引擎工作原理</h3><p>V8 是用<code>C++</code>编写的跨平台的 Google 开源高性能 JavaScript 和 WebAssembly 引擎，它用于 Chrome 和 Node.js 等，可以独立运行，也可以嵌入到任何<code>C++</code>应用程序中。</p>
 <p><img data-src="http://cdn.flqin.com/p336-107.png" alt="v8流程图"></p>
 <ol>
-<li><code>js</code>源码通过<strong>词法分析</strong>(分词 tokenize)将代码分解成<strong>词元</strong>(token)，再通过<strong>语法分析(解析 parse)**根据语法规则转为</strong>AST**，生成抽象语法树（<code>AST</code>）和执行上下文。</li>
+<li><code>js</code>源码通过<strong>词法分析</strong>(分词 tokenize)将代码分解成<strong>词元</strong>(token)，再通过<strong>语法分析</strong>(解析 parse)根据语法规则转为<strong>AST</strong>，生成抽象语法树（<code>AST</code>）和执行上下文。</li>
 <li>通过<strong>解释器 Ignition</strong>根据<code>AST</code>生成<strong>字节码（ByteCode）</strong>（不直接转成机器码是因为其内存消耗大）</li>
 <li>通过<strong>解释器 Ignition</strong>逐条解释执行执行字节码。如果有热点函数（函数被多次调用）就会经过<strong>编译器 TurboFan</strong>转换成优化的机器码，提高代码的执行性能。如果类型发生了变化，之前优化的机器码并不能正确的处理运算，就会逆向的转换成字节码。</li>
 </ol>
@@ -1092,13 +1092,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">514k</span>
+    <span title="站点总字数">504k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">7:48</span>
+    <span title="站点阅读时长">7:38</span>
   </span>
 </div>
 

@@ -150,12 +150,12 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">7</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">97</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">94</span></a>
 
   </li>
         <li class="menu-item menu-item-map">
@@ -238,14 +238,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-count">94</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -335,7 +335,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-          <a href="/categories/FE-Misc/" itemprop="url" rel="index"><span itemprop="name">FE Misc</span></a>
+          <a href="/categories/FE-Summary/" itemprop="url" rel="index"><span itemprop="name">FE Summary</span></a>
         </span>
     </span>
 
@@ -386,7 +386,9 @@
 <h3 id="相关点"><a href="#相关点" class="headerlink" title="相关点"></a>相关点</h3><h4 id="await"><a href="#await" class="headerlink" title="await"></a>await</h4><p><code>await</code> 将直接使用 <code>Promise.resolve()</code> 相同语义<span class="exturl" data-url="aHR0cHM6Ly93d3cuemhpaHUuY29tL3F1ZXN0aW9uLzI2ODAwNzk2OS9hbnN3ZXIvMzM5ODExOTk4">查阅<i class="fa fa-external-link-alt"></i></span>，即：</p>
 <figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">async1</span>(<span class="params"></span>) </span>{</span><br><span class="line">  <span class="keyword">await</span> async2();</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'async1 end'</span>);</span><br><span class="line">}</span><br><span class="line"><span class="comment">//等价于</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">async1</span>(<span class="params"></span>) </span>{</span><br><span class="line">  <span class="built_in">Promise</span>.resolve(async2()).then(<span class="function">() =&gt;</span> {</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'async1 end'</span>);</span><br><span class="line">  });</span><br><span class="line">}</span><br><span class="line"><span class="comment">//等价于</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">async1</span>(<span class="params"></span>) </span>{</span><br><span class="line">  <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve</span>) =&gt;</span> {</span><br><span class="line">    resolve(async2());</span><br><span class="line">  }).then(<span class="function">() =&gt;</span> {</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'async1 end'</span>);</span><br><span class="line">  });</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
 
-<h4 id="update-rendering（更新渲染）"><a href="#update-rendering（更新渲染）" class="headerlink" title="update rendering（更新渲染）"></a>update rendering（更新渲染）</h4><p><code>update rendering（更新渲染）</code>发生在本轮事件循环的 <code>microtask</code> 队列被执行完之后，也就是说执行任务的耗时会影响视图渲染的时机。通常浏览器以每秒 60 帧（<code>60fps</code>）的速率刷新页面，这个帧率最适合人眼交互，大概 <code>16.7ms</code> 渲染一帧，所以如果要让用户觉得顺畅，单个 <code>macrotask</code> 及它相关的所有 <code>microtask</code> 最好能在 <code>16.7ms</code> 内完成。</p>
+<h4 id="update-rendering（更新渲染）"><a href="#update-rendering（更新渲染）" class="headerlink" title="update rendering（更新渲染）"></a>update rendering（更新渲染）</h4><p><code>update rendering（更新渲染）</code>发生在本轮事件循环的 <code>microtask</code> 队列被执行完之后（下轮事件循环执行之前），也就是说执行任务的耗时会影响视图渲染的时机。通常浏览器以每秒 60 帧（<code>60fps</code>）的速率刷新页面，这个帧率最适合人眼交互，大概 <code>16.7ms</code> 渲染一帧，所以如果要让用户觉得顺畅，单个 <code>macrotask</code> 及它相关的所有 <code>microtask</code> 最好能在 <code>16.7ms</code> 内完成。</p>
+<figure class="highlight js"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">demo</span>(<span class="params"></span>) </span>{</span><br><span class="line">  <span class="keyword">const</span> now = <span class="built_in">Date</span>.now();</span><br><span class="line">  <span class="built_in">document</span>.body.style.backgroundColor = <span class="string">'red'</span>;</span><br><span class="line">  <span class="keyword">while</span> (<span class="built_in">Date</span>.now() - now &lt;= <span class="number">2000</span>) {}</span><br><span class="line">  <span class="built_in">document</span>.body.style.backgroundColor = <span class="string">'blue'</span>;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">demo();</span><br><span class="line"><span class="comment">//2s 后变成蓝色</span></span><br></pre></td></tr></tbody></table></figure>
+
 <p>也不是每轮事件循环都会执行 <code>update rendering</code>，浏览器有自己的优化策略，可能把几次的视图更新累积到一起重绘。重绘之前会通知 <code>requestAnimationFrame</code> 执行回调函数，即<code>requestAnimationFrame</code> 的执行时机是在一次或多次事件循环的 <code>UI render</code> 阶段。<span class="exturl" data-url="aHR0cHM6Ly93d3cuY25ibG9ncy5jb20vc3Vuc2hxL3AvNTgwNzU3NS5odG1s">查阅 1<i class="fa fa-external-link-alt"></i></span>,<span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Zod2ZyMnUwMnEvYXJ0aWNsZS9kZXRhaWxzLzc5NDkyMzAz">查阅 2<i class="fa fa-external-link-alt"></i></span></p>
 <h4 id="life-of-a-frame"><a href="#life-of-a-frame" class="headerlink" title="life of a frame"></a>life of a frame</h4><p>浏览器页面是一帧一帧绘制出来的，每一帧（<code>Frame</code>）都需要完成哪些工作？</p>
 <ol>
@@ -582,13 +584,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">514k</span>
+    <span title="站点总字数">504k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">7:48</span>
+    <span title="站点阅读时长">7:38</span>
   </span>
 </div>
 
