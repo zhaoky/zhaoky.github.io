@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://blog.flqin.com/413.html</loc>
+    
+    <lastmod>2021-06-08</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.flqin.com/412.html</loc>
+    
+    <lastmod>2021-04-28</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.flqin.com/411.html</loc>
     
     <lastmod>2021-02-05</lastmod>
@@ -690,7 +704,7 @@
 
   <url>
     <loc>https://blog.flqin.com/</loc>
-    <lastmod>2021-03-22</lastmod>
+    <lastmod>2021-06-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -700,49 +714,49 @@
   
   <url>
     <loc>https://blog.flqin.com/categories/FE-Misc/</loc>
-    <lastmod>2021-03-22</lastmod>
+    <lastmod>2021-06-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://blog.flqin.com/categories/FE-Css/</loc>
-    <lastmod>2021-03-22</lastmod>
+    <lastmod>2021-06-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://blog.flqin.com/categories/FE-Summary/</loc>
-    <lastmod>2021-03-22</lastmod>
+    <lastmod>2021-06-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://blog.flqin.com/categories/FE-Js/</loc>
-    <lastmod>2021-03-22</lastmod>
+    <lastmod>2021-06-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://blog.flqin.com/categories/FE-Code/</loc>
-    <lastmod>2021-03-22</lastmod>
+    <lastmod>2021-06-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://blog.flqin.com/categories/FE-Build/</loc>
-    <lastmod>2021-03-22</lastmod>
+    <lastmod>2021-06-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://blog.flqin.com/categories/FE-Frame/</loc>
-    <lastmod>2021-03-22</lastmod>
+    <lastmod>2021-06-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
